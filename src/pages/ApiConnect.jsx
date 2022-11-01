@@ -1,0 +1,1200 @@
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react'
+
+import { css } from '@emotion/react'
+import styled from '@emotion/styled'
+
+import LayoutMixin from 'util/LayoutMixin'
+
+import ThemeMixin, { fetchTheme } from 'util/ThemeMixin'
+import { apiDoc as apiDocThemeObject } from 'theme/reas'
+
+import { PageTitle } from "module/layout";
+import { useTranslation } from "react-i18next";
+
+import { useState, useEffect, useRef } from 'react';
+
+import { useUrlQuery } from "util/UrlQuery";
+// import StateModel from 'model/StateModel';
+import ApiConnectModel, { ApiComposition } from 'fragment/ApiConnect';
+import FetchControl from 'control/FetchControl';
+import Select from 'component/Select'
+import SelectControl from 'control/SelectControl'
+
+import { ReactComponent as AngleDownSvg } from 'assets/svg/sr-angle-down.svg'
+import { ReactComponent as AngleUpSvg } from 'assets/svg/sr-angle-up.svg'
+
+const apiDocTheme = new ThemeMixin(apiDocThemeObject);
+
+const PRINT_LOG = true;
+
+const quickPanelWidth = '320px';
+const quickPanelRight = '35px';
+
+
+const quickPanelHiddenMaxWidth = '1280px';
+
+
+
+const TagBlockBoardStyled = styled.div`
+display: flex;
+flex-direction: column;
+
+/* margin-top: 1.5rem; */
+margin-left: 1.5rem;
+margin-right: 1.5rem;
+margin-bottom: 1.5rem;
+
+// width: calc(100% - 8rem)
+/* width: ${() => LayoutMixin.getPageBoardWidth()}; */
+/* 'calc(100% - 4rem)' */
+
+background-color: ${fetchTheme('board', '#cba165')};
+border-radius: ${fetchTheme('boardRadius', '5px')};
+
+padding-bottom: 1.5rem;
+    
+    & .tag-block-title-row {
+        font-size: 1.8rem;
+
+        margin: 0.75rem 1.75rem 0 1.75rem;
+
+        color: ${fetchTheme('groupTitle', '#1c7575')};
+    }
+    /* & .tag-block-title-hr{
+
+    } */
+
+    & .tag-title-hr {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        margin-top: 0.5rem;
+        & .hr-line {
+            width: 95%;
+            border-bottom: 1px solid #a7a7a7;
+        }
+    }
+
+    & .row {
+        margin: 0.65rem 1.75rem 0 1.75rem;
+    }
+    & .attr-row {
+        margin: 0 1.75rem 0 1.75rem;
+    }
+    /* & .h2-row {
+        margin: 0.65rem 1.75rem 0 1.75rem;
+    } */
+
+
+    & .row.api-title-row {
+        font-size: 1.18rem;
+        color: ${fetchTheme('apiTitle', '#1c7575')};
+    }
+
+    & .row.api-path-row {
+        & .api-path-block {
+            /* margin: 0.5rem; */
+            background-color: ${fetchTheme('apiPathBlock', '#a7a7a7')};
+            border-radius: 5px;
+
+            padding: 0.35rem 0.5rem;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+
+            color: ${fetchTheme('apiPath', '1f4b4b')};
+
+            cursor: pointer;
+
+            & .api-type-container {
+
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+
+                width: 5.6rem;
+
+                & .api-type {
+                    padding: 0.25rem 0rem;
+                    /* background-color: ${fetchTheme('apiTypeBlock', '#e8e8e8')}; */
+                    background-color: #e8e8e8; // 預設的顏色，不會顯示
+
+                    border-radius: 5px;
+
+                    /* margin-right: 0.85rem; */
+                    font-size: 1.09rem;
+
+                    width: 5rem;
+                    display: flex;
+                    justify-content: center;
+
+                    &.get {
+                        color: ${fetchTheme('apiTypeGet', '#3c3c3c')};
+                        background-color: ${fetchTheme('apiTypeBlockGet', '#e8e8e8')};
+                    }
+                    &.put {
+                        color: ${fetchTheme('apiTypePut', '#3c3c3c')};
+                        background-color: ${fetchTheme('apiTypeBlockPut', '#e8e8e8')};
+                    }
+                    &.post {
+                        color: ${fetchTheme('apiTypePost', '#3c3c3c')};
+                        background-color: ${fetchTheme('apiTypeBlockPost', '#e8e8e8')};
+                    }
+                    &.delete {
+                        color: ${fetchTheme('apiTypeDeletet', '#3c3c3c')};
+                        background-color: ${fetchTheme('apiTypeBlockDelete', '#e8e8e8')};
+                    }
+                }
+            }
+
+            & .api-path {
+                font-size: 1.15rem;
+            }
+        }
+
+        /* cursor: pointer; */
+    }
+
+    & .row.api-description-row {
+        margin-left: 2.3rem;
+
+        /* color: #636363; */
+        color: ${fetchTheme('apiDescription', '#636363')};
+    }
+
+    & .request-title-row {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        
+        padding-left: 0.75rem;
+
+        /* padding: 0.25rem 1.5rem; */
+
+        font-size: 1.25rem;
+
+        display: flex;
+        flex-direction: row;
+
+        justify-content: space-between;
+        & .title {
+            cursor: auto;
+
+            font-weight: 500;
+
+            color: ${fetchTheme('requestTitle', '#9f9f9f')};
+        }
+
+        & .content-type-block {
+            display: flex;
+            flex-direction: row;
+
+            font-size: 0.9rem;
+            & .title {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                margin-right: 2rem;
+
+                color: ${fetchTheme('requestTitle', '#9f9f9f')};
+            }
+            & .content-type {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                background-color: ${fetchTheme('contentTypeBlock', '#a7a7a7')};
+                border-radius: 5px;
+
+                padding: 0.25rem 1.5rem;
+
+                color: ${fetchTheme('contentType', '#a7a7a7')};
+            }
+        }
+    }
+
+    & .param-title-row {
+        /* margin-top: 0.5rem; */
+        /* background-color: #a7a7a7; */
+        color: ${fetchTheme('paramFormTitle', '#a7a7a7')};
+        background-color: ${fetchTheme('paramFormTitleBlock', '#a7a7a7')};
+
+        padding: 0.25rem 1.5rem;
+
+        font-size: 1.25rem;
+        font-weight: 500;
+
+        display: flex;
+        flex-direction: row;
+
+        & .title {
+            /* cursor: auto; */
+        }
+
+        cursor: pointer;
+    }
+
+    & .api-attribute-row {
+        background-color: ${fetchTheme('attributeRow', '#d3d3d3')};
+
+        display: flex;
+        flex-direction: column;
+
+        & .parameter-row {
+            display: flex;
+            flex-direction: row;
+
+            border-bottom: 1px solid ${fetchTheme('attributeRowHr', '#9b9b9b')};
+
+            color: ${fetchTheme('attributeText', '#5f5f5f')};
+
+            &.sub-parameter{
+                cursor: pointer;
+            }
+
+            &.tail {
+                border-bottom: none;
+            }
+
+            & .parameter-title-col {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+
+                width: 10rem;
+                word-wrap: 'break-word';
+
+                & .title {
+                    margin: 0rem 1rem 0 1.5rem;
+                    font-size: 1.1rem;
+                    cursor: auto;
+                }
+                & .object-title {
+                    margin: 0.65rem 0.65rem 0.65rem 1.5rem;
+                    font-size: 1.1rem;
+                    cursor: auto;
+                }
+                & .required {
+                    /* display: none; */
+                    display: flex;
+
+                    margin: 0 1rem 0 1.5rem;
+                    font-size: 0.9rem;
+                    color: ${fetchTheme('attributeReuired', '#5f5f5f')};
+                    
+                    /* &.show {
+                        display: flex;
+                    } */
+                    cursor: auto;
+                }
+            }
+
+            & .parameter-attribute-col {
+                display: flex;
+                flex-direction: column;
+
+                & .attribute-row {
+                    display: flex;
+                    flex-direction: row;
+
+                    flex-grow: 1;
+
+                    margin: 0.5rem 1.5rem;
+
+                    & .attr-type {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: flex-start;
+
+                        /* margin-right: 1.5rem; */
+
+                        width: 6rem;
+                        & .text {
+                            cursor: auto;
+                        }
+                    }
+
+                    & .attr-default {
+                        background-color: ${fetchTheme('attributeQuoteBlock', '#9f9f9f')};
+                        color: ${fetchTheme('attributeQuote', '#9f9f9f')};
+
+                        padding: 0.15rem 1.2rem;
+                        border-radius: 3px;
+
+                        line-height: 1.5rem;
+                        & .text {
+                            cursor: auto;
+                        }
+
+                        &.input-select {
+                            padding: 0.15rem 3rem 0.15rem 1.2rem;
+                            cursor: pointer;
+
+                            position: relative;
+
+                            & .arrow-icon {
+                                width: 18px;
+                                height: 18px;
+
+                                position: absolute;
+                                top: 7px;
+                                right: 7px;
+
+                                &.angle-up {
+                                    top: 5px;
+                                }
+                            }
+                        }
+                    }
+                }
+                & .description-row {
+                    margin: 0rem 1.5rem 0.65rem 1.5rem;
+                }
+            }
+        }
+    }
+
+
+`
+
+const AttributeDefaultBlock = ({ attributeData }) => {
+
+    // const [valueState, setValueState] = useState('');
+    let valueState = '';
+    const getDefault = () => {
+        // { attributeData.default !== undefined ? `${attributeData.default}` : '' }
+
+        if (attributeData.default === undefined) {
+            return '';
+        }
+        if (attributeData.type === 'string') {
+            if (attributeData.default === '') {
+                return '';
+            }
+        }
+
+        return `${attributeData.default}`;
+    }
+
+    const checkDefaultExist = () => {
+
+        if (attributeData.default === undefined) {
+            return false;
+        }
+        if (attributeData.type === 'string') {
+            if (attributeData.default === '') {
+                return false;
+            }
+        }
+
+        return `${attributeData.default}`;
+    }
+
+    valueState = checkDefaultExist() ? 'default' : '';
+
+    if (attributeData.enum) {
+
+        const [enumLabel, setEnumLabel] = useState(getDefault());
+
+        const enumSelectControl = new SelectControl(useRef({
+            selectedLabel: getDefault(),
+            dropdownOpen: false,
+        }));
+        enumSelectControl.getStateModel().registSetter('selectedLabel', 'enumLabel', setEnumLabel);
+
+        const enumOptionList = attributeData.enum.map((value) => {
+            return {
+                value,
+                label: value,
+            };
+        });
+
+        // const onEnumSelectUpdate = () => val => {
+        //     // enumSelectControl.bindAct('onSelectChanged')
+        //     console.log(`onEnumSelectUpdate`, val)
+        // }
+        // onUpdate={onEnumSelectUpdate()}
+
+        //     let arrowIcon;
+        // if (dropdownOpen) {
+        //     arrowIcon = <AngleUpSvg className="arrow-icon" fill={selectTheme.getTheme('arrowIcon', '#a1a1a1')} />
+        // } else {
+        //     arrowIcon = <AngleDownSvg className="arrow-icon" fill={selectTheme.getTheme('arrowIcon', '#a1a1a1')} />
+        // }
+
+        const [dropdownOpen, setDropdownOpen] = useState(false);
+        enumSelectControl.getStateModel().registSetter('dropdownOpen', 'enumLabel', setDropdownOpen);
+
+        let arrowIcon;
+        if (dropdownOpen) {
+            arrowIcon = <AngleUpSvg className="arrow-icon angle-up" fill={apiDocTheme.getTheme('inputSelectArrowIcon', '#a1a1a1')} />
+        } else {
+            arrowIcon = <AngleDownSvg className="arrow-icon" fill={apiDocTheme.getTheme('inputSelectArrowIcon', '#a1a1a1')} />
+        }
+
+        return (
+            <Select type="slot" optionList={enumOptionList} control={enumSelectControl}>
+                <div className="attr-default input-select" onClick={enumSelectControl.bindAct('actDropdown')}>
+                    {enumLabel}
+                    {arrowIcon}
+                    {/* <AngleUpSvg className="arrow-icon"
+                        fill={apiDocTheme.getTheme('inputSelectArrowIcon', '#a1a1a1')} /> */}
+                </div>
+            </Select>
+        )
+    }
+
+
+
+    return (
+        (
+            <div>
+                <div className="attr-default" style={{
+                    display: valueState === 'default' ? 'block' : 'none',
+                }}>
+                    {getDefault()}
+                </div>
+            </div>
+        )
+    );
+}
+
+// Object的折疊
+const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail, layer, show }) => {
+
+    let indent = layer - 1;
+
+    const [subShow, setSubShow] = useState(false);
+
+    // useEffect(function () {
+    //     setSubShow(false);
+    // }, [show]);
+
+    if (!attributeData.attributes) {
+        console.error(`attributes not exist`, attributeData);
+        return (
+            (<div>attributes not exist</div>)
+        );
+    }
+    let subAttributeList = attributeData.attributes;
+
+    let subAttributeListDom = subAttributeList.map((subAttribute, index) => {
+        return (
+            (
+                <ApiAttributeRow key={`sub_ApiAttributeRow_${index}`}
+                    apiData={apiData}
+                    attributeData={subAttribute} layer={layer + 1}
+                    show={subShow}></ApiAttributeRow>
+            )
+        )
+    });
+
+    const onSubParameterClick = () => () => {
+        if (PRINT_LOG) {
+            if (apiData) {
+                console.log(`[${apiData.apiType}] ${apiData.path} attributeData`, attributeData)
+            } else {
+                console.error(`attributeData not have apiData`, attributeData)
+            }
+        }
+        setSubShow(!subShow);
+    }
+
+    const getAttributeType = () => {
+
+        if (attributeData.type === 'array') {
+            if (attributeData.items) {
+                if (attributeData.items.type === 'object') {
+                    return 'object-array';
+                }
+            }
+        }
+
+        return attributeData.type || '';
+    }
+
+    return (
+        <div className={`${indent === 0 ? 'attr-row' : ''} api-attribute-row`} style={{
+            display: show ? 'flex' : 'none',
+        }}>
+            <div className={`parameter-row sub-parameter ${(isTail && !subShow) ? 'tail' : ''}`} onClick={onSubParameterClick()}>
+                <div className="parameter-title-col" style={{
+                    marginLeft: `${indent * 25}px`,
+                }}>
+                    <div className="object-title">
+                        {attributeData.name || ''}
+                    </div>
+                </div>
+                <div className="parameter-attribute-col">
+                    <div className="attribute-row">
+                        <div className="attr-type">
+                            <div className="text">
+                                {getAttributeType()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {subAttributeListDom}
+        </div>
+    )
+}
+
+
+const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, show = true }) => {
+    // apiData.apiData.attributes
+
+    let indent = layer - 1;
+
+    if (layer > 5) {
+        console.error(`out of max layer 5`);
+        return (
+            <div>out of max layer 5</div>
+        )
+    }
+
+    // console.log('attributeData', attributeData)
+
+    if (attributeData.type === 'object' ||
+        attributeData.type === 'array') {
+        // 使用物件模式render，全部參數都直接繼承
+        // type={'object'}
+        return (
+            <ApiAttributeObjectRow apiData={apiData} attributeData={attributeData} isTail={isTail} layer={layer}
+                show={show}></ApiAttributeObjectRow>
+        );
+    }
+
+
+    // 用來取得attributeData
+    const onAttributeClick = () => () => {
+        if (PRINT_LOG) {
+            if (apiData) {
+                // console.log(`attributeData`, attributeData);
+                console.log(`[${apiData.apiType}] ${apiData.path} attributeData`, attributeData)
+            } else {
+                console.error(`attributeData not have apiData bbb`, attributeData)
+            }
+        }
+    }
+
+    //     (<div className={`required ${attributeData.required ? 'show' : ''}`}>
+    //     required
+    // </div>)
+
+    let requiredTagDom;
+    if (attributeData.required) {
+        requiredTagDom = (<div className="required">
+            required
+        </div>);
+    }
+
+
+    return (
+        <div className={`${indent === 0 ? 'attr-row' : ''} api-attribute-row`} style={{
+            display: show ? 'flex' : 'none',
+        }}>
+            {/* onClick={onAttributeClick()} Debug用，用來看attributeData */}
+            <div className={`parameter-row ${isTail ? 'tail' : ''}`} onClick={onAttributeClick()}>
+                <div className="parameter-title-col" style={{
+                    marginLeft: `${indent * 25}px`,
+                }}>
+                    <div className="title">
+                        {/* activated */}
+                        {attributeData.name || ''}
+                    </div>
+                    {requiredTagDom}
+                </div>
+                <div className="parameter-attribute-col">
+                    <div className="attribute-row">
+                        <div className="attr-type">
+                            {/* boolean */}
+                            {attributeData.type || ''}
+                        </div>
+                        <AttributeDefaultBlock attributeData={attributeData}></AttributeDefaultBlock>
+                        {/* <div className="attr-default" style={{
+                            display: checkDefaultExist() ? 'block' : 'none',
+                        }}>
+                            {getDefault()}
+                        </div> */}
+                    </div>
+                    <div className="description-row">
+                        {/* 帳號是否已激活 */}
+                        {attributeData.description || ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+    // return (
+    //     <div className="attr-row api-attribute-row">
+    //         <div className="parameter-row tail">
+    //             <div className="parameter-title-col">
+    //                 <div className="title">
+    //                     activated
+    //                 </div>
+    //                 <div className={`required ${true ? 'show' : ''}`}>
+    //                     required
+    //                 </div>
+    //             </div>
+    //             <div className="parameter-attribute-col">
+    //                 <div className="attribute-row">
+    //                     <div className="attr-type">
+    //                         boolean
+    //                     </div>
+    //                     <div className="attr-default">
+    //                         {`${true}`}
+    //                     </div>
+    //                 </div>
+    //                 <div className="description-row">
+    //                     帳號是否已激活
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+}
+
+
+const AttributesForm = ({ apiData, title, attributes, show = true }) => {
+    // attributes = apiComp.getApiDataField('requestAttributes')
+
+    // console.log(`title ${title} show ${show}`)
+
+    const [collapse, setCollapse] = useState(true);
+
+    useEffect(function () {
+        setCollapse(true);
+        // setCollapse(!show);
+    }, [show]);
+
+    let reqAttrListDom = [];
+    if (attributes) {
+        reqAttrListDom = attributes.map((attributeData, index, arr) => {
+            return (
+                (
+                    <ApiAttributeRow key={`ApiAttributeRow_${index}`}
+                        apiData={apiData}
+                        attributeData={attributeData} isTail={index === (arr.length - 1)}
+                        show={!collapse}></ApiAttributeRow>
+                )
+            )
+        });
+    }
+
+    // ps.最外面那層div是因為組件的關係，才必須多包一層
+
+    return (
+        <div>
+            <div className="attr-row param-title-row" style={{
+                display: show ? 'flex' : 'none',
+            }} onClick={() => setCollapse(!collapse)}>
+                <div className="title">
+                    {title}
+                    {/* {`show: ${show}`} */}
+                </div>
+            </div>
+            {reqAttrListDom}
+        </div>
+    );
+}
+
+
+const ApiBlock = ({ apiData }) => {
+
+    const apiComp = new ApiComposition(apiData);
+
+    // console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
+
+    const resAttr = apiComp.getApiDataField('responseAttributes');
+    // console.log(`[${apiData.apiType}] ${apiData.path} resAttr`, resAttr);
+
+    // 用來取得API的資料用的
+    const onClickApiTitle = () => () => {
+        if (PRINT_LOG) {
+            console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
+        }
+    }
+
+    const [apiShow, setApiShow] = useState(false);
+
+    const getApiShowStyle = function (showDisplay = 'block') {
+        return {
+            display: apiShow ? showDisplay : 'none',
+        };
+    };
+
+    const onApiPathClick = () => e => {
+        e.stopPropagation();
+        setApiShow(!apiShow);
+    }
+
+    return (<div className="api-list-col" id={`${apiData.apiType}_${apiData.path}`}>
+        {/* <div className="api-layer-display">
+        階層顯示BAR (有空再來做)
+        {`3. 社群/3-06. 創建新文章/POST-/forum/sendCreateArticle`}
+    </div> */}
+        <div className="row api-title-row" onClick={onClickApiTitle()}>
+            {/* {`1-2.用ID取得子用戶(API名稱)`} */}
+            {/* {`${apiData.apiData.description}`} */}
+            {apiComp.getApiDataField('apiTitle')}
+        </div>
+        <div className="row api-path-row">
+            <div className="api-path-block" onClick={onApiPathClick()}>
+                <div className="api-type-container">
+                    <div className={`api-type ${apiComp.getApiDataField('apiType').toLowerCase()}`}>
+                        {apiComp.getApiDataField('apiType').toUpperCase()}
+                    </div>
+                </div>
+                <div className="api-path">
+                    {apiComp.getApiDataField('path')}
+                </div>
+            </div>
+        </div>
+        <div className="row api-description-row" style={getApiShowStyle('block')}>
+            {/* {`這個是1-2.API的詳細描述`} */}
+            {/* {`${apiData.apiData.description}`} */}
+            {apiComp.getApiDataField('apiDescription')}
+        </div>
+        <div className="attr-row request-title-row" style={getApiShowStyle('flex')}>
+            <div className="title">
+                Request
+            </div>
+            <div className="content-type-block" style={{
+                display: apiComp.checkApiDataField('consumesContentType') ? 'flex' : 'none',
+            }}>
+                <div className="title">
+                    content type
+                </div>
+                <div className="content-type">
+                    {apiComp.getApiDataField('consumesContentType')}
+                </div>
+            </div>
+        </div>
+        <AttributesForm title="HEADER - ATTRIBUTES" attributes={apiComp.getApiDataField('requestHeaderAttributes')}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestHeaderAttributes')}></AttributesForm>
+        <AttributesForm title="URL - ATTRIBUTES" attributes={apiComp.getApiDataField('requestUrlAttributes')}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestUrlAttributes')}></AttributesForm>
+        <AttributesForm title="Query - ATTRIBUTES" attributes={apiComp.getApiDataField('requestQueryAttributes')}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestQueryAttributes')}></AttributesForm>
+        <AttributesForm title="BODY - ATTRIBUTES" attributes={apiComp.getApiDataField('requestAttributes')}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestAttributes')}></AttributesForm>
+        <div className="attr-row request-title-row" style={getApiShowStyle('flex')}>
+            <div className="title">
+                Response
+            </div>
+            <div className="content-type-block" style={{
+                display: apiComp.checkApiDataField('producesContentType') ? 'flex' : 'none',
+            }}>
+                <div className="title">
+                    content type
+                </div>
+                <div className="content-type">
+                    {apiComp.getApiDataField('producesContentType')}
+                </div>
+            </div>
+        </div>
+        <AttributesForm title="BODY - ATTRIBUTES" attributes={resAttr}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('responseAttributes')}></AttributesForm>
+    </div>);
+}
+
+
+const TagHr = () => {
+    return (
+        <div className="tag-title-hr">
+            <div className="hr-line">
+            </div>
+        </div >)
+}
+
+
+const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
+    /* tagData: {
+        // Swagger預設----------------------------
+        description: "Everything about your Pets"
+        externalDocs: {description: 'Find out more', url: 'http://swagger.io'}
+        name: "pet"
+        // 內部系統用----------------------------
+    } */
+
+    // console.log('tagData', tagData)
+
+    // fetchModel('apiDoc').get
+
+    // const [apiBlockList, setApiBlockList] = useState([]);
+
+    // console.log(`tagData.apiList`, tagData.apiList);
+
+    const apiBlockList = tagData.apiList || [];
+
+    let apiBlockListDom = [];
+    if (apiBlockList.length !== 0) {
+        apiBlockListDom = apiBlockList.map((apiBlockData, index) => {
+            return (
+                <ApiBlock key={`${tagData.name}_ApiBlock_${index}`}
+                    apiData={apiBlockData}></ApiBlock>
+            )
+        });
+    }
+
+    return (
+        <TagBlockBoardStyled theme={apiDocThemeObject} id={`tag_${tagData.name}`} className="tag-block-board">
+            <div className="tag-block-title-row">
+                {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`}
+            </div>
+            <TagHr></TagHr>
+            {apiBlockListDom}
+        </TagBlockBoardStyled>
+    )
+}
+
+const ApiDocumentStyled = styled.div`
+display: flex;
+flex-direction: column;
+
+flex-grow: 1;
+
+`
+
+const ApiDocument = ({ fetchControl, jsonPath }) => {
+
+    const fc = new FetchControl(fetchControl);
+
+    const apiDocModel = new ApiConnectModel(useRef(null));
+    fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
+
+    const fetchModel = fc.export('fetchModel');
+
+    useEffect(() => {
+        // console.log('jsonPath', jsonPath);
+
+        // 使用js原生的fetch讀取public底下的json
+        fetch(jsonPath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(json => {
+                // console.log(json);
+                fetchModel('apiDoc').saveApiDoc(json);
+            })
+            .catch(function (error) {
+                console.error(error);
+                // this.dataError = true;
+            })
+    }, [jsonPath]);
+
+    const [tagList, setTagList] = useState([]);
+    apiDocModel.registSetter('tagList', 'ApiDocument', setTagList);
+
+    // useEffect(function () {
+    //     console.log('tagBlockList', tagBlockList)
+    // }, [tagBlockList])
+
+    const tagBlockListDom = tagList.map((tagData, index) => {
+        return (
+            <TagBlock key={`TagBlock_${index}`} fetchControl={fetchControl}
+                fetchModel={fetchModel} tagData={tagData}></TagBlock>
+        );
+    })
+
+
+    return (
+        <ApiDocumentStyled>
+            {/* <TagBlock></TagBlock> */}
+            {tagBlockListDom}
+        </ApiDocumentStyled>
+    );
+}
+
+const checkHalfShape = function (summary) {
+
+    /*
+    str="中文;；ａ"     
+  alert(str.match(/[\u0000-\u00ff]/g))     //半形   
+  alert(str.match(/[\u4e00-\u9fa5]/g))     //中文   
+  alert(str.match(/[\uff00-\uffff]/g))     //全形   */
+
+    // match會輸出一個陣列，把符合全形、或半形的字塞進每個陣列元素
+
+    // let isHalfShape = false;
+
+    const checkLen = 15;
+
+    // 檢查前15個字元，只要超過5成是半形，就以半形計算字數
+    let str = summary.slice(0, checkLen);
+
+    const matchArr = str.match(/[\u0020-\u00ff]/g); //全形 (0020以前是控制字符，不能使用)
+
+    if (!matchArr) {
+        return false; // 代表全都是全形
+    }
+
+    // console.log(`${summary} matchArr: ${matchArr.length} ${(matchArr.length / summary.length).toFixed(2)}`, matchArr.length / summary.length >= 0.5)
+
+    return matchArr.length / checkLen >= 0.5;
+}
+
+
+const QuickLinkGroup = ({ tagGroupData }) => {
+
+    // console.log('tagGroupData', tagGroupData)
+
+    const apiList = tagGroupData.apiList;
+    // console.log('QuickLinkGroup apiList', apiList)
+
+    const getApiLinkLabel = function (apiData) {
+        const summary = apiData.apiData.summary;
+
+        if (!summary) {
+            return '';
+        }
+        if (checkHalfShape(summary)) {
+
+            return summary.slice(0, 36); // 半形限30字元
+        }
+
+        return summary.slice(0, 15); // 全形限15字元
+    }
+
+    let apiLinkListDom = apiList.map((apiData, index) => {
+        if (!apiData.apiData) {
+            return (
+                <div>no summary</div>
+            );
+        }
+        const apiLinkId = `${apiData.apiType}_${apiData.path}`;
+
+        return (
+            <a href={`#${apiLinkId}`} key={`apiLink_${index}`}>
+                {getApiLinkLabel(apiData)}
+            </a>
+        )
+    });
+
+    const getApiGroupLabel = function (tagGroupData) {
+        return tagGroupData.groupName || tagGroupData.name;
+    }
+
+    return (
+        (
+            <div className="quick-link-group">
+                <a className="group-link" href={`#tag_${tagGroupData.name}`}>
+                    {getApiGroupLabel(tagGroupData)}
+                </a>
+                {apiLinkListDom}
+            </div>
+        )
+    )
+}
+
+// 用來騰出右側空間用的
+const QuickPanelAsideSpace = styled.div`
+display: flex;
+flex-direction: column;
+
+flex-grow: 0;
+
+margin-right: ${quickPanelRight || '35px'};
+
+width: ${quickPanelWidth};
+
+@media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
+    display: none;
+}
+`
+
+const marginVertical = '1rem';
+
+const QuickPanelAsideStyled = styled.div`
+
+
+display: flex;
+flex-direction: column;
+
+flex-grow: 0;
+
+/* margin-right: ${quickPanelRight || '35px'}; */
+
+background-color: ${fetchTheme('board', '#cba165')};
+
+border-radius: ${fetchTheme('boardRadius', '5px')};
+
+width: ${quickPanelWidth};
+
+position: fixed;
+
+top: calc(${LayoutMixin.navBarHeight} + ${marginVertical});
+// 若想要對齊PageTitle的下緣，只要把top參數拿掉即可
+
+right: ${quickPanelRight};
+
+height: calc(100vh - ${LayoutMixin.navBarHeight} - (${marginVertical} * 2));
+
+overflow-y: auto;
+
+@media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
+    display: none;
+}
+
+// scrollbar---------------------------------------
+
+/* width */
+&::-webkit-scrollbar {
+    width: 14px;
+}
+
+/* Track */
+&::-webkit-scrollbar-track {
+    /* box-shadow: inset 0 0 5px grey; */
+    /* background: #d1d1d1; */
+    border-radius: 15px;
+
+    background: transparent;
+}
+
+/* Handle */
+&::-webkit-scrollbar-thumb {
+    /* background: #989898; */
+    background-color: ${fetchTheme('scrollbar', '#cdcdcd')};
+
+    border-radius: 30px;
+    
+    border: 3px solid transparent; // 用來縮小thumb的寬度
+    background-clip: content-box;
+    /* box-shadow: inset 0 0 5px #282828; */
+}
+
+/* Handle on hover */
+&::-webkit-scrollbar-thumb:hover {
+    /* background: #dedede; */
+    background-color: ${fetchTheme('scrollbarHover', '#dedede')};
+    border: 3px solid transparent; // 用來縮小thumb的寬度
+    background-clip: content-box;
+}
+
+    & .quick-link-group {
+        display: flex;
+        flex-direction: column;
+
+        margin-right: 1rem;
+
+        margin-top: 1rem;
+
+        & a {
+            margin-left: 2.5rem;
+
+            /* word-break: break-all; */
+            /* word-break: normal; */
+            /* word-break: keep-all; */
+            /* word-break: break-word; */
+
+            color: ${fetchTheme('quickApiTitle', '#000000')};
+
+            margin-bottom: 0.45rem;
+            text-decoration: none;
+
+            font-size: 1.05rem;
+        }
+        /* & a:active {
+            color: blue;
+        } */
+
+        & a.group-link {
+            color: ${fetchTheme('quickGroupTitle', '#000000')};
+            margin-left: 1rem;
+        }
+    }
+
+`
+
+const QuickPanelAside = ({ fetchControl }) => {
+
+    const fc = new FetchControl(fetchControl);
+    const fetchModel = fc.export('fetchModel');
+
+    const [tagGroupList, setTagGroupList] = useState([]);
+    // fetchModel('tagSelector').registSetter('tagCategoryList', 'TagSelector', setTagCategoryList);
+    fetchModel('apiDoc').registSetter('jumpTagList', 'QuickLinkAside', setTagGroupList);
+
+    let tagGroupListDom = tagGroupList.map((tagGroupData, index) => {
+        return (
+            <QuickLinkGroup tagGroupData={tagGroupData} key={`QuickLinkGroup_${index}`}>
+            </QuickLinkGroup>
+        );
+    })
+
+    return (
+        <QuickPanelAsideStyled theme={apiDocThemeObject}>
+            {tagGroupListDom}
+        </QuickPanelAsideStyled>
+    )
+}
+
+
+const ApiPageOuter = styled.div`
+    display: flex;
+    flex-direction: row;
+
+    /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
+`
+
+export default function ApiConnect({ fetchControl }) {
+
+    const translationMenu = useTranslation('menu', { keyPrefix: 'subItem' });
+    const { t } = useTranslation('setting', { keyPrefix: 'payRelated' });
+
+
+    const urlQuery = useUrlQuery();
+    // console.log('UrlQuery', urlQuery.get())
+
+    const urlQueryObj = urlQuery.get();
+    /* urlQueryObj: {
+        category: "dataCollection"
+    }*/
+
+    // http://{host}/apiConnect?category=dataCollection
+
+    const apiConnectPageMap = {
+        dataCollection: { // <category>
+            jsonPath: "/apiConnect/dataCollection.json",
+            pageTitle: "apiConnectDataCollection",
+        },
+    };
+
+    let jsonPath = '/apiConnect/default.json';
+    let pageTitle = translationMenu.t('apiConnect');
+    if (urlQueryObj) {
+        if (urlQueryObj.category) {
+            const pageInfo = apiConnectPageMap[urlQueryObj.category];
+
+            if (pageInfo) {
+                if (pageInfo.jsonPath) {
+                    jsonPath = pageInfo.jsonPath
+                    pageTitle = `${translationMenu.t(pageInfo.pageTitle)}`;
+                }
+            }
+        }
+    }
+
+    return (
+        <PageTitle title={pageTitle}>
+            <ApiPageOuter>
+                <ApiDocument fetchControl={fetchControl} jsonPath={jsonPath}></ApiDocument>
+                <QuickPanelAsideSpace></QuickPanelAsideSpace>
+                <QuickPanelAside fetchControl={fetchControl}></QuickPanelAside>
+            </ApiPageOuter>
+        </PageTitle>
+    );
+}

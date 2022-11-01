@@ -1,0 +1,16 @@
+@import "assets/scss/colors.scss";
+
+html,
+body {
+  //   margin: 0;
+  //   padding: 0;
+  //   height: 100%;
+  //   width: 100%;
+  background-color: $body-bg-color;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+
+  // 解決頁面右側出現白邊的問題
+  overflow-x: hidden;
+}
