@@ -6,6 +6,7 @@ export default class ApiManageModel extends StateModel {
             // ModalRef----------------------------------------
             addTagModalRef: null,
             addApiModalRef: null,
+            addBodyModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '',
@@ -58,6 +59,23 @@ export class AddApiModel extends StateModel {
                 label: 'DELETE',
                 value: 'delete',
             }],
+        }
+    }
+}
+
+
+export class AddBodyModel extends StateModel {
+    data(initObj = {}) {
+        return {
+            apiRoute: '',
+            apiType: '',
+            rootType: '',
+            schema: '',
+            // "fileName": "qore-plus-api",
+    //         "apiRoute": "/api/friend",
+    // "apiType": "post",
+    // "rootType": "SYSTEM_FRIEND_LIST",
+    // "schema"
         }
     }
 }

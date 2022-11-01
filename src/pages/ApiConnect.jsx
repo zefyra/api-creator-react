@@ -31,7 +31,7 @@ import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
 import AddTagModal from 'element/ApiConnect/AddTagModal'
 import AddApiModal from 'element/ApiConnect/AddApiModal'
-import ApiManageModel, { AddApiModel, AddTagModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiModel, AddBodyModel, AddTagModel } from 'fragment/ApiManage'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -811,9 +811,7 @@ const ApiBlock = ({ fetchControl, apiData }) => {
                     Request
                 </div>
                 <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
-                >
-                    {/* 寫到這裡 */}
-                    {/* onClick={fetchControl().bindAct()} */}
+                    onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}>
                     <PlusSvg className="plus-icon" fill="#0a2f25" />
                 </Button>
             </div>
@@ -855,7 +853,7 @@ const ApiBlock = ({ fetchControl, apiData }) => {
         </div>
         <AttributesForm title="BODY - ATTRIBUTES" attributes={resAttr}
             apiData={apiData} show={apiShow && apiComp.checkApiDataField('responseAttributes')}></AttributesForm>
-    </div>);
+    </div >);
 }
 
 
@@ -1251,9 +1249,13 @@ export default function ApiConnect({ fetchControl, mode }) {
     const addApiModel = new AddApiModel(useRef(null));
     fc.setupModel('addApi', addApiModel);
 
+    const addBodyModel = new AddBodyModel(useRef(null));
+    fc.setupModel('addBody', addBodyModel);
+
     apiManageControl.registModel('apiManage', apiManageModel);
     apiManageControl.registModel('addTag', addTagModel);
     apiManageControl.registModel('addApi', addApiModel);
+    apiManageControl.registModel('addBody', addBodyModel);
 
 
     // http://{host}/apiConnect?category=dataCollection

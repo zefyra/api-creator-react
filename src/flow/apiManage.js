@@ -164,4 +164,68 @@ export class ApiManageControl extends Control {
 
         vm.fetchJson();
     }
+
+    onClickAddBody(apiData) {
+        /* apiData: {
+        } */
+        console.log('onClickAddBody apiData', JSON.stringify(apiData))
+        /* apiData: {
+            "path": "/api/friend",
+            "apiType": "put",
+            "apiData": {
+                "produces": [
+                "application/json"
+                ],
+                "tags": [
+                "friend"
+                ],
+                "summary": "1-2.Edit Friend",
+                "parameters": [
+
+                ],
+                "responses": {
+
+                }
+            }
+        } */
+
+        // 寫到這裡
+
+        // this.fetchModel('addApi').setState('tags', [tagData.name])
+
+        const addBodyModalRef = this.fetchModel('apiManage').getState('addBodyModalRef');
+        if (addBodyModalRef) {
+            addBodyModalRef.openModal();
+        }
+    }
+
+    onCancelAddBody() {
+        const addBodyModalRef = this.fetchModel('apiManage').getState('addBodyModalRef');
+
+        if (addBodyModalRef) {
+            addBodyModalRef.closeModal();
+        }
+    }
+
+    async onConfirmAddBody() {
+        const vm = this;
+        const addBodyModel = this.fetchModel('addBody');
+
+        const apiParam = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            // summary: addBodyModel.getState('summary'),
+        };
+
+        console.log('onConfirmAddBody apiParam', apiParam)
+
+        // await ApiSender.sendApi(`[post]/addBody`, apiParam).catch(new ApiError().catchAlertMsg())
+
+        // const addBodyModalRef = this.fetchModel('apiManage').getState('addBodyModalRef');
+
+        // if (addBodyModalRef) {
+        //     addBodyModalRef.closeModal();
+        // }
+
+        // vm.fetchJson();
+    }
 }
