@@ -15,62 +15,7 @@ let menuItemList = [{ // 系統管理
         nameSrc: 'subItem.users', // '用戶帳號',
         path: '/users',
         resourceName: 'users',
-    }, {
-        nameSrc: 'subItem.subUsers', // '用戶子帳號',
-        resourceName: 'subUsers',
     }],
-    isMenu: true,
-}, {
-    icon: 'document',
-    // iconComponent: <DocumentSvg className="menu-item-icon" alt="logo" fill={iconColor} />,
-    nameSrc: 'system.logRecord',
-    category: CategoryEnum.system, // 'systemManage',
-    resourceName: 'logHistory', // 差異 Record => History
-    isMenu: true,
-    // }, {
-    //     icon: 'shoppingcart',
-    //     nameSrc: 'system.moduleShop', // 模組商店
-    //     category: CategoryEnum.system,
-    //     resourceName: 'moduleShop',
-    //     isMenu: true,
-    // }, {
-    //     icon: 'cube',
-    //     nameSrc: 'system.moduleManage',
-    //     category: CategoryEnum.system,
-    //     resourceName: 'moduleManage',
-    //     isMenu: true,
-    // }, {
-    //     icon: 'cube',
-    //     nameSrc: 'system.purchasedModule', // 已購模組
-    //     category: CategoryEnum.system,
-    //     resourceName: 'purchasedModule',
-    //     isMenu: true,
-}, {
-    icon: 'brdollar',
-    nameSrc: 'system.quotaRankManage', // 用量級距管理
-    category: CategoryEnum.system,
-    path: '/quotaRankManage',
-    resourceName: 'quotaRangeManage', // 差異 Rank => Range
-    isMenu: true,
-}, {
-    icon: 'moneycheckedit',
-    nameSrc: 'system.myOrder', // 我的訂單
-    category: CategoryEnum.system,
-    resourceName: 'myOrder',
-    isMenu: true,
-    path: '/myOrder',
-}, {
-    icon: 'key',
-    nameSrc: 'system.platformPreference',
-    category: CategoryEnum.system,
-    path: '/platformPreference',
-    resourceName: 'platformPerference', // 錯字 Pre => Per
-    isMenu: true,
-}, {
-    icon: 'datatransfer',
-    nameSrc: 'system.dataExchange',
-    category: CategoryEnum.system,
-    resourceName: 'dataExchange',
     isMenu: true,
 }, {
     icon: 'gear',
@@ -84,10 +29,14 @@ let menuItemList = [{ // 系統管理
         // },
         queryString: 'category=dataCollection',
         resourceName: 'apiConnect',
-        // }, {
-        //     nameSrc: 'subItem.moduleDevelop', // '模組開發',
-        //     // path: '/moduleDevelop',
-        //     resourceName: 'defaultAuth',
+    }, {
+        nameSrc: 'subItem.apiConnectDataCollection', // 'API介接',
+        path: '/apiManage',
+        // searchParams: {
+        //     category: 'dataCollection'
+        // },
+        queryString: 'category=dataCollection',
+        resourceName: 'apiConnect',
     }],
     isMenu: true,
 }, {
@@ -95,14 +44,6 @@ let menuItemList = [{ // 系統管理
     nameSrc: 'system.setting',
     category: CategoryEnum.system,
     subItemList: [{
-        nameSrc: 'subItem.payRelated', // '支付相關',
-        path: '/payRelated',
-        resourceName: 'payRelated',
-    }, {
-        nameSrc: 'subItem.defaultAuth', // '預設權限',
-        path: '/defaultAuth',
-        resourceName: 'defaultAuth',
-    }, {
         nameSrc: 'subItem.otherSetting', // '其他設定',
         path: '/otherSetting',
         resourceName: 'otherSetting',
@@ -114,80 +55,6 @@ let menuItemList = [{ // 系統管理
     category: CategoryEnum.social,
     path: '/socialFriendManage',
     isMenu: true,
-}, {
-    icon: 'comments',
-    nameSrc: 'social.chatRoom',
-    category: CategoryEnum.social,
-    isMenu: true,
-}, {
-    icon: 'envelope',
-    nameSrc: 'social.messageBroadcast', // 訊息推播
-    path: '/messageBroadcast',
-    category: CategoryEnum.social,
-    isMenu: true,
-}, {
-    icon: 'tags',
-    nameSrc: 'social.tagManage',
-    category: CategoryEnum.social,
-    // path: '/tagManage',
-    subItemList: [{
-        nameSrc: 'subItem.tagCategory', // '標籤分類',
-        path: '/tagCategory',
-        resourceName: 'tagCategory',
-    }, {
-        nameSrc: 'subItem.tagList', // '標籤列表',
-        path: '/tagList',
-        resourceName: 'tagList',
-    }],
-    isMenu: true,
-}, {
-    icon: 'robot',
-    nameSrc: 'social.robotManage', // 機器人觀禮
-    category: CategoryEnum.social,
-    isMenu: true,
-    subItemList: [{
-        nameSrc: 'subItem.scriptList', // '腳本清單',
-        // path: '/scriptList',
-        resourceName: 'scriptList',
-    // }, {
-    //     nameSrc: 'subItem.topologyGraph', // 拓樸圖測試 (測試用頁面，之後隱藏)
-    //     path: '/topologyGraph',
-    //     resourceName: 'topologyGraph',
-    }],
-}, {
-    icon: 'book',
-    nameSrc: 'social.knowledgeBase',
-    category: CategoryEnum.social,
-    subItemList: [{
-        nameSrc: 'subItem.categoryList', // '分類列表',
-        // path: '/payRelated',
-        resourceName: 'payRelated',
-    }, {
-        nameSrc: 'subItem.articleList', // '文章列表',
-        // path: '/defaultAuth',
-        resourceName: 'defaultAuth',
-    }],
-    isMenu: true,
-    // }, { // 報表管理(不用做)------------------------------------------
-    //     icon: 'ballot',
-    //     nameSrc: 'report.behaviorFeature',
-    //     category: CategoryEnum.report,
-    //     isMenu: true,
-    // }, {
-    //     icon: 'ballot',
-    //     nameSrc: 'report.RFMAnalyze',
-    //     category: CategoryEnum.report,
-    //     isMenu: true,
-    // }, {
-    //     icon: 'ballot',
-    //     nameSrc: 'report.NESAnalyze',
-    //     category: CategoryEnum.report,
-    //     isMenu: true,
-    // }, {
-    //     icon: 'ballot',
-    //     nameSrc: 'report.accountingReport',
-    //     category: CategoryEnum.report,
-    //     isMenu: true,
 }, { // 數據集 -------------------------------------------
     icon: 'ballot',
     nameSrc: 'data.customData',
@@ -196,26 +63,6 @@ let menuItemList = [{ // 系統管理
     path: '/customData',
     // resourceName: 'platformPerference',
 }, {
-    icon: 'ballot',
-    nameSrc: 'data.sharedData',
-    category: CategoryEnum.data,
-    isMenu: true,
-    path: '/sharedData',
-    // queryString: 'category=sharedData',
-    // resourceName: 'platformPerference',
-}, { // 非Menu頁面 -----------------------------------------------
-    path: '/subscribeQuotaPlan',
-    nameSrc: 'hide.subscribeQuotaPlan', // 訂閱用戶級距方案
-    isMenu: false, // 代表是隱藏頁
-    category: CategoryEnum.system,
-    // resourceName: 'subscribeQuotaPlan', // 只要有註冊resourceName，就會在resourceInfoMap註冊
-}, {
-    path: '/upgradeQuotaPlan',
-    nameSrc: 'hide.upgradeQuotaPlan', // 訂閱用戶級距升級
-    isMenu: false, // 代表是隱藏頁
-    category: CategoryEnum.system,
-    // resourceName: 'upgradeQuotaPlan',
-}, {
     path: '/profile',
     nameSrc: 'hide.profile', // 帳號設定
     isMenu: false, // 代表是隱藏頁
@@ -223,21 +70,15 @@ let menuItemList = [{ // 系統管理
     // resourceName: 'subscribeQuotaPlan', // 只要有註冊resourceName，就會在resourceInfoMap註冊
 }, {
     path: '/home',
-    // nameSrc: 'hide.upgradeQuotaPlan', // 訂閱用戶級距升級
+    // nameSrc: 'hide.upgradeQuotaPlan', // 首頁
     isMenu: false,
     category: CategoryEnum.system,
     // resourceName: 'upgradeQuotaPlan',
 }, {
-    path: '/tagDecisionCondition',
-    nameSrc: 'social.tagDecisionCondition', // 標籤判斷條件
-    isMenu: false, // 代表是隱藏頁
-    category: CategoryEnum.social,
-    // resourceName: 'upgradeQuotaPlan',
-}, {
-    path: '/tagConditionList',
-    nameSrc: 'social.tagConditionList', // 標籤判斷條件(標籤條件列表)
-    isMenu: false, // 代表是隱藏頁
-    category: CategoryEnum.social,
+    path: '/',
+    // nameSrc: 'hide.upgradeQuotaPlan', // 首頁
+    isMenu: false,
+    category: CategoryEnum.system,
     // resourceName: 'upgradeQuotaPlan',
 }];
 
@@ -389,6 +230,76 @@ export default class RouteManager {
 
     // 篩選有權限的menu項目
     getMenuItemListByAuth(category, getPermission) { // 
+
+        // system
+        return [
+            {
+                "icon": "users",
+                "nameSrc": "system.accountList",
+                "category": "system",
+                "subItemList": [
+                    {
+                        "nameSrc": "subItem.users",
+                        "path": "/users",
+                        "resourceName": "users",
+                        "name": "用戶帳號",
+                        "category": "system"
+                    }
+                ],
+                "isMenu": true,
+                "name": "帳號列表"
+            },
+            {
+                "icon": "gear",
+                "nameSrc": "system.developDocumentation",
+                "category": "system",
+                "subItemList": [
+                    {
+                        "nameSrc": "subItem.apiConnectDataCollection",
+                        "path": "/apiConnect",
+                        "queryString": "category=dataCollection",
+                        "resourceName": "apiConnect",
+                        "name": "API介接 - 數據集",
+                        "category": "system"
+                    },
+                    {
+                        "nameSrc": "subItem.apiConnectShakuApi",
+                        "path": "/apiManage",
+                        "queryString": "category=shakuApi",
+                        "resourceName": "apiConnect",
+                        "name": "API介接 - ShakuAPI",
+                        "category": "system"
+                    }
+                ],
+                "isMenu": true,
+                "name": "開發文件"
+            },
+            {
+                "icon": "gear",
+                "nameSrc": "system.setting",
+                "category": "system",
+                "subItemList": [
+                    {
+                        "nameSrc": "subItem.otherSetting",
+                        // "path": "/otherSetting",
+                        "resourceName": "otherSetting",
+                        "name": "其他設定",
+                        "category": "system"
+                    }
+                ],
+                "isMenu": true,
+                "name": "設定"
+            }
+        ];
+        // system
+        // return [{ "icon": "users", "nameSrc": "system.accountList", "category": "system", "subItemList": [{ "nameSrc": "subItem.users", "path": "/users", "resourceName": "users", "name": "用戶帳號", "category": "system" }, { "nameSrc": "subItem.subUsers", "resourceName": "subUsers", "name": "用戶子帳號", "category": "system" }], "isMenu": true, "name": "帳號列表" }, { "icon": "document", "nameSrc": "system.logRecord", "category": "system", "resourceName": "logHistory", "isMenu": true, "name": "log紀錄" }, { "icon": "brdollar", "nameSrc": "system.quotaRankManage", "category": "system", "path": "/quotaRankManage", "resourceName": "quotaRangeManage", "isMenu": true, "name": "用量級距管理" }, { "icon": "moneycheckedit", "nameSrc": "system.myOrder", "category": "system", "resourceName": "myOrder", "isMenu": true, "path": "/myOrder", "name": "我的訂單" }, { "icon": "key", "nameSrc": "system.platformPreference", "category": "system", "path": "/platformPreference", "resourceName": "platformPerference", "isMenu": true, "name": "平台參數" }, { "icon": "datatransfer", "nameSrc": "system.dataExchange", "category": "system", "resourceName": "dataExchange", "isMenu": true, "name": "資料介接" }, { "icon": "gear", "nameSrc": "system.developDocumentation", "category": "system", "subItemList": [{ "nameSrc": "subItem.apiConnectDataCollection", "path": "/apiConnect", "queryString": "category=dataCollection", "resourceName": "apiConnect", "name": "API介接 - 數據集", "category": "system" }], "isMenu": true, "name": "開發文件" }, { "icon": "gear", "nameSrc": "system.setting", "category": "system", "subItemList": [{ "nameSrc": "subItem.payRelated", "path": "/payRelated", "resourceName": "payRelated", "name": "支付相關", "category": "system" }, { "nameSrc": "subItem.defaultAuth", "path": "/defaultAuth", "resourceName": "defaultAuth", "name": "預設權限", "category": "system" }, { "nameSrc": "subItem.otherSetting", "path": "/otherSetting", "resourceName": "otherSetting", "name": "其他設定", "category": "system" }], "isMenu": true, "name": "設定" }];
+
+        // social
+        // return [{"icon":"addressbook","nameSrc":"social.socialFriendManage","category":"social","path":"/socialFriendManage","isMenu":true,"name":"社群好友管理"},{"icon":"comments","nameSrc":"social.chatRoom","category":"social","isMenu":true,"name":"即時聊天室"},{"icon":"envelope","nameSrc":"social.messageBroadcast","path":"/messageBroadcast","category":"social","isMenu":true,"name":"訊息推播"},{"icon":"tags","nameSrc":"social.tagManage","category":"social","subItemList":[{"nameSrc":"subItem.tagCategory","path":"/tagCategory","resourceName":"tagCategory","name":"標籤分類","category":"social"},{"nameSrc":"subItem.tagList","path":"/tagList","resourceName":"tagList","name":"標籤列表","category":"social"}],"isMenu":true,"name":"標籤管理"},{"icon":"robot","nameSrc":"social.robotManage","category":"social","isMenu":true,"subItemList":[{"nameSrc":"subItem.scriptList","resourceName":"scriptList","name":"腳本清單","category":"social"}],"name":"機器人管理"},{"icon":"book","nameSrc":"social.knowledgeBase","category":"social","subItemList":[{"nameSrc":"subItem.categoryList","resourceName":"payRelated","name":"分類列表","category":"social"},{"nameSrc":"subItem.articleList","resourceName":"defaultAuth","name":"文章列表","category":"social"}],"isMenu":true,"name":"知識庫"}];
+
+        // dataCollection
+        // return [{"icon":"ballot","nameSrc":"data.customData","category":"data","isMenu":true,"path":"/customData","name":"自訂數據"},{"icon":"ballot","nameSrc":"data.sharedData","category":"data","isMenu":true,"path":"/sharedData","name":"共用數據"}]
+        /*
         // const getPermission = useGetter(selectGetPermission);
         const role = useGetter(selectRole);
         const menuItemList = this.getMenuItemList();
@@ -438,6 +349,7 @@ export default class RouteManager {
             }
             return false;
         });
+        */
     }
 
     getProtectedRoutePageAuth(pathInfo) {

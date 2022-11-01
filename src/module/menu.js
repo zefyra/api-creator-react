@@ -27,9 +27,6 @@ import {
     selectCategory, // ,  updateCategory
     selectGetPermission
 } from 'store/login';
-import {
-    selectPermissionCheck
-} from 'store/login'
 
 import LayerMixin from 'util/LayerMixin'
 

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import ApiSender, { ApiError } from "apiSender"; // 載入 /src/apiSender/index.js
 import styled from 'styled-components';
 
-import SubscribeBlock from 'element/Home/SubscribeBlock'
 import BlankBlock from 'element/Home/BlankBlock'
 
 import { board as boardThemeObject } from 'theme/reas'
@@ -27,7 +26,6 @@ function Home({ className }) {
     return (
         <div className={className}>
             <div className="block-column">
-                <SubscribeBlock theme={boardThemeObject}></SubscribeBlock>
                 <BlankBlock></BlankBlock>
                 <div>
                     <Button type="fill" onClick={testApiHandle()}>BBBBBB</Button>

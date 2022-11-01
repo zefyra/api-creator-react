@@ -1,3 +1,4 @@
+import StateModel from 'model/StateModel';
 import Control from './Control'
 
 /*
@@ -99,12 +100,19 @@ export default class FetchControl {
         }
     }
     // Model------------------------------------------------
-    setupModel(modelKey, fetchModelObject) {
+    setupModel(modelKey, modelObj) {
         if (typeof modelKey !== 'string') {
             console.error(`setupModel: modelKey is not string`);
             return;
         }
-        this.modelMap[modelKey] = fetchModelObject;
+        // if (modelObj instanceof StateModel) { // 代表是StateModel類型的物件
+        //     // 註冊時，即自動輸出一個fetchModel函式到Control物件上
+        //     controlObj.bindFetchModel(this.export('fetchModel'));
+        //     // 自動輸出fetchControl
+        //     controlObj.bindFetchControl(this.export('fetchControl'));
+        // }
+
+        this.modelMap[modelKey] = modelObj;
     }
     // registModel(modelKey, fetchModelObject) {
     //     this.modelMap[modelKey] = fetchModelObject;

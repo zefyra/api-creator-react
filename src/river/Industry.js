@@ -1,6 +1,6 @@
 import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
-import { selectHasLoad, updateIndustryData } from "store/industry";
+// import { selectHasLoad, updateIndustryData } from "store/industry";
 
 export default class IndustryControl extends Control {
     setup() {
@@ -13,7 +13,8 @@ export default class IndustryControl extends Control {
     autoLoad() {
         const vm = this;
 
-        const hasLoad = this.carry(selectHasLoad);
+        // const hasLoad = this.carry(selectHasLoad);
+        const hasLoad = true;
         if (hasLoad) {
             return Promise.resolve();
         }
@@ -28,7 +29,7 @@ export default class IndustryControl extends Control {
         // }
 
         return ApiSender.sendApi('[get]/industries', null).then((apiRes) => {
-            vm.dispatch(updateIndustryData(apiRes));
+            // vm.dispatch(updateIndustryData(apiRes));
             
             // return wait();
             return Promise.resolve();

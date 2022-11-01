@@ -7,7 +7,7 @@ import styled from '@emotion/styled'
 import LayoutMixin from 'util/LayoutMixin'
 
 import ThemeMixin, { fetchTheme } from 'util/ThemeMixin'
-import { apiDoc as apiDocThemeObject } from 'theme/reas'
+import { apiDoc, apiDoc as apiDocThemeObject } from 'theme/reas'
 
 import { PageTitle } from "module/layout";
 import { useTranslation } from "react-i18next";
@@ -23,6 +23,15 @@ import SelectControl from 'control/SelectControl'
 
 import { ReactComponent as AngleDownSvg } from 'assets/svg/sr-angle-down.svg'
 import { ReactComponent as AngleUpSvg } from 'assets/svg/sr-angle-up.svg'
+import { ReactComponent as TrashSvg } from "assets/svg/br-trash.svg"
+import { ReactComponent as MinusSvg } from "assets/svg/br-minus.svg"
+import { ReactComponent as PlusSvg } from "assets/svg/br-plus.svg"
+
+import Button from 'component/Button'
+import { ApiManageControl } from 'flow/apiManage'
+import AddTagModal from 'element/ApiConnect/AddTagModal'
+import AddApiModal from 'element/ApiConnect/AddApiModal'
+import ApiManageModel, { AddApiModel, AddTagModel } from 'fragment/ApiManage'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -53,8 +62,23 @@ background-color: ${fetchTheme('board', '#cba165')};
 border-radius: ${fetchTheme('boardRadius', '5px')};
 
 padding-bottom: 1.5rem;
+
+
+    & .plus-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    & .trash-icon {
+        width: 18px;
+        height: 18px;
+    }
     
     & .tag-block-title-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
         font-size: 1.8rem;
 
         margin: 0.75rem 1.75rem 0 1.75rem;
@@ -90,8 +114,15 @@ padding-bottom: 1.5rem;
 
 
     & .row.api-title-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        
         font-size: 1.18rem;
         color: ${fetchTheme('apiTitle', '#1c7575')};
+
+        cursor: default;
     }
 
     & .row.api-path-row {
@@ -182,12 +213,16 @@ padding-bottom: 1.5rem;
         flex-direction: row;
 
         justify-content: space-between;
-        & .title {
-            cursor: auto;
+        & .title-block {
+            display: flex;
+            flex-direction: row;
+            & .title {
+                cursor: auto;
 
-            font-weight: 500;
+                font-weight: 500;
 
-            color: ${fetchTheme('requestTitle', '#9f9f9f')};
+                color: ${fetchTheme('requestTitle', '#9f9f9f')};
+            }
         }
 
         & .content-type-block {
@@ -708,7 +743,7 @@ const AttributesForm = ({ apiData, title, attributes, show = true }) => {
 }
 
 
-const ApiBlock = ({ apiData }) => {
+const ApiBlock = ({ fetchControl, apiData }) => {
 
     const apiComp = new ApiComposition(apiData);
 
@@ -742,10 +777,16 @@ const ApiBlock = ({ apiData }) => {
         階層顯示BAR (有空再來做)
         {`3. 社群/3-06. 創建新文章/POST-/forum/sendCreateArticle`}
     </div> */}
-        <div className="row api-title-row" onClick={onClickApiTitle()}>
+        <div className="row api-title-row">
             {/* {`1-2.用ID取得子用戶(API名稱)`} */}
             {/* {`${apiData.apiData.description}`} */}
-            {apiComp.getApiDataField('apiTitle')}
+            <div onClick={onClickApiTitle()}>
+                {apiComp.getApiDataField('apiTitle')}
+            </div>
+            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickAddApi', apiData)}>
+                <PlusSvg className="plus-icon" fill="#0a2f25" />
+            </Button> */}
         </div>
         <div className="row api-path-row">
             <div className="api-path-block" onClick={onApiPathClick()}>
@@ -765,8 +806,16 @@ const ApiBlock = ({ apiData }) => {
             {apiComp.getApiDataField('apiDescription')}
         </div>
         <div className="attr-row request-title-row" style={getApiShowStyle('flex')}>
-            <div className="title">
-                Request
+            <div className="title-block">
+                <div className="title">
+                    Request
+                </div>
+                <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
+                >
+                    {/* 寫到這裡 */}
+                    {/* onClick={fetchControl().bindAct()} */}
+                    <PlusSvg className="plus-icon" fill="#0a2f25" />
+                </Button>
             </div>
             <div className="content-type-block" style={{
                 display: apiComp.checkApiDataField('consumesContentType') ? 'flex' : 'none',
@@ -788,8 +837,10 @@ const ApiBlock = ({ apiData }) => {
         <AttributesForm title="BODY - ATTRIBUTES" attributes={apiComp.getApiDataField('requestAttributes')}
             apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestAttributes')}></AttributesForm>
         <div className="attr-row request-title-row" style={getApiShowStyle('flex')}>
-            <div className="title">
-                Response
+            <div className="title-block">
+                <div className="title">
+                    Response
+                </div>
             </div>
             <div className="content-type-block" style={{
                 display: apiComp.checkApiDataField('producesContentType') ? 'flex' : 'none',
@@ -825,15 +876,6 @@ const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
         name: "pet"
         // 內部系統用----------------------------
     } */
-
-    // console.log('tagData', tagData)
-
-    // fetchModel('apiDoc').get
-
-    // const [apiBlockList, setApiBlockList] = useState([]);
-
-    // console.log(`tagData.apiList`, tagData.apiList);
-
     const apiBlockList = tagData.apiList || [];
 
     let apiBlockListDom = [];
@@ -841,18 +883,30 @@ const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
         apiBlockListDom = apiBlockList.map((apiBlockData, index) => {
             return (
                 <ApiBlock key={`${tagData.name}_ApiBlock_${index}`}
-                    apiData={apiBlockData}></ApiBlock>
+                    apiData={apiBlockData} fetchControl={fetchControl}></ApiBlock>
             )
         });
     }
+
+    const removeTagButton = fetchModel('apiDoc').pageUnitAuth('removeTagButton') ? (
+        <Button type="fill" pattern="small" mode="danger" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '0' }}
+            onClick={fetchControl('apiManage').bindAct('onClickRemoveTag', tagData.name)}>
+            <TrashSvg className="trash-icon" fill="#e5d6d6"></TrashSvg>
+        </Button>
+    ) : null;
 
     return (
         <TagBlockBoardStyled theme={apiDocThemeObject} id={`tag_${tagData.name}`} className="tag-block-board">
             <div className="tag-block-title-row">
                 {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`}
+                {removeTagButton}
             </div>
             <TagHr></TagHr>
             {apiBlockListDom}
+            <Button type="fill" pattern="small" importStyle={{ marginLeft: '30px', marginTop: '15px', marginBottom: '0', fixWidth: '65px' }}
+                onClick={fetchControl('apiManage').bindAct('onClickAddApi', tagData)}>
+                <PlusSvg className="plus-icon" fill="#0a2f25" />
+            </Button>
         </TagBlockBoardStyled>
     )
 }
@@ -865,55 +919,59 @@ flex-grow: 1;
 
 `
 
-const ApiDocument = ({ fetchControl, jsonPath }) => {
+const ApiDocument = ({ fetchControl }) => { // , jsonPath
 
     const fc = new FetchControl(fetchControl);
-
-    const apiDocModel = new ApiConnectModel(useRef(null));
-    fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
-
     const fetchModel = fc.export('fetchModel');
 
-    useEffect(() => {
-        // console.log('jsonPath', jsonPath);
+    // const apiDocModel = new ApiConnectModel(useRef(null), { pageMode: mode });
+    // const fc = new FetchControl(fetchControl);
+    // fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
+    const apiDocModel = fetchModel('apiDoc');
 
-        // 使用js原生的fetch讀取public底下的json
-        fetch(jsonPath)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
-                }
-                return response.json();
-            })
-            .then(json => {
-                // console.log(json);
-                fetchModel('apiDoc').saveApiDoc(json);
-            })
-            .catch(function (error) {
-                console.error(error);
-                // this.dataError = true;
-            })
-    }, [jsonPath]);
+    // const apiDocModel = new ApiConnectModel(useRef(null), { pageMode: pageMode });
+    // fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
+
+    // useEffect(() => {
+    //     // 使用js原生的fetch讀取public底下的json
+    //     // fetch(jsonPath)
+    //     //     .then(response => {
+    //     //         if (!response.ok) {
+    //     //             throw new Error("HTTP error " + response.status);
+    //     //         }
+    //     //         return response.json();
+    //     //     })
+    //     //     .then(json => {
+    //     //         fetchModel('apiDoc').saveApiDoc(json);
+    //     //     })
+    //     //     .catch(function (error) {
+    //     //         console.error(error);
+    //     //         // this.dataError = true;
+    //     //     })
+    //     fetchControl('apiManage').fetchJson(jsonPath);
+    // }, [jsonPath]);
 
     const [tagList, setTagList] = useState([]);
     apiDocModel.registSetter('tagList', 'ApiDocument', setTagList);
-
-    // useEffect(function () {
-    //     console.log('tagBlockList', tagBlockList)
-    // }, [tagBlockList])
 
     const tagBlockListDom = tagList.map((tagData, index) => {
         return (
             <TagBlock key={`TagBlock_${index}`} fetchControl={fetchControl}
                 fetchModel={fetchModel} tagData={tagData}></TagBlock>
         );
-    })
+    });
 
+    const { t: apiManageT } = useTranslation('apiConnect', { keyPrefix: 'apiManage' });
+
+    let addTagButton = fetchModel('apiDoc').pageUnitAuth('addTagButton') ?
+        (<Button type="fill" onClick={fetchControl('apiManage').bindAct('onClickAddTag')}
+            importStyle={{ fixWidth: '120px', paddingH: '12px', marginLeft: '25px' }}>{apiManageT('addTag')}</Button>) : null;
 
     return (
         <ApiDocumentStyled>
             {/* <TagBlock></TagBlock> */}
             {tagBlockListDom}
+            {addTagButton}
         </ApiDocumentStyled>
     );
 }
@@ -1150,7 +1208,10 @@ const ApiPageOuter = styled.div`
     /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
 `
 
-export default function ApiConnect({ fetchControl }) {
+export default function ApiConnect({ fetchControl, mode }) {
+    // mode: 'edit'
+
+    console.log('page render')
 
     const translationMenu = useTranslation('menu', { keyPrefix: 'subItem' });
     const { t } = useTranslation('setting', { keyPrefix: 'payRelated' });
@@ -1164,6 +1225,37 @@ export default function ApiConnect({ fetchControl }) {
         category: "dataCollection"
     }*/
 
+    // apiDocModel------------------------------------------------------
+
+    const apiDocModel = new ApiConnectModel(useRef(null), { pageMode: mode });
+    const fc = new FetchControl(fetchControl);
+    fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
+
+    const actPageMode = apiDocModel.reactive('pageMode', 'ApiConnectPage');
+    useEffect(function () {
+        actPageMode(mode);
+    }, [mode]);
+
+    // apiManage------------------------------------------------------
+
+    const apiManageModel = new ApiManageModel(useRef(null));
+    fc.setupModel('apiManage');
+
+    const apiManageControl = new ApiManageControl();
+    fc.setup('apiManage', apiManageControl);
+
+
+    const addTagModel = new AddTagModel(useRef(null));
+    fc.setupModel('addTag', addTagModel);
+
+    const addApiModel = new AddApiModel(useRef(null));
+    fc.setupModel('addApi', addApiModel);
+
+    apiManageControl.registModel('apiManage', apiManageModel);
+    apiManageControl.registModel('addTag', addTagModel);
+    apiManageControl.registModel('addApi', addApiModel);
+
+
     // http://{host}/apiConnect?category=dataCollection
 
     const apiConnectPageMap = {
@@ -1171,10 +1263,16 @@ export default function ApiConnect({ fetchControl }) {
             jsonPath: "/apiConnect/dataCollection.json",
             pageTitle: "apiConnectDataCollection",
         },
+        shakuApi: {
+            fileName: 'qore-plus-api',
+            jsonPath: "http://localhost:5050/apiDoc/qore-plus-api.json",
+            pageTitle: "apiConnectDataCollection",
+        },
     };
 
     let jsonPath = '/apiConnect/default.json';
     let pageTitle = translationMenu.t('apiConnect');
+    let fileName = '';
     if (urlQueryObj) {
         if (urlQueryObj.category) {
             const pageInfo = apiConnectPageMap[urlQueryObj.category];
@@ -1183,17 +1281,31 @@ export default function ApiConnect({ fetchControl }) {
                 if (pageInfo.jsonPath) {
                     jsonPath = pageInfo.jsonPath
                     pageTitle = `${translationMenu.t(pageInfo.pageTitle)}`;
+                    fileName = pageInfo.fileName;
                 }
             }
         }
     }
 
+    useEffect(function () {
+        apiManageModel.setState('fileName', fileName);
+        apiManageModel.setState('jsonPath', jsonPath);
+
+        fetchControl('apiManage').fetchJson();
+    }, []);
+
     return (
         <PageTitle title={pageTitle}>
             <ApiPageOuter>
-                <ApiDocument fetchControl={fetchControl} jsonPath={jsonPath}></ApiDocument>
+                <ApiDocument fetchControl={fetchControl}></ApiDocument>
                 <QuickPanelAsideSpace></QuickPanelAsideSpace>
                 <QuickPanelAside fetchControl={fetchControl}></QuickPanelAside>
+                <AddTagModal control={apiManageControl}
+                    model={addTagModel}
+                    apiManageModel={apiManageModel}></AddTagModal>
+                <AddApiModal control={apiManageControl}
+                    model={addApiModel}
+                    apiManageModel={apiManageModel}></AddApiModal>
             </ApiPageOuter>
         </PageTitle>
     );

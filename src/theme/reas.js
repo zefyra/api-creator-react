@@ -120,6 +120,13 @@ const buttonThemeObj = {
     // defaultToggleActive: '#6deac5',
     defaultToggleButton: '#d4e0dd',
     defaultToggleActive: '#63cfaf',
+
+    danger: '#dc5353',
+    dangerText: '#e5d6d6',
+    dangerBorder: '#d1a8a8',
+    dangerBorderHover: '#d1a8a8',
+    dangerShadowHover: '#ffadad99',
+    dangerHover: '#dc5353',
 }
 
 const inputTextThemeObj = {

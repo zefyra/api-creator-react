@@ -33,7 +33,6 @@ import OuterInvoker from 'module/outerInvoker'
 import CategoryEnum from 'enum/Category';
 import LayoutMixin from 'util/LayoutMixin';
 import RouteManager from 'router/RouteManager';
-import { LogoutFlow } from 'flow/login';
 
 const getTheme = ThemeMixin.fetchGetTheme();
 
@@ -235,7 +234,7 @@ const Category = function () {
     </div>);
 }
 
-const NavBar = function ({ className, layoutClassName, logoutControl }) {
+const NavBar = function ({ className, layoutClassName }) {
 
     const navigate = useNavigate();
 
@@ -281,10 +280,7 @@ const NavBar = function ({ className, layoutClassName, logoutControl }) {
     }, {
         name: t('account.logout'), // 登出
         event: function () {
-            // loginModuleRef.logoutEvent();
-
-            // console.log('logoutEvent');
-            logoutControl.onNavBarClickLogout();
+            console.log('logoutEvent');
         },
     }];
 
@@ -521,13 +517,11 @@ const NavBarStyled = styled(NavBar)`
 export default function NavBarExport() {
 
     const navigate = useNavigate();
-    const logoutControl = new LogoutFlow();
-    logoutControl.registRef('navigate', navigate);
 
     return (
         <div>
             <NavBarSpace theme={navBarThemeObject}>
-                <NavBarStyled theme={navBarThemeObject} logoutControl={logoutControl}></NavBarStyled>
+                <NavBarStyled theme={navBarThemeObject}></NavBarStyled>
             </NavBarSpace>
         </div>
     );

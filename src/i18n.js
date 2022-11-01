@@ -25,7 +25,7 @@ i18n
         // 若有新增namespace一定要加，不然navigate跳頁的時候會出錯
         ns: ['login', 'menu', 'navBar', 'lang', 'profile', 'component',
             'users', 'setting', 'pay', 'order', 'social', 'dataCollection',
-            'tag'],
+            'tag', 'apiConnect'],
         // defaultNS: 'login', // 要設定這個，否則系統會自動去找translation.json
     }, (err, t) => {
         if (err) return console.error('i18n error', err);

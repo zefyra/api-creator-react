@@ -485,7 +485,9 @@ class ApiConnectComposition {
         // const vm = this;
         const silentMode = run === 1; // 當第一run時，開啟silentMode
 
-        Object.keys(json.definitions).forEach((definitionKey) => {
+        const definitions = json.definitions || {};
+
+        Object.keys(definitions).forEach((definitionKey) => {
             let definitionData = Object.assign({}, json.definitions[definitionKey]);
             // 預先將definition的shema build出來，解決裡面巢狀schema的問題
             // definitionData = vm.buildSchema(definitionData);
@@ -673,28 +675,30 @@ class ApiConnectComposition {
 
 
 export default class ApiConnectModel extends StateModel {
-    /*
-    const tagSelectorModel = new StateModel(useRef({
-        tagCategory: null, // 當前選擇的標籤類別
-        tagCategoryList: [],
-        tagList: [],
-        searchKey: '',
-        startDate: '',
-        endDate: '',
-    }));
-    */
-
-    // constructor(stateRef) {
-    //     super(stateRef);
-    //     this.stateRef = stateRef;
-    // }
-
-    data() {
+    data(initObj = {}) {
         return {
             docJson: null,
             tagList: [],
             jumpTagList: [], // 右邊側邊欄用來生成連結用的
+            pageMode: initObj.pageMode || '',
         }
+    }
+
+    pageUnitAuth(unitKey) { // 取得元件權限
+        const unitAuthMap = {
+            // <unitKey>: <pageMode>
+            addTagButton: 'edit', // 新增tag按鈕
+            removeTagButton: 'edit', // 移除tag按鈕
+        }
+
+        const unitAuth = unitAuthMap[unitKey];
+        if (!unitAuth) {
+            return true;
+        }
+
+        const pageMode = this.getState('pageMode');
+
+        return unitAuth === pageMode;
     }
 
     saveApiDoc(json) {
@@ -703,8 +707,6 @@ export default class ApiConnectModel extends StateModel {
         // console.log('saveApiDoc json', json.tags)
 
         const tagList = this.buildTagBlockDataList(new ApiConnectComposition(json));
-
-        // console.log('tagList', tagList)
 
         this.setState('tagList', tagList);
 
@@ -737,9 +739,9 @@ export default class ApiConnectModel extends StateModel {
             return apiMap[tagName] || [];
         }
 
+        const tags = json.tags || [];
 
-
-        return json.tags.map((tagData) => {
+        return tags.map((tagData) => {
             /* tagData: {
                 "name": "accounts",
                 "description": "Crossbot account-entities",

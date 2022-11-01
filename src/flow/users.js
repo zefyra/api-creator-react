@@ -18,7 +18,7 @@ import {
     updateUserManageBaseInfo
 } from "store/user";
 import IndustryControl from "river/Industry";
-import { selectIndustryOptionList } from "store/industry";
+// import { selectIndustryOptionList } from "store/industry";
 import { BatchControl } from "control/BatchControl";
 import TableData from "util/TableData";
 // import Flow from "./flow"
@@ -440,7 +440,8 @@ export class UserManageFlow extends BatchControl {
         const vm = this;
         vm.fetchModel('stateModel').setState('industryOptionListLoading', true);
         return this.fetchControl('industry').autoLoad().then(() => {
-            const industryOptionList = vm.carry(selectIndustryOptionList);
+            // const industryOptionList = vm.carry(selectIndustryOptionList);
+            const industryOptionList = [];
 
             vm.fetchModel('stateModel').setState('industryOptionList', industryOptionList);
             vm.fetchModel('stateModel').setState('industryOptionListLoading', false);

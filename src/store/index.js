@@ -1,19 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import LocalAccessor from 'localAccessor';
-import alertReducer from './alert';
-
-import loginReducer, { loginSlice } from './login';
-// import menuReducer from './menu';
-import subscribeReducer from './subscribe';
-import subscribeUpgradeReducer from './subscribeUpgrade'
 import userReducer from './user';
-import orderReducer from './order';
-import quotaRankReducer from './quotaRank';
-import socialReducer from './social';
-// import tagSelectorReducer from './tagSelector';
-import multiSelectorSampleReducer from './multiSelectorSample';
 import profileReducer from './profile'
-import industryReducer from './industry'
+import loginReducer, { loginSlice } from './login';
+import alertReducer from './alert';
 
 // // 用來定義Store的資料內容
 // export default configureStore({
@@ -39,17 +28,15 @@ const store = configureStore({
     // 這裡可以配置多種模組
     login: loginReducer,
     profile: profileReducer,
-    industry: industryReducer,
+    // industry: industryReducer,
     alert: alertReducer,
-    // menu: menuReducer,
-    subscribe: subscribeReducer,
-    subscribeUpgrade: subscribeUpgradeReducer,
+    // subscribe: subscribeReducer,
+    // subscribeUpgrade: subscribeUpgradeReducer,
     user: userReducer,
-    order: orderReducer,
-    quotaRank: quotaRankReducer,
-    social: socialReducer,
-    // tagSelector: tagSelectorReducer,
-    multiSelectorSample: multiSelectorSampleReducer, // 多選框的範例
+    // order: orderReducer,
+    // quotaRank: quotaRankReducer,
+    // social: socialReducer,
+    // multiSelectorSample: multiSelectorSampleReducer, // 多選框的範例
 
   },
   // preloadedState: { // 測試從localStorage載入store
