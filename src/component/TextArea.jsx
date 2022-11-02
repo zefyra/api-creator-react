@@ -6,7 +6,7 @@ import styled from '@emotion/styled'
 
 import { fetchTheme, fetchImportStyle } from 'util/ThemeMixin'
 import { textArea as textAreaThemeObject } from 'theme/reas'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Ref from 'model/Ref'
 
 const TextareaStyled = styled.textarea`
@@ -81,10 +81,10 @@ export default function TextArea({ width, height, value, onUpdate, srcKey = 'Tex
     }
     const [nowValue, setNowValue] = useState(convertValue(value));
 
-    const mutTextArea = function (val) {
-        setNowValue(val);
-    }
-    let actTextArea = mutTextArea;
+    // const mutTextArea = function (val) {
+    //     setNowValue(val);
+    // }
+    let actTextArea = setNowValue;
     if (isRefMode) { // 綁定value
         actTextArea = value.reactive(srcKey, actTextArea);
     }
@@ -96,17 +96,32 @@ export default function TextArea({ width, height, value, onUpdate, srcKey = 'Tex
         // console.log('handleChange nowValue', nowValue)
 
         if (isRefMode) {
+
+            // console.log('actTextArea', e.target.value)
+
             // 代表是ref雙向綁定模式
             actTextArea(e.target.value);
         } else if (onUpdate) {
             // 非雙向綁定模式: 若有onUpdate即丟出事件
             onUpdate(e.target.value);
         }
-
     }
+
+    // useEffect(function () {
+    //     if (!isRefMode) {
+    //         // 代表為直接綁定模式
+
+    //         if (value !== nowValue) {
+    //             // 代表上層有將字串重新處理過
+    //             console.log('eeeee', value, nowValue)
+    //         }
+    //     }
+    // }, [value]);
+
     return (
-        <TextareaStyled width={width} height={height} theme={textAreaThemeObject}
-            onChange={handleChange()}
+        <TextareaStyled
+            width={width} height={height} theme={textAreaThemeObject}
+            value={nowValue} onChange={handleChange()}
         ></TextareaStyled>
     )
 }

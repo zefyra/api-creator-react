@@ -9,6 +9,9 @@ const apiConfigMap = {
     '[post]/removeTag': {},
     '[post]/addApi': {},
     '[post]/addBody': {},
+    '[post]/editTag': {},
+    '[post]/addResponse': {},
+    '[post]/editAttr': {},
     // '[get]/permissions': {
     //     header: 'bearerTokenHeader',
     //     outputType: 'crossbot',

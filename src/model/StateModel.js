@@ -219,6 +219,10 @@ export default class StateModel extends ReactModel {
 
     sightMap = {};
 
+    // 過濾--------------------------------------
+
+    filterMap = null; // {};
+
     constructor(initialStateRef, beforeCreateObj) {
         super(beforeCreateObj);
         this.className = this.constructor.name; // 繼承StateModel的類別名稱
@@ -264,9 +268,18 @@ export default class StateModel extends ReactModel {
             this.sightMap = this.sight();
 
             const sightValid = WatchSensor.validateSightMap(this.sightMap);
-            if(!sightValid){
+            if (!sightValid) {
                 console.error(`[${this.constructor.name}] StateModel: sight validate fail`);
             }
+        }
+
+        if (this.filter) {
+            const filterMap = this.filter();
+            if (typeof filterMap !== 'object') {
+                console.error(`filterMap must be object`)
+                return;
+            }
+            this.filterMap = filterMap;
         }
     }
 
@@ -542,11 +555,23 @@ export default class StateModel extends ReactModel {
         // 自動執行watch監控觸發
         this.autoWatch(stateKey, prevValue, value);
 
+        value = this.autoFilt(stateKey, prevValue, value);
+
         // 連動已註冊的setter-------------------------------------
         this.cascadeSetter(stateKey, value);
 
         // 連動getter-------------------------------------
         this.cascadeGetters(stateKey, value, newState);
+    }
+    autoFilt(stateKey, prevValue, value) {
+        if (!this.filterMap){
+            return value;
+        }
+        if (!this.filterMap[stateKey]) {
+            return value;
+        }
+
+        return this.filterMap[stateKey](value);
     }
     autoWatch(stateKey, prevValue, value) {
 

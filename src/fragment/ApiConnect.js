@@ -12,6 +12,10 @@ import StateModel from "model/StateModel";
 "description": "帳號是否已激活"
 */
 
+const layerPathPush = function (layerPath, layerName) {
+    return layerPath.concat([layerName]);
+}
+
 
 export class AttributeComposition {
     attributeData = null;
@@ -62,7 +66,7 @@ export class ApiComposition {
 
         this.apiData = apiData;
     }
-    checkApiDataField(key) {
+    checkApiDataField(key, ...args) {
 
         const apiInfo = this.apiData.apiData;
 
@@ -84,7 +88,7 @@ export class ApiComposition {
             return this.getApiDataField(key).length !== 0;
             // return apiInfo.parameters ? (apiInfo.parameters.filter(item => item.in === 'query')) : [];
         } else if (key === 'responseAttributes') {
-            return this.getApiDataField(key).length !== 0;
+            return this.getApiDataField(key, ...args).length !== 0;
         } else if (key === 'requestUrlAttributes') {
             return this.getApiDataField(key).length !== 0;
         } else if (key === 'requestHeaderAttributes') {
@@ -92,7 +96,7 @@ export class ApiComposition {
         }
         return false;
     }
-    getApiDataField(key) {
+    getApiDataField(key, ...args) {
 
         const apiInfo = this.apiData.apiData;
 
@@ -120,6 +124,13 @@ export class ApiComposition {
             }
 
             return parameterItem.schema.attributes;
+        } else if (key === 'statusList') {
+
+            if (!apiInfo.responses) {
+                return [];
+            }
+
+            return Object.keys(apiInfo.responses);
         } else if (key === 'responseAttributes') {
             /* apiInfo: {
                 responses: {
@@ -128,14 +139,19 @@ export class ApiComposition {
                         schema: <schema>
                     }
                 }
-            }*/
-            const responseItem = apiInfo.responses['200'];
+            } */
+
+            const status = args[0];
+
+            if (!apiInfo.responses) {
+                return [];
+            }
+            // const responseItem = apiInfo.responses['200'];
+            const responseItem = apiInfo.responses[status];
 
             if (!responseItem) {
                 return [];
             }
-
-            // console.log('responseItem', responseItem)
 
             return responseItem.schema.attributes;
 
@@ -181,7 +197,7 @@ class ApiSchema {
     getDefinitionData(defKey) {
         if (!this.definitionMap[defKey]) {
             if (!this.silent) { // ps.寧靜模式下不報錯
-                console.error(`definition ${defKey} not exist`);
+                console.error(`getDefinitionData: definition ${defKey} not exist`);
             }
         }
         return this.definitionMap[defKey];
@@ -189,7 +205,7 @@ class ApiSchema {
     getDefKey(ref) {
         if (!/^\#\/definitions\//.test(ref)) {
             // definition識別失敗
-            console.error(`definition ref validate fail, unknown $ref ${ref}`);
+            console.error(`getDefKey: definition ref validate fail, unknown $ref ${ref}`);
             return;
         }
 
@@ -335,7 +351,10 @@ class ApiSchema {
         return schema;
     }
     // buildAttributes----------------------------------------------------
-    buildAttributes(schema, layer = 1) {
+    buildAttributes(schema, layer = 1, layerPath = []) {
+        // layerPath: 用來顯示欄位的階層
+        // console.log(`layerPath:`, layerPath);
+
         // 避免修改到原本的schema那個樹狀結構內的物件，否則attributes和schema就只是入口不同，但底下的物件都相同
         schema = Object.assign({}, schema);
 
@@ -434,11 +453,16 @@ class ApiSchema {
             attributeData.name = key; // 將name加上去
             attributeData.required = required;
 
+            // 麵包屑
+            attributeData.layerPath = layerPath;
+
             // 檢查是否有需要遞迴-----------------------------------------
             if (attributeData.type === 'object' ||
                 attributeData.type === 'array') { // recursiveCheck(attributeData)
+
                 // 進行遞迴
-                attributeData = vm.buildAttributes(attributeData, layer + 1);
+                attributeData = vm.buildAttributes(attributeData, layer + 1,
+                    layerPathPush(layerPath, attributeData.name));
             }
 
             attributeList.push(attributeData);
@@ -655,7 +679,8 @@ class ApiConnectComposition {
         }, 'body');
 
         // 跑每個response
-        Object.keys(apiData.responses).forEach((code) => {
+        const responses = apiData.responses || {};
+        Object.keys(responses).forEach((code) => {
             // code: '200'
 
             const responseItem = apiData.responses[code];

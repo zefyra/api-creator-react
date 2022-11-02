@@ -312,14 +312,11 @@ const TextRow = ({ formItem, srcKey = 'TextRow' }) => {
 
 const TextAreaRow = ({ formItem, srcKey = 'TextAreaRow' }) => {
 
-    // style={style} className={inputTextClassName} placeholder={placeholder}
-    //         value={value} onChange={onChange} disabled={disabled}
-    //         onFocus={onFocus} onBlur={onBlur} qid={qid} id={id}
-    //         onClick={onClick} onKeyDown={onKeyDown}
+    const height = formItem.height || '100px';
 
-    // width="350px" 
     return (
-        <TextArea height="100px" value={formItem.value} srcKey={srcKey}></TextArea>
+        <TextArea width={formItem.width} height={height} value={formItem.value}
+            onUpdate={formItem.onUpdate} srcKey={srcKey}></TextArea>
     )
 }
 

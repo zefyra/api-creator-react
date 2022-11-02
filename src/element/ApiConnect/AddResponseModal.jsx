@@ -5,13 +5,19 @@ import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import Button from 'component/Button';
 import FormModal, { FooterArea } from 'component/FormModal'
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 
-export default function AddBodyModal({ control, apiManageModel, model }) {
+export default function AddResponseModal({ control, apiManageModel, model }) {
 
     const { t } = useTranslation('apiConnect', { keyPrefix: 'apiManage' })
+
+
+    // "fileName": "qore-plus-api",
+    // "apiRoute": "/api/friend",
+    // "apiType": "get",
+    // "tags": ["friend"],
+    // "summary": "1-1.list friend"
 
     let formItemList = [{/*
         label: t('upperCategory'), // 上級分類
@@ -25,7 +31,7 @@ export default function AddBodyModal({ control, apiManageModel, model }) {
     }, {*/
         label: 'rootType',
         type: 'inputText',
-        value: model.fetchRef('rootType', `AddBodyModal`),
+        value: model.fetchRef('rootType', `AddResponseModal`),
     }, {
         label: 'schema',
         type: 'textArea',
@@ -33,7 +39,17 @@ export default function AddBodyModal({ control, apiManageModel, model }) {
         height: '250px',
         // value: schema,
         // onUpdate: updateSchema,
-        value: model.fetchRef('schema', 'AddBodyModal'),
+        value: model.fetchRef('schema', 'AddResponseModal'),
+    }, {
+        label: '回傳類型',
+        type: 'select',
+        // value: model.fetchRef('apiType', `AddApiModal`),
+        optionList: model.fetchRef('resTypeOptionList', `AddResponseModal`),
+        value: model.fetchRef('resType', `AddResponseModal`),
+    }, {
+        label: 'description',
+        type: 'inputText',
+        value: model.fetchRef('description', `AddResponseModal`),
         /*
     }, {
         label: t('tagCategoryEn'), // 標籤分類(英)
@@ -88,17 +104,17 @@ export default function AddBodyModal({ control, apiManageModel, model }) {
     }];
 
     return (
-        <FormModal modalRef={apiManageModel.reactive('addBodyModalRef', 'AddTagModal_ref')}
-            title="新增Body" formItemList={formItemList}
+        <FormModal modalRef={apiManageModel.reactive('addResModalRef', 'EditTagModal_ref')}
+            title="加入Response" formItemList={formItemList}
             modalHeight={620}
             modalWidth={800}
-            srcKey="AddApiModal"
+            srcKey="AddResModal"
             formWidth="580px"
             footerSlot={
                 <FooterArea>
-                    <Button type="fill" onClick={control.bindAct('onCancelAddBody')}>{t('cancel')}</Button>
+                    <Button type="fill" onClick={control.bindAct('onCancelAddRes')}>{t('cancel')}</Button>
                     <div style={{ width: '5rem' }}></div>
-                    <Button type="fill" onClick={control.bindAct('onConfirmAddBody')}>{t('confirm')}</Button>
+                    <Button type="fill" onClick={control.bindAct('onConfirmAddRes')}>{t('confirm')}</Button>
                 </FooterArea>
             }
         ></FormModal>

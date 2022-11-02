@@ -7,7 +7,7 @@ import styled from '@emotion/styled'
 import LayoutMixin from 'util/LayoutMixin'
 
 import ThemeMixin, { fetchTheme } from 'util/ThemeMixin'
-import { apiDoc, apiDoc as apiDocThemeObject } from 'theme/reas'
+import { apiDoc as apiDocThemeObject } from 'theme/reas'
 
 import { PageTitle } from "module/layout";
 import { useTranslation } from "react-i18next";
@@ -29,9 +29,18 @@ import { ReactComponent as PlusSvg } from "assets/svg/br-plus.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
+
 import AddTagModal from 'element/ApiConnect/AddTagModal'
 import AddApiModal from 'element/ApiConnect/AddApiModal'
-import ApiManageModel, { AddApiModel, AddBodyModel, AddTagModel } from 'fragment/ApiManage'
+import AddBodyModal from 'element/ApiConnect/AddBodyModal'
+import EditApiModal from 'element/ApiConnect/EditTagModal'
+
+import ApiManageModel, { AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
+
+import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
+import AddResponseModal from 'element/ApiConnect/AddResponseModal'
+import EditAttrModal from 'element/ApiConnect/EditAttrModal'
+import AttrSrc from 'enum/apiConnect/AttrSrc'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -84,6 +93,14 @@ padding-bottom: 1.5rem;
         margin: 0.75rem 1.75rem 0 1.75rem;
 
         color: ${fetchTheme('groupTitle', '#1c7575')};
+
+        & .tag-block-title-left {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+
+        }
     }
     /* & .tag-block-title-hr{
 
@@ -289,6 +306,8 @@ padding-bottom: 1.5rem;
 
             color: ${fetchTheme('attributeText', '#5f5f5f')};
 
+            height: 48px;
+
             &.sub-parameter{
                 cursor: pointer;
             }
@@ -299,9 +318,9 @@ padding-bottom: 1.5rem;
 
             & .parameter-title-col {
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
 
                 width: 10rem;
                 word-wrap: 'break-word';
@@ -311,8 +330,18 @@ padding-bottom: 1.5rem;
                     font-size: 1.1rem;
                     cursor: auto;
                 }
+
+                & .layer-icon-block {
+
+                    margin-left: 12px;
+                    & .layer-icon {
+                        width: 12px;
+                        height: 12px;
+                    }
+                }
+                
                 & .object-title {
-                    margin: 0.65rem 0.65rem 0.65rem 1.5rem;
+                    margin: 0.65rem 0.65rem 0.65rem 12px;
                     font-size: 1.1rem;
                     cursor: auto;
                 }
@@ -333,7 +362,13 @@ padding-bottom: 1.5rem;
 
             & .parameter-attribute-col {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
+
+                height: inherit;
+
+                align-items: center;
+
+                margin-left: 15px;
 
                 & .attribute-row {
                     display: flex;
@@ -341,7 +376,9 @@ padding-bottom: 1.5rem;
 
                     flex-grow: 1;
 
-                    margin: 0.5rem 1.5rem;
+                    transform: translateY(-1px);
+
+                    /* margin: 0.5rem 1.5rem; */
 
                     & .attr-type {
                         display: flex;
@@ -391,7 +428,16 @@ padding-bottom: 1.5rem;
                     }
                 }
                 & .description-row {
-                    margin: 0rem 1.5rem 0.65rem 1.5rem;
+                    display: flex;
+                    flex-direction: row;
+
+                    margin-left: 1.5rem;
+                }
+                & .attribute-control-row {
+                    display: flex;
+                    flex-direction: row;
+
+                    margin-left: 1.5rem;
                 }
             }
         }
@@ -503,7 +549,7 @@ const AttributeDefaultBlock = ({ attributeData }) => {
 }
 
 // Object的折疊
-const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail, layer, show }) => {
+const ApiAttributeObjectRow = ({ fetchControl, type = 'object', apiData, attributeData, isTail, layer, show, attrSrc }) => {
 
     let indent = layer - 1;
 
@@ -525,9 +571,10 @@ const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail
         return (
             (
                 <ApiAttributeRow key={`sub_ApiAttributeRow_${index}`}
+                    fetchControl={fetchControl}
                     apiData={apiData}
                     attributeData={subAttribute} layer={layer + 1}
-                    show={subShow}></ApiAttributeRow>
+                    show={subShow} attrSrc={attrSrc}></ApiAttributeRow>
             )
         )
     });
@@ -556,6 +603,10 @@ const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail
         return attributeData.type || '';
     }
 
+    let layerIconDom = subShow ?
+        (<MinusSvg className="layer-icon" fill="#91c8c8" />) :
+        (<PlusSvg className="layer-icon" fill="#91c8c8" />)
+
     return (
         <div className={`${indent === 0 ? 'attr-row' : ''} api-attribute-row`} style={{
             display: show ? 'flex' : 'none',
@@ -564,6 +615,11 @@ const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail
                 <div className="parameter-title-col" style={{
                     marginLeft: `${indent * 25}px`,
                 }}>
+                    <div className="layer-icon-block">
+                        {layerIconDom}
+                        {/* {`${subShow}`} */}
+                        {/* <MinusSvg className="layer-icon" fill="#91c8c8" /> */}
+                    </div>
                     <div className="object-title">
                         {attributeData.name || ''}
                     </div>
@@ -584,7 +640,7 @@ const ApiAttributeObjectRow = ({ type = 'object', apiData, attributeData, isTail
 }
 
 
-const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, show = true }) => {
+const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false, layer = 1, show = true, attrSrc }) => {
     // apiData.apiData.attributes
 
     let indent = layer - 1;
@@ -604,26 +660,23 @@ const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, sh
         // type={'object'}
         return (
             <ApiAttributeObjectRow apiData={apiData} attributeData={attributeData} isTail={isTail} layer={layer}
-                show={show}></ApiAttributeObjectRow>
+                show={show} fetchControl={fetchControl} attrSrc={attrSrc}></ApiAttributeObjectRow>
         );
     }
 
 
     // 用來取得attributeData
-    const onAttributeClick = () => () => {
-        if (PRINT_LOG) {
-            if (apiData) {
-                // console.log(`attributeData`, attributeData);
-                console.log(`[${apiData.apiType}] ${apiData.path} attributeData`, attributeData)
-            } else {
-                console.error(`attributeData not have apiData bbb`, attributeData)
-            }
-        }
-    }
-
-    //     (<div className={`required ${attributeData.required ? 'show' : ''}`}>
-    //     required
-    // </div>)
+    // const onAttributeClick = () => () => {
+    //     console.log('attr src', attrSrc)
+    //     // if (PRINT_LOG) {
+    //     //     if (apiData) {
+    //     //         // console.log(`attributeData`, attributeData);
+    //     //         console.log(`[${apiData.apiType}] ${apiData.path} attributeData`, attributeData)
+    //     //     } else {
+    //     //         console.error(`attributeData not have apiData bbb`, attributeData)
+    //     //     }
+    //     // }
+    // }
 
     let requiredTagDom;
     if (attributeData.required) {
@@ -638,7 +691,7 @@ const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, sh
             display: show ? 'flex' : 'none',
         }}>
             {/* onClick={onAttributeClick()} Debug用，用來看attributeData */}
-            <div className={`parameter-row ${isTail ? 'tail' : ''}`} onClick={onAttributeClick()}>
+            <div className={`parameter-row ${isTail ? 'tail' : ''}`}>
                 <div className="parameter-title-col" style={{
                     marginLeft: `${indent * 25}px`,
                 }}>
@@ -664,6 +717,12 @@ const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, sh
                     <div className="description-row">
                         {/* 帳號是否已激活 */}
                         {attributeData.description || ''}
+                    </div>
+                    <div className="attribute-control-row">
+                        <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickEditAttr', apiData, attributeData, attrSrc)}
+                            importStyle={{ margin: '0 0 0 15px' }}>
+                            <DocumentSvg className="icon" fill="#FFFFFF" />
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -699,10 +758,11 @@ const ApiAttributeRow = ({ apiData, attributeData, isTail = false, layer = 1, sh
 }
 
 
-const AttributesForm = ({ apiData, title, attributes, show = true }) => {
+const AttributesForm = ({ fetchControl, apiData, title, attributes, show = true, attrSrc }) => {
     // attributes = apiComp.getApiDataField('requestAttributes')
 
-    // console.log(`title ${title} show ${show}`)
+
+    // console.log(`AttributesForm attrSrc`, attrSrc)
 
     const [collapse, setCollapse] = useState(true);
 
@@ -717,9 +777,10 @@ const AttributesForm = ({ apiData, title, attributes, show = true }) => {
             return (
                 (
                     <ApiAttributeRow key={`ApiAttributeRow_${index}`}
+                        fetchControl={fetchControl}
                         apiData={apiData}
                         attributeData={attributeData} isTail={index === (arr.length - 1)}
-                        show={!collapse}></ApiAttributeRow>
+                        show={!collapse} attrSrc={attrSrc}></ApiAttributeRow>
                 )
             )
         });
@@ -749,7 +810,6 @@ const ApiBlock = ({ fetchControl, apiData }) => {
 
     // console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
 
-    const resAttr = apiComp.getApiDataField('responseAttributes');
     // console.log(`[${apiData.apiType}] ${apiData.path} resAttr`, resAttr);
 
     // 用來取得API的資料用的
@@ -771,6 +831,28 @@ const ApiBlock = ({ fetchControl, apiData }) => {
         e.stopPropagation();
         setApiShow(!apiShow);
     }
+
+    // const responses = apiData.responses || {};
+    // const responseList = Object.keys(responses).map((statusCode) => {
+    //     let resObj = Object.assign({}, apiData.responses[statusCode]);
+    //     resObj.status = statusCode; // 要將status代碼塞入，否則物件裡面沒有
+
+    //     return resObj;
+    // });
+
+
+    const statusList = apiComp.getApiDataField('statusList');
+
+    const resAttrFormListDom = statusList.map((status) => {
+        const key = `[${apiData.apiType}]_${apiData.path}_res_${status}`;
+        const resAttr = apiComp.getApiDataField('responseAttributes', status);
+
+        return (
+            <AttributesForm title={`BODY - ATTRIBUTES (${status})`} attributes={resAttr}
+                apiData={apiData} show={apiShow && apiComp.checkApiDataField('responseAttributes', status)}
+                key={key} fetchControl={fetchControl} attrSrc={AttrSrc.resBody(status)}></AttributesForm>
+        );
+    });
 
     return (<div className="api-list-col" id={`${apiData.apiType}_${apiData.path}`}>
         {/* <div className="api-layer-display">
@@ -810,10 +892,14 @@ const ApiBlock = ({ fetchControl, apiData }) => {
                 <div className="title">
                     Request
                 </div>
-                <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
+                <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}
+                    importStyle={{ margin: '0 0 0 15px' }}>
+                    <DocumentSvg className="icon" fill="#FFFFFF" />
+                </Button>
+                {/* <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
                     onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}>
                     <PlusSvg className="plus-icon" fill="#0a2f25" />
-                </Button>
+                </Button> */}
             </div>
             <div className="content-type-block" style={{
                 display: apiComp.checkApiDataField('consumesContentType') ? 'flex' : 'none',
@@ -827,18 +913,26 @@ const ApiBlock = ({ fetchControl, apiData }) => {
             </div>
         </div>
         <AttributesForm title="HEADER - ATTRIBUTES" attributes={apiComp.getApiDataField('requestHeaderAttributes')}
-            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestHeaderAttributes')}></AttributesForm>
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestHeaderAttributes')}
+            fetchControl={fetchControl}></AttributesForm>
         <AttributesForm title="URL - ATTRIBUTES" attributes={apiComp.getApiDataField('requestUrlAttributes')}
-            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestUrlAttributes')}></AttributesForm>
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestUrlAttributes')}
+            fetchControl={fetchControl} ></AttributesForm>
         <AttributesForm title="Query - ATTRIBUTES" attributes={apiComp.getApiDataField('requestQueryAttributes')}
-            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestQueryAttributes')}></AttributesForm>
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestQueryAttributes')}
+            fetchControl={fetchControl}></AttributesForm>
         <AttributesForm title="BODY - ATTRIBUTES" attributes={apiComp.getApiDataField('requestAttributes')}
-            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestAttributes')}></AttributesForm>
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestAttributes')}
+            fetchControl={fetchControl} attrSrc={AttrSrc.reqBody}></AttributesForm>
         <div className="attr-row request-title-row" style={getApiShowStyle('flex')}>
             <div className="title-block">
                 <div className="title">
                     Response
                 </div>
+                <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddRes', apiData)}
+                    importStyle={{ margin: '0 0 0 15px' }}>
+                    <DocumentSvg className="icon" fill="#FFFFFF" />
+                </Button>
             </div>
             <div className="content-type-block" style={{
                 display: apiComp.checkApiDataField('producesContentType') ? 'flex' : 'none',
@@ -851,8 +945,9 @@ const ApiBlock = ({ fetchControl, apiData }) => {
                 </div>
             </div>
         </div>
-        <AttributesForm title="BODY - ATTRIBUTES" attributes={resAttr}
-            apiData={apiData} show={apiShow && apiComp.checkApiDataField('responseAttributes')}></AttributesForm>
+        {/* <AttributesForm title="BODY - ATTRIBUTES" attributes={resAttr}
+            apiData={apiData} show={apiShow && apiComp.checkApiDataField('responseAttributes')}></AttributesForm> */}
+        {resAttrFormListDom}
     </div >);
 }
 
@@ -896,8 +991,15 @@ const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
     return (
         <TagBlockBoardStyled theme={apiDocThemeObject} id={`tag_${tagData.name}`} className="tag-block-board">
             <div className="tag-block-title-row">
-                {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`}
-                {removeTagButton}
+                <div className="tag-block-title-left">
+                    {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`}
+                    <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickTagEdit', tagData)}>
+                        <DocumentSvg className="icon" fill="#FFFFFF" />
+                    </Button>
+                </div>
+                <div className="tag-block-title-right">
+                    {removeTagButton}
+                </div>
             </div>
             <TagHr></TagHr>
             {apiBlockListDom}
@@ -1206,6 +1308,19 @@ const ApiPageOuter = styled.div`
     /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
 `
 
+const CreateApiDocStyled = styled.div`
+    display: flex;
+    flex-direction: row;
+
+    margin-right: 12px;
+
+    & .plus-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+`
+
 export default function ApiConnect({ fetchControl, mode }) {
     // mode: 'edit'
 
@@ -1252,10 +1367,23 @@ export default function ApiConnect({ fetchControl, mode }) {
     const addBodyModel = new AddBodyModel(useRef(null));
     fc.setupModel('addBody', addBodyModel);
 
+    const editTagModel = new EditTagModel(useRef(null));
+    fc.setupModel('editTag', editTagModel);
+
+    const addResModel = new AddResModel(useRef(null));
+    fc.setupModel('addRes', addResModel);
+
+    const editAttrModel = new EditAttrModel(useRef(null));
+    fc.setupModel('editAttr', editAttrModel);
+
     apiManageControl.registModel('apiManage', apiManageModel);
     apiManageControl.registModel('addTag', addTagModel);
     apiManageControl.registModel('addApi', addApiModel);
     apiManageControl.registModel('addBody', addBodyModel);
+    apiManageControl.registModel('editTag', editTagModel);
+    apiManageControl.registModel('editAttr', editAttrModel);
+
+
 
 
     // http://{host}/apiConnect?category=dataCollection
@@ -1296,8 +1424,17 @@ export default function ApiConnect({ fetchControl, mode }) {
         fetchControl('apiManage').fetchJson();
     }, []);
 
+    const rightSlotDom = (
+        <CreateApiDocStyled>
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
+                <PlusSvg className="plus-icon" fill="#4c5e5a" />
+            </Button>
+        </CreateApiDocStyled>
+    )
+
     return (
-        <PageTitle title={pageTitle}>
+        <PageTitle title={pageTitle} rightSlot={rightSlotDom}>
             <ApiPageOuter>
                 <ApiDocument fetchControl={fetchControl}></ApiDocument>
                 <QuickPanelAsideSpace></QuickPanelAsideSpace>
@@ -1308,6 +1445,18 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <AddApiModal control={apiManageControl}
                     model={addApiModel}
                     apiManageModel={apiManageModel}></AddApiModal>
+                <AddBodyModal control={apiManageControl}
+                    model={addBodyModel}
+                    apiManageModel={apiManageModel}></AddBodyModal>
+                <EditApiModal control={apiManageControl}
+                    model={editTagModel}
+                    apiManageModel={apiManageModel}></EditApiModal>
+                <AddResponseModal control={apiManageControl}
+                    model={addResModel}
+                    apiManageModel={apiManageModel}></AddResponseModal>
+                <EditAttrModal control={apiManageControl}
+                    model={editAttrModel}
+                    apiManageModel={apiManageModel}></EditAttrModal>
             </ApiPageOuter>
         </PageTitle>
     );

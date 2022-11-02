@@ -18,22 +18,17 @@ const PageBottomLayerStyled = styled.div`
 
     /* background-color: ${getTheme('pageBackground', '#e3edea')}; */
 
-    .page-title-row {
+    & .page-title-row {
 
         display: flex;
         flex-direction: row;
 
-        /* margin-top: 1.5rem;
-        margin-left: 1.5rem; */
-
-        /* min-height: 75px; */
-        min-height: ${LayoutMixin.pageTitleHeight || '75px'};
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
 
-        /* margin-bottom: 1rem; */
+        min-height: ${LayoutMixin.pageTitleHeight || '75px'};
 
-        .page-title-block {
+        & .page-title-block {
 
             display: flex;
             flex-direction: column;
@@ -46,7 +41,7 @@ const PageBottomLayerStyled = styled.div`
 
             /* padding-bottom: 1rem; */
 
-            .page-title {
+            & .page-title {
                 font-size: 1.6rem;
                 color: ${getTheme('pageTitleText', '#000000')}
             }
@@ -54,14 +49,21 @@ const PageBottomLayerStyled = styled.div`
 
             } */
         }
+        & .right-slot {
+            display: flex;
+            flex-direction: row;
+        }
     }
 `
 
-export const PageTitle = ({ title, children }) => {
+export const PageTitle = ({ title, children, rightSlot }) => {
     return (<PageBottomLayerStyled theme={layoutThemeObject} className="page-title-layer">
         <div className="page-title-row">
             <div className="page-title-block">
                 <div className="page-title">{title}</div>
+            </div>
+            <div className="right-slot">
+                {rightSlot}
             </div>
         </div>
         {children}

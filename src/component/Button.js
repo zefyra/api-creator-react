@@ -187,6 +187,50 @@ const ToggleButtonStyled = styled(ToggleButton)`
 `;
 
 
+const IconButton = ({ importStyle, onClick, children }) => {
+
+    return (
+        <IconButtonStyled onClick={onClick} style={importStyle}>
+            {/* <QuestionSquareIconSvg className="question-icon" fill="#FFFFFF" onClick={onClickQuestion} /> */}
+            {children}
+        </IconButtonStyled>
+    );
+}
+
+const IconButtonStyled = styled.div`
+width: 27px;
+height: 27px;
+margin: 0.35rem;
+
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+
+transform: translateY(2px);
+
+background-color: #296a61;
+border-radius: 3px;
+
+cursor: pointer;
+& .icon {
+    width: 19px;
+    height: 19px;
+    /* transform: translateY(1px); */
+    /* margin: 0.35rem; */
+    border-radius: 2px;
+    /* box-shadow: 0 0 10px #def0ee ; */
+}
+&:hover {
+    box-shadow: 0 0 10px #def0ee;
+    /* border: 2px solid #def0ee;
+    box-sizing:border-box; */
+
+    background-color: #85e1d5;
+}
+`
+
+
 export default function Button({ children, type, mode, pattern, onClick, disabled,
     importStyle, qid, onChange, active, setActive, status, setStatus, importCss, importClass,
     srcKey, value }) {
@@ -245,6 +289,8 @@ export default function Button({ children, type, mode, pattern, onClick, disable
         return (<FillButtonStyled disabled={nowDisabled} theme={themeObject} type={mode}
             onClick={handleClick()} importStyle={importStyle} patternStyle={patternStyle}
             qid={qid}>{children}</FillButtonStyled>);
+    } else if (type === 'icon') {
+        return (<IconButton importStyle={importStyle} onClick={onClick}>{children}</IconButton>);
     } else if (type === 'toggle') {
         if (!mode) {
             mode = 'default';
