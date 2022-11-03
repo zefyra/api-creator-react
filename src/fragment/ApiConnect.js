@@ -729,7 +729,7 @@ export default class ApiConnectModel extends StateModel {
     saveApiDoc(json) {
         this.setState('docJson', json);
 
-        // console.log('saveApiDoc json', json.tags)
+        // console.log('saveApiDoc json', json)
 
         const tagList = this.buildTagBlockDataList(new ApiConnectComposition(json));
 

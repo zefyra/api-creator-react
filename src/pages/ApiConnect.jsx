@@ -41,6 +41,8 @@ import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
 import EditAttrModal from 'element/ApiConnect/EditAttrModal'
 import AttrSrc from 'enum/apiConnect/AttrSrc'
+import DocxSave from 'element/ApiConnect/DocxSave'
+import DocxControl from 'flow/docxControl'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -1314,7 +1316,7 @@ const CreateApiDocStyled = styled.div`
 
     margin-right: 12px;
 
-    & .plus-icon {
+    & .icon {
         width: 16px;
         height: 16px;
     }
@@ -1383,8 +1385,9 @@ export default function ApiConnect({ fetchControl, mode }) {
     apiManageControl.registModel('editTag', editTagModel);
     apiManageControl.registModel('editAttr', editAttrModel);
 
-
-
+    const docxControl = new DocxControl(useRef(null));
+    docxControl.registModel('apiManage', apiManageModel);
+    docxControl.registModel('apiDoc', apiDocModel);
 
     // http://{host}/apiConnect?category=dataCollection
 
@@ -1424,17 +1427,18 @@ export default function ApiConnect({ fetchControl, mode }) {
         fetchControl('apiManage').fetchJson();
     }, []);
 
-    const rightSlotDom = (
+    const titleExtendSlotDom = (
         <CreateApiDocStyled>
-            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
+            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
                 onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
-                <PlusSvg className="plus-icon" fill="#4c5e5a" />
-            </Button>
+                <PlusSvg className="icon" fill="#4c5e5a" />
+            </Button> */}
+            <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave>
         </CreateApiDocStyled>
     )
 
     return (
-        <PageTitle title={pageTitle} rightSlot={rightSlotDom}>
+        <PageTitle title={pageTitle} titleExtendSlot={titleExtendSlotDom}>
             <ApiPageOuter>
                 <ApiDocument fetchControl={fetchControl}></ApiDocument>
                 <QuickPanelAsideSpace></QuickPanelAsideSpace>

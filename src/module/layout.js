@@ -31,7 +31,7 @@ const PageBottomLayerStyled = styled.div`
         & .page-title-block {
 
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
 
             min-width: 14rem;
 
@@ -45,26 +45,30 @@ const PageBottomLayerStyled = styled.div`
                 font-size: 1.6rem;
                 color: ${getTheme('pageTitleText', '#000000')}
             }
-            /* .page-comment {
-
-            } */
+            & .extend-slot {
+                display: flex;
+                flex-direction: row;
+            }
         }
-        & .right-slot {
+        /* & .right-slot {
             display: flex;
             flex-direction: row;
-        }
+        } */
     }
 `
 
-export const PageTitle = ({ title, children, rightSlot }) => {
+export const PageTitle = ({ title, children, titleExtendSlot }) => {
     return (<PageBottomLayerStyled theme={layoutThemeObject} className="page-title-layer">
         <div className="page-title-row">
             <div className="page-title-block">
                 <div className="page-title">{title}</div>
+                <div className="extend-slot">
+                    {titleExtendSlot}
+                </div>
             </div>
-            <div className="right-slot">
+            {/* <div className="right-slot">
                 {rightSlot}
-            </div>
+            </div> */}
         </div>
         {children}
     </PageBottomLayerStyled>);
