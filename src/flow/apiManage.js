@@ -1,7 +1,8 @@
 import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
-import ApiManageModel, { AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import LocalAccessor from "localAccessor";
 
 export class ApiManageControl extends Control {
     // constructor(){
@@ -25,6 +26,7 @@ export class ApiManageControl extends Control {
             addBody: AddBodyModel.name,
             addRes: AddResModel.name,
             editAttr: EditAttrModel.name,
+            addApiDoc: AddApiDocModel.name,
         }
     }
 
@@ -455,7 +457,7 @@ export class ApiManageControl extends Control {
     }
 
     onClickEditAttr(apiData, attributeData, attrSrc) {
-        console.log('onClickEditAttributeDescription attrSrc', attrSrc);
+        console.log('onClickEditAttributeDescription attributeData', attributeData);
         /* attributeData: {
             default: 0
             description: "好友ID"
@@ -463,7 +465,16 @@ export class ApiManageControl extends Control {
             required: false
             type: "integer"
             layerPath: ['error', 'path', 'path']
+            attrRequired: false,
         }*/
+
+        const getBoolean = function (value) {
+            if (typeof value !== 'boolean') {
+                return 'false';
+            }
+
+            return value ? 'true' : 'false';
+        }
 
         const editAttrModel = this.fetchModel('editAttr');
         // 查詢參數
@@ -479,12 +490,18 @@ export class ApiManageControl extends Control {
         editAttrModel.setState('defaultValue', attributeData.default || '');
         editAttrModel.setState('valueType', attributeData.type || '');
         editAttrModel.setState('description', attributeData.description || '');
+        editAttrModel.setState('required', getBoolean(attributeData.attrRequired));
 
         // 原始參數
         editAttrModel.setState('originAttrName', attributeData.name || '');
         editAttrModel.setState('originDefaultValue', attributeData.default || '');
         editAttrModel.setState('originValueType', attributeData.type || '');
         editAttrModel.setState('originDescription', attributeData.description || '');
+        editAttrModel.setState('originRequired', getBoolean(attributeData.attrRequired));
+
+        // console.log('requ', editAttrModel.getState('required'), editAttrModel.getState('originRequired'))
+        // console.log('rrrr', attributeData.required)
+
 
         const editAttrModalRef = this.fetchModel('apiManage').getState('editAttrModalRef');
         if (editAttrModalRef) {
@@ -499,6 +516,13 @@ export class ApiManageControl extends Control {
         const noUpdateCheck = function (val, originKey) {
             // 與原始數值相同
             return val === editAttrModel.getState(originKey);
+        }
+        const getNoUpdateCheckVal = function (key, originKey) {
+            let value = editAttrModel.getState(key);
+            if (noUpdateCheck(description, originKey)) {
+                value = null;
+            }
+            return value;
         }
 
         let attrName = editAttrModel.getState('newAttrName');
@@ -520,6 +544,15 @@ export class ApiManageControl extends Control {
         if (noUpdateCheck(description, 'originDescription')) {
             description = null;
         }
+
+        // console.log('required bb', editAttrModel.getState('required'), editAttrModel.getState('originRequired'));
+
+        let required = getNoUpdateCheckVal('required', 'originRequired');
+
+        // console.log('required cc', required)
+
+        required = required === 'true'; // 將字串轉回boolean
+
 
         if (defaultValue !== null) {
             const nowValueType = editAttrModel.getState('valueType');
@@ -544,6 +577,7 @@ export class ApiManageControl extends Control {
                 defaultValue: defaultValue,
                 valueType: valueType,
                 description: description,
+                required: required,
             },
         };
         // console.log('onConfirmEditAttr', apiParam);
@@ -565,6 +599,44 @@ export class ApiManageControl extends Control {
     }
 
     onClickCreateApiDoc() {
-        console.log('onClickCreateApiDoc')
+        console.log('onClickCreateApiDoc');
+
+
+
+
+        const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
+        if (addApiDocModalRef) {
+            addApiDocModalRef.openModal();
+        }
+    }
+    onCancelAddApiDoc() {
+
+        const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
+        if (addApiDocModalRef) {
+            addApiDocModalRef.closeModal();
+        }
+    }
+    async onConfirmAddApiDoc() {
+        let error;
+
+        const addApiDocModel = this.fetchModel('addApiDoc');
+
+        // LocalAccessor.setItem('apiDocList', [{
+        //     fileName: addApiDocModel.getState('fileName'),
+        // }]);
+
+        const apiParam = {
+            fileName: addApiDocModel.getState('fileName'),
+            title: addApiDocModel.getState('title'),
+            host: addApiDocModel.getState('host'),
+        }
+
+        await ApiSender.sendApi('[post]/genSwagger', apiParam).catch(err => (error = err));
+        if (error) return Promise.reject(error);
+
+        const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
+        if (addApiDocModalRef) {
+            addApiDocModalRef.closeModal();
+        }
     }
 }

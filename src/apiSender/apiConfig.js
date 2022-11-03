@@ -12,6 +12,10 @@ const apiConfigMap = {
     '[post]/editTag': {},
     '[post]/addResponse': {},
     '[post]/editAttr': {},
+    '[post]/genSwagger': {},
+    '[post]/listApiDoc': {
+        outputType: 'apiCreator',
+    },
     // '[get]/permissions': {
     //     header: 'bearerTokenHeader',
     //     outputType: 'crossbot',

@@ -4,6 +4,8 @@ import RoleEnum from 'enum/Role'
 import { selectGetPermission } from 'store/login';
 import { selectRole } from 'store/profile';
 import { useGetter } from 'store';
+import LocalAccessor from 'localAccessor';
+import ApiSender, { ApiError } from 'apiSender';
 
 
 let menuItemList = [{ // 系統管理
@@ -231,8 +233,11 @@ export default class RouteManager {
     // 篩選有權限的menu項目
     getMenuItemListByAuth(category, getPermission) { // 
 
+
+
+
         // system
-        return [
+        let menuList = [
             {
                 "icon": "users",
                 "nameSrc": "system.accountList",
@@ -291,6 +296,44 @@ export default class RouteManager {
                 "name": "設定"
             }
         ];
+
+        let apiDocList = LocalAccessor.getItem('apiDocList');
+
+        const customApiDocSubMenuList = apiDocList.map((apiDocItem) => {
+            return {
+                // "nameSrc": "subItem.cccccc",
+                "path": "/apiManage",
+                // "queryString": "category=shakuApi",
+                "queryString": `fileName=${apiDocItem.fileName}`,
+                "resourceName": "apiConnect",
+                "name": apiDocItem.fileName,
+                "category": "system"
+            };
+            // return {
+            //     "nameSrc": "subItem.apiConnectShakuApi",
+            //     "path": "/apiManage",
+            //     "queryString": "category=shakuApi",
+            //     "resourceName": "apiConnect",
+            //     "name": "API介接 - ShakuAPI",
+            //     "category": "system"
+            // }
+        });
+
+        const customMenuList = [{
+            "icon": "gear",
+            "nameSrc": "system.developDocumentation",
+            "category": "system",
+            "subItemList": customApiDocSubMenuList,
+            "isMenu": true,
+            "name": "自訂API文件"
+        }];
+        menuList = menuList.concat(customMenuList)
+
+
+
+        return menuList;
+
+
         // system
         // return [{ "icon": "users", "nameSrc": "system.accountList", "category": "system", "subItemList": [{ "nameSrc": "subItem.users", "path": "/users", "resourceName": "users", "name": "用戶帳號", "category": "system" }, { "nameSrc": "subItem.subUsers", "resourceName": "subUsers", "name": "用戶子帳號", "category": "system" }], "isMenu": true, "name": "帳號列表" }, { "icon": "document", "nameSrc": "system.logRecord", "category": "system", "resourceName": "logHistory", "isMenu": true, "name": "log紀錄" }, { "icon": "brdollar", "nameSrc": "system.quotaRankManage", "category": "system", "path": "/quotaRankManage", "resourceName": "quotaRangeManage", "isMenu": true, "name": "用量級距管理" }, { "icon": "moneycheckedit", "nameSrc": "system.myOrder", "category": "system", "resourceName": "myOrder", "isMenu": true, "path": "/myOrder", "name": "我的訂單" }, { "icon": "key", "nameSrc": "system.platformPreference", "category": "system", "path": "/platformPreference", "resourceName": "platformPerference", "isMenu": true, "name": "平台參數" }, { "icon": "datatransfer", "nameSrc": "system.dataExchange", "category": "system", "resourceName": "dataExchange", "isMenu": true, "name": "資料介接" }, { "icon": "gear", "nameSrc": "system.developDocumentation", "category": "system", "subItemList": [{ "nameSrc": "subItem.apiConnectDataCollection", "path": "/apiConnect", "queryString": "category=dataCollection", "resourceName": "apiConnect", "name": "API介接 - 數據集", "category": "system" }], "isMenu": true, "name": "開發文件" }, { "icon": "gear", "nameSrc": "system.setting", "category": "system", "subItemList": [{ "nameSrc": "subItem.payRelated", "path": "/payRelated", "resourceName": "payRelated", "name": "支付相關", "category": "system" }, { "nameSrc": "subItem.defaultAuth", "path": "/defaultAuth", "resourceName": "defaultAuth", "name": "預設權限", "category": "system" }, { "nameSrc": "subItem.otherSetting", "path": "/otherSetting", "resourceName": "otherSetting", "name": "其他設定", "category": "system" }], "isMenu": true, "name": "設定" }];
 

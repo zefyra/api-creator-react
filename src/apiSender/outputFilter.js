@@ -40,6 +40,14 @@ export default class OutputFilter {
         return outData;
     }
 
+    apiCreator() {
+        if (!this.resData) {
+            return null;
+        }
+
+        return this.resData.data;
+    }
+
     // apiConfig內設定 outType: 'crossbot'，用來執行的函式
     // 基本的，單純只回傳data欄位
     crossbot() {

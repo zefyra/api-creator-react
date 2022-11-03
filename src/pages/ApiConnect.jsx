@@ -26,6 +26,7 @@ import { ReactComponent as AngleUpSvg } from 'assets/svg/sr-angle-up.svg'
 import { ReactComponent as TrashSvg } from "assets/svg/br-trash.svg"
 import { ReactComponent as MinusSvg } from "assets/svg/br-minus.svg"
 import { ReactComponent as PlusSvg } from "assets/svg/br-plus.svg"
+import { ReactComponent as StarSvg } from "assets/svg/star-sign.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -35,7 +36,7 @@ import AddApiModal from 'element/ApiConnect/AddApiModal'
 import AddBodyModal from 'element/ApiConnect/AddBodyModal'
 import EditApiModal from 'element/ApiConnect/EditTagModal'
 
-import ApiManageModel, { AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
 
 import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
@@ -43,6 +44,8 @@ import EditAttrModal from 'element/ApiConnect/EditAttrModal'
 import AttrSrc from 'enum/apiConnect/AttrSrc'
 import DocxSave from 'element/ApiConnect/DocxSave'
 import DocxControl from 'flow/docxControl'
+import AddApiDocModal from 'element/ApiConnect/AddApiDocModal'
+import LocalAccessor from 'localAccessor'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -328,7 +331,7 @@ padding-bottom: 1.5rem;
                 word-wrap: 'break-word';
 
                 & .title {
-                    margin: 0rem 1rem 0 1.5rem;
+                    margin: 0rem 0rem 0 1.5rem;
                     font-size: 1.1rem;
                     cursor: auto;
                 }
@@ -347,18 +350,21 @@ padding-bottom: 1.5rem;
                     font-size: 1.1rem;
                     cursor: auto;
                 }
-                & .required {
-                    /* display: none; */
+                /* & .required {
                     display: flex;
 
                     margin: 0 1rem 0 1.5rem;
                     font-size: 0.9rem;
                     color: ${fetchTheme('attributeReuired', '#5f5f5f')};
                     
-                    /* &.show {
-                        display: flex;
-                    } */
                     cursor: auto;
+                } */
+                & .required-icon {
+                    width: 12px;
+                    height: 12px;
+
+                    margin-left: 0.05rem;
+                    transform: translateY(-6px);
                 }
             }
 
@@ -680,11 +686,12 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
     //     // }
     // }
 
+
     let requiredTagDom;
-    if (attributeData.required) {
-        requiredTagDom = (<div className="required">
-            required
-        </div>);
+    if (attributeData.attrRequired) {
+        requiredTagDom = (
+            <StarSvg className="required-icon" fill="#91c8c8" />
+        )
     }
 
 
@@ -702,6 +709,9 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
                         {attributeData.name || ''}
                     </div>
                     {requiredTagDom}
+                    {/* <div className="required">
+                        required
+                    </div> */}
                 </div>
                 <div className="parameter-attribute-col">
                     <div className="attribute-row">
@@ -815,11 +825,11 @@ const ApiBlock = ({ fetchControl, apiData }) => {
     // console.log(`[${apiData.apiType}] ${apiData.path} resAttr`, resAttr);
 
     // 用來取得API的資料用的
-    const onClickApiTitle = () => () => {
-        if (PRINT_LOG) {
-            console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
-        }
-    }
+    // const onClickApiTitle = () => () => {
+    //     if (PRINT_LOG) {
+    //         console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
+    //     }
+    // }
 
     const [apiShow, setApiShow] = useState(false);
 
@@ -863,8 +873,8 @@ const ApiBlock = ({ fetchControl, apiData }) => {
     </div> */}
         <div className="row api-title-row">
             {/* {`1-2.用ID取得子用戶(API名稱)`} */}
-            {/* {`${apiData.apiData.description}`} */}
-            <div onClick={onClickApiTitle()}>
+            {/* Debug用 onClick={onClickApiTitle()} */}
+            <div>
                 {apiComp.getApiDataField('apiTitle')}
             </div>
             {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
@@ -1378,12 +1388,16 @@ export default function ApiConnect({ fetchControl, mode }) {
     const editAttrModel = new EditAttrModel(useRef(null));
     fc.setupModel('editAttr', editAttrModel);
 
+    const addApiDocModel = new AddApiDocModel(useRef(null));
+    fc.setupModel('addApiDoc', addApiDocModel);
+
     apiManageControl.registModel('apiManage', apiManageModel);
     apiManageControl.registModel('addTag', addTagModel);
     apiManageControl.registModel('addApi', addApiModel);
     apiManageControl.registModel('addBody', addBodyModel);
     apiManageControl.registModel('editTag', editTagModel);
     apiManageControl.registModel('editAttr', editAttrModel);
+    apiManageControl.registModel('addApiDoc', addApiDocModel);
 
     const docxControl = new DocxControl(useRef(null));
     docxControl.registModel('apiManage', apiManageModel);
@@ -1417,6 +1431,19 @@ export default function ApiConnect({ fetchControl, mode }) {
                     fileName = pageInfo.fileName;
                 }
             }
+        } else if (urlQueryObj.fileName) { // fileName模式
+
+            const apiDocList = LocalAccessor.getItem('apiDocList');
+            const apiDocInfo = apiDocList.find(docInfo => docInfo.fileName === urlQueryObj.fileName);
+
+            if (apiDocInfo) {
+                jsonPath = apiDocInfo.path;
+                // jsonPath = `http://localhost:5050/apiDoc/${urlQueryObj.fileName}.json`
+                pageTitle = `pageTitle`;
+                fileName = urlQueryObj.fileName;
+            } else {
+                console.error(`apiDocInfo not found`, urlQueryObj.fileName);
+            }
         }
     }
 
@@ -1429,11 +1456,16 @@ export default function ApiConnect({ fetchControl, mode }) {
 
     const titleExtendSlotDom = (
         <CreateApiDocStyled>
-            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
                 onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
                 <PlusSvg className="icon" fill="#4c5e5a" />
+            </Button>
+            {/* <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave> */}
+
+            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
+                add apiDoc
             </Button> */}
-            <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave>
         </CreateApiDocStyled>
     )
 
@@ -1461,6 +1493,9 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <EditAttrModal control={apiManageControl}
                     model={editAttrModel}
                     apiManageModel={apiManageModel}></EditAttrModal>
+                <AddApiDocModal control={apiManageControl}
+                    model={addApiDocModel}
+                    apiManageModel={apiManageModel}></AddApiDocModal>
             </ApiPageOuter>
         </PageTitle>
     );

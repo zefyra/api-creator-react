@@ -10,6 +10,7 @@ export default class ApiManageModel extends StateModel {
             editTagModalRef: null,
             addResModalRef: null,
             editAttrModalRef: null,
+            addApiDocModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '',
@@ -164,11 +165,30 @@ export class EditAttrModel extends StateModel {
                 label: 'Boolean',
             }],
             description: '',
+            required: 'true',
+            requiredOptionList: [{
+                label: 'true',
+                value: 'true'
+            }, {
+                label: 'false',
+                value: 'false'
+            }],
             // 原始參數
             originAttrName: '',
             originDefaultValue: '',
             originValueType: '',
             originDescription: '',
+            originRequired: '',
+        }
+    }
+}
+
+export class AddApiDocModel extends StateModel {
+    data() {
+        return {
+            fileName: '',
+            title: '',
+            host: '',
         }
     }
 }

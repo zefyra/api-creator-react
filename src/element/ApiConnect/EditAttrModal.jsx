@@ -45,6 +45,11 @@ export default function EditAttrModal({ control, apiManageModel, model }) {
         label: '描述',
         type: 'inputText',
         value: model.fetchRef('description', `EditAttrModal`),
+    }, {
+        label: '必填',
+        type: 'select',
+        optionList: model.fetchRef('requiredOptionList', `EditAttrModal`),
+        value: model.fetchRef('required', `EditAttrModal`),
         // }, {
         //     label: 'schema',
         //     type: 'textArea',

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, generatePath } from "react-router-dom";
 
 import { useTranslation, withTranslation } from 'react-i18next';
@@ -32,6 +32,8 @@ import LayerMixin from 'util/LayerMixin'
 
 import { menu as menuThemeObject } from 'theme/reas'
 import ThemeMixin from 'util/ThemeMixin'
+import ApiSender, { ApiError } from 'apiSender';
+import LocalAccessor from 'localAccessor';
 const getTheme = ThemeMixin.fetchGetTheme();
 
 const menuTheme = new ThemeMixin(menuThemeObject);
@@ -193,7 +195,6 @@ const MenuItem = ({ itemKey, item, subItemList }) => {
 const Menu = function ({ className, layoutClassName }) {
     const { t } = useTranslation('menu');
 
-    // const navigate = useNavigate();
     const currentCategory = useSelector(selectCategory);
     const getPermission = useSelector(selectGetPermission);
 
@@ -203,6 +204,19 @@ const Menu = function ({ className, layoutClassName }) {
         return <MenuItem key={index} itemKey={index} item={item} subItemList={item.subItemList}>
         </MenuItem>;
     });
+
+    useEffect(function () {
+
+        const apiDocListStr = localStorage.getItem('apiDocList');
+
+        if (!apiDocListStr) {
+            // 裡面是空的，代表需要載入
+            ApiSender.sendApi('[post]/listApiDoc').then((apiRes) => {
+                LocalAccessor.setItem('apiDocList', apiRes.list);
+            }).catch(new ApiError().catchAlertMsg());
+        }
+    }, [])
+
 
     return (
         <div className={`${className} ${layoutClassName}`}>

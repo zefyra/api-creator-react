@@ -437,21 +437,62 @@ class ApiSchema {
         Object.keys(schemaPack).forEach((key) => {
             let attributeData = schemaPack[key];
 
+            // if (key === 'name') {
+            //     console.log('name schema', schema, schemaPack)
+            // }
+
             let required = false;
-            if (schema.required) {
-                if (Array.isArray(schema.required)) {
-                    schema.required.forEach((key) => {
-                        if (key === vm.name) {
+
+            let requiredArray;
+            if (schema.type === 'object') {
+                requiredArray = schema.required;
+            } else if (schema.type === 'array') {
+                requiredArray = schema.items.required;
+            }
+            // if (requiredArray === undefined){
+            //     console.error('requiredArray is not array', schema)
+            // }
+
+            if (requiredArray) {
+
+                if (Array.isArray(requiredArray)) {
+                    requiredArray.forEach((requiredKey) => {
+                        if (key === requiredKey) {
                             required = true;
                         }
                     });
+                } else {
+                    console.error(`schema.required is not array`);
                 }
+                // console.log(`build required schema [${key}] required`, schema.required, required)
             }
+
+            // if (schema.required) {
+            //     if (Array.isArray(schema.required)) {
+            //         schema.required.forEach((requiredKey) => {
+            //             if (key === requiredKey) {
+            //                 required = true;
+            //             }
+            //         });
+            //     } else {
+            //         console.error(`schema.required is not array`);
+            //     }
+            //     // console.log(`build required schema [${key}] required`, schema.required, required)
+            // }
 
             // console.log(`${propName}`, attributeData)
             attributeData = Object.assign({}, attributeData);
             attributeData.name = key; // 將name加上去
-            attributeData.required = required;
+
+
+            // if (Array.isArray(attributeData.required)) {
+            //     // 代表這個欄位是物件，尚未到底
+            //     // console.error('required arr cannot set', JSON.stringify(attributeData.required));
+            //     // [BUG]目前無法設定object類型欄位的required，因為會導致下一層取到boolean，原本的array被蓋掉了
+            // } else {
+            //     attributeData.required = required;
+            // }
+            attributeData.attrRequired = required; // 要避免與原本物件的required衝突
 
             // 麵包屑
             attributeData.layerPath = layerPath;
@@ -460,10 +501,19 @@ class ApiSchema {
             if (attributeData.type === 'object' ||
                 attributeData.type === 'array') { // recursiveCheck(attributeData)
 
+                // if (attributeData.type === 'array') {
+                //     console.log('array', attributeData)
+                // } else if (attributeData.type === 'object') {
+                //     console.log('object', attributeData)
+                // }
+
+
                 // 進行遞迴
                 attributeData = vm.buildAttributes(attributeData, layer + 1,
                     layerPathPush(layerPath, attributeData.name));
             }
+
+            // console.log(`[${key}] required`, attributeData)
 
             attributeList.push(attributeData);
         });
@@ -751,7 +801,7 @@ export default class ApiConnectModel extends StateModel {
         const json = apiCompConnectData.getJson();
 
         const apiMap = this.buildApiMapFromJson(apiCompConnectData);
-        // console.log('apiMap', apiMap)
+
         /* apiMap: {
             <tag>: [ <apiInfo>, <apiInfo2>... ]
         } 
@@ -784,9 +834,10 @@ export default class ApiConnectModel extends StateModel {
         });
     }
     buildApiMapFromJson(apiCompConnectData) {
+        const apiMap = {};
         if (!(apiCompConnectData instanceof ApiConnectComposition)) {
             console.error(`buildApiMapFromJson: apiCompConnectData not ApiConnectComposition`);
-            return;
+            return apiMap;
         }
         const json = apiCompConnectData.getJson();
 
@@ -803,10 +854,8 @@ export default class ApiConnectModel extends StateModel {
 
         if (!json.paths) {
             console.error(`json.paths not exist`);
-            return;
+            return apiMap;
         }
-
-        const apiMap = {};
         /* apiMap: {
             <tag>: [ <apiInfo>, <apiInfo2>... ]
         } 
