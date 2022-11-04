@@ -764,11 +764,12 @@ export default class ApiConnectModel extends StateModel {
             // <unitKey>: <pageMode>
             addTagButton: 'edit', // 新增tag按鈕
             removeTagButton: 'edit', // 移除tag按鈕
+            titleExtend: 'edit',
         }
 
         const unitAuth = unitAuthMap[unitKey];
         if (!unitAuth) {
-            return true;
+            return false;
         }
 
         const pageMode = this.getState('pageMode');

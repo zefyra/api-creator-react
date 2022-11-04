@@ -3,6 +3,7 @@ import StateModel from "model/StateModel";
 export default class ApiManageModel extends StateModel {
     data(initObj = {}) {
         return {
+            viewMode: 'board',
             // ModalRef----------------------------------------
             addTagModalRef: null,
             addApiModalRef: null,

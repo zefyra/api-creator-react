@@ -16,6 +16,9 @@ const apiConfigMap = {
     '[post]/listApiDoc': {
         outputType: 'apiCreator',
     },
+    '[post]/doc/updateJson': {
+        
+    }
     // '[get]/permissions': {
     //     header: 'bearerTokenHeader',
     //     outputType: 'crossbot',

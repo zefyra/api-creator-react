@@ -11,65 +11,90 @@ const PageBottomLayerStyled = styled.div`
 // page-layer -----------------------
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 
     width: 100%;
     min-height: 100%;
 
-    /* background-color: ${getTheme('pageBackground', '#e3edea')}; */
-
-    & .page-title-row {
-
+    & .page-main-layer {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        flex-grow: 1;
 
-        align-items: center;
-        justify-content: space-between;
+        /* background-color: ${getTheme('pageBackground', '#e3edea')}; */
 
-        min-height: ${LayoutMixin.pageTitleHeight || '75px'};
-
-        & .page-title-block {
+        & .page-title-row {
 
             display: flex;
             flex-direction: row;
 
-            min-width: 14rem;
+            align-items: center;
 
-            margin-left: 1.5rem;
-            /* height: 2rem; */
-            /* border-bottom: 3px solid ${getTheme('pageTitleBottomBorder', '#000000')}; */
+            min-height: ${LayoutMixin.pageTitleHeight || '75px'};
 
-            /* padding-bottom: 1rem; */
+            & .page-title-block {
 
-            & .page-title {
-                font-size: 1.6rem;
-                color: ${getTheme('pageTitleText', '#000000')}
+                display: flex;
+                flex-direction: row;
+
+                margin-left: 1.5rem;
+                /* height: 2rem; */
+                /* border-bottom: 3px solid ${getTheme('pageTitleBottomBorder', '#000000')}; */
+
+                /* padding-bottom: 1rem; */
+
+                & .page-title {
+                    font-size: 1.6rem;
+                    color: ${getTheme('pageTitleText', '#000000')}
+                }
             }
             & .extend-slot {
                 display: flex;
                 flex-direction: row;
+
+                flex-grow: 1;
             }
+            /* & .right-slot {
+                display: flex;
+                flex-direction: row;
+            } */
         }
-        /* & .right-slot {
+
+        & .page-content-row {
             display: flex;
             flex-direction: row;
-        } */
+        }
+    }
+
+    & .page-aside-layer {
+
     }
 `
 
-export const PageTitle = ({ title, children, titleExtendSlot }) => {
-    return (<PageBottomLayerStyled theme={layoutThemeObject} className="page-title-layer">
-        <div className="page-title-row">
-            <div className="page-title-block">
-                <div className="page-title">{title}</div>
+export const PageTitle = ({ title, children, titleExtendSlot, asideSlot }) => {
+    return (<PageBottomLayerStyled theme={layoutThemeObject}
+        className="page-layout-layer">
+        <div className="page-main-layer">
+            <div className="page-title-row">
+                <div className="page-title-block">
+                    <div className="page-title">{title}</div>
+                    {/* <div className="extend-slot">
+                    {titleExtendSlot}
+                </div> */}
+                </div>
                 <div className="extend-slot">
                     {titleExtendSlot}
                 </div>
-            </div>
-            {/* <div className="right-slot">
+                {/* <div className="right-slot">
                 {rightSlot}
             </div> */}
+            </div>
+            <div className="page-content-row">
+                {children}
+            </div>
         </div>
-        {children}
+        <div className="page-aside-layer">
+            {asideSlot}
+        </div>
     </PageBottomLayerStyled>);
 }

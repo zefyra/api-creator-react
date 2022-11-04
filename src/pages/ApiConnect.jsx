@@ -12,7 +12,7 @@ import { apiDoc as apiDocThemeObject } from 'theme/reas'
 import { PageTitle } from "module/layout";
 import { useTranslation } from "react-i18next";
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { useUrlQuery } from "util/UrlQuery";
 // import StateModel from 'model/StateModel';
@@ -27,6 +27,8 @@ import { ReactComponent as TrashSvg } from "assets/svg/br-trash.svg"
 import { ReactComponent as MinusSvg } from "assets/svg/br-minus.svg"
 import { ReactComponent as PlusSvg } from "assets/svg/br-plus.svg"
 import { ReactComponent as StarSvg } from "assets/svg/star-sign.svg"
+import { ReactComponent as FolderDownloadSvg } from "assets/svg/folder-download.svg"
+import { ReactComponent as FolderUploadSvg } from "assets/svg/folder-upload.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -46,6 +48,12 @@ import DocxSave from 'element/ApiConnect/DocxSave'
 import DocxControl from 'flow/docxControl'
 import AddApiDocModal from 'element/ApiConnect/AddApiDocModal'
 import LocalAccessor from 'localAccessor'
+
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import TextArea from 'component/TextArea'
+import { ApiJsonControl } from 'flow/apiJsonControl'
+import ApiJsonModel from 'fragment/ApiJson'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -1117,7 +1125,7 @@ const checkHalfShape = function (summary) {
 }
 
 
-const QuickLinkGroup = ({ tagGroupData }) => {
+const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
 
     // console.log('tagGroupData', tagGroupData)
 
@@ -1146,8 +1154,25 @@ const QuickLinkGroup = ({ tagGroupData }) => {
         }
         const apiLinkId = `${apiData.apiType}_${apiData.path}`;
 
+        // 未完成: 之後要想辦法用js加回去，會跟textarea搶focus
+        // href={`#${apiLinkId}`} 
+
+        const onAsideLinkClick = fetchControl('apiJson').bindAct('onAsideLinkClick', tagGroupData, apiData);
+
+        const handleApiLinkClick = () => () => {
+            const viewMode = fetchControl('apiJson').getViewMode();
+            // console.log('viewMode', viewMode);
+            if (viewMode === 'board') {
+                const element = document.getElementById(apiLinkId);
+                element.scrollIntoView();
+            } else if (viewMode === 'json') {
+                onAsideLinkClick();
+            }
+        }
+
         return (
-            <a href={`#${apiLinkId}`} key={`apiLink_${index}`}>
+            <a key={`apiLink_${index}`} onClick={handleApiLinkClick()}
+                style={{ cursor: 'pointer' }}>
                 {getApiLinkLabel(apiData)}
             </a>
         )
@@ -1295,12 +1320,12 @@ const QuickPanelAside = ({ fetchControl }) => {
     const fetchModel = fc.export('fetchModel');
 
     const [tagGroupList, setTagGroupList] = useState([]);
-    // fetchModel('tagSelector').registSetter('tagCategoryList', 'TagSelector', setTagCategoryList);
     fetchModel('apiDoc').registSetter('jumpTagList', 'QuickLinkAside', setTagGroupList);
 
     let tagGroupListDom = tagGroupList.map((tagGroupData, index) => {
         return (
-            <QuickLinkGroup tagGroupData={tagGroupData} key={`QuickLinkGroup_${index}`}>
+            <QuickLinkGroup tagGroupData={tagGroupData} key={`QuickLinkGroup_${index}`}
+                fetchControl={fetchControl}>
             </QuickLinkGroup>
         );
     })
@@ -1314,29 +1339,77 @@ const QuickPanelAside = ({ fetchControl }) => {
 
 
 const ApiPageOuter = styled.div`
-    display: flex;
+    /* display: flex; */
+    display: ${props => (props.show ? 'flex' : 'none')};
     flex-direction: row;
+
+    flex-grow: 1;
 
     /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
 `
 
 const CreateApiDocStyled = styled.div`
-    display: flex;
-    flex-direction: row;
+    /* display: flex; */
+    display: ${props => props.show ? 'flex' : 'none'};
+    flex-direction: row-reverse;
+    flex-grow: 1;
 
-    margin-right: 12px;
+    justify-content: flex-start;
 
     & .icon {
-        width: 16px;
-        height: 16px;
+    width: 22px;
+    height: 22px;
     }
 
+/* background-color: red; */
+
+/* width: calc(100% - ${quickPanelWidth} - 20px); */
+/* width: 100%; */
 `
+
+const JsonEditorStyled = styled.div`
+display: flex;
+flex-direction: column;
+width: calc(100% - 1.5rem);
+
+    & .text-area-block {
+    margin-left: 1.5rem;
+}
+`
+
+const ApiDocJsonTextEditor = ({ apiJsonControl, apiJsonModel }) => {
+    // {/* width={formItem.width} height={height} */}
+
+    const [json, setJson] = useState(apiJsonModel.getState('json'));
+    const actJson = apiJsonModel.reactive('json', 'ApiDocJsonTextEditor', setJson);
+
+    // const onUpdateJson = () => (val) => {
+    //     // console.log('onUpdateJson', val)
+    //     setJson('val');
+    // }
+
+    useEffect(function () {
+        console.log('ApiDocJsonTextEditor');
+    }, [])
+
+    return (
+        <JsonEditorStyled>
+            <div className="text-area-block">
+                {/* onUpdate={onUpdateJson()} */}
+                <TextArea value={apiJsonModel.fetchRef('json', 'ApiDocJsonTextEditor_ref')}
+                    width="100%" height="600px"
+                    srcKey="ApiDocJsonTextEditor"
+                    nowrap={true}
+                    searchTrigger={apiJsonControl.bindAct('receiveSearchKeyword')}></TextArea>
+            </div>
+        </JsonEditorStyled>
+    )
+}
 
 export default function ApiConnect({ fetchControl, mode }) {
     // mode: 'edit'
 
-    console.log('page render')
+    // console.log('page render')
 
     const translationMenu = useTranslation('menu', { keyPrefix: 'subItem' });
     const { t } = useTranslation('setting', { keyPrefix: 'payRelated' });
@@ -1403,6 +1476,16 @@ export default function ApiConnect({ fetchControl, mode }) {
     docxControl.registModel('apiManage', apiManageModel);
     docxControl.registModel('apiDoc', apiDocModel);
 
+    const apiJsonModel = new ApiJsonModel(useRef(null));
+    const apiJsonControl = new ApiJsonControl();
+    apiJsonControl.registModel('apiJson', apiJsonModel);
+    apiJsonControl.registModel('apiManage', apiManageModel);
+
+    apiManageControl.registModel('apiJson', apiJsonModel);
+
+    fc.setup('apiJson', apiJsonControl);
+
+
     // http://{host}/apiConnect?category=dataCollection
 
     const apiConnectPageMap = {
@@ -1427,7 +1510,7 @@ export default function ApiConnect({ fetchControl, mode }) {
             if (pageInfo) {
                 if (pageInfo.jsonPath) {
                     jsonPath = pageInfo.jsonPath
-                    pageTitle = `${translationMenu.t(pageInfo.pageTitle)}`;
+                    pageTitle = `${translationMenu.t(pageInfo.pageTitle)} `;
                     fileName = pageInfo.fileName;
                 }
             }
@@ -1454,27 +1537,53 @@ export default function ApiConnect({ fetchControl, mode }) {
         fetchControl('apiManage').fetchJson();
     }, []);
 
+    const [viewMode, setViewMode] = React.useState(apiManageModel.getState('viewMode')); // 'board'
+    const actViewMode = apiManageModel.reactive('viewMode', 'ApiConnect', setViewMode);
+
+    const handleChangeToggleButton = (event, newMode) => {
+        actViewMode(newMode);
+    };
+
     const titleExtendSlotDom = (
-        <CreateApiDocStyled>
-            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
-                onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
+        <CreateApiDocStyled show={apiDocModel.pageUnitAuth('titleExtend')}>
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '1.5rem' }}
+                onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}
+                show={viewMode === 'board'}>
                 <PlusSvg className="icon" fill="#4c5e5a" />
             </Button>
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '1.5rem', marginLeft: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickClientSaveJsonFile')}
+                show={viewMode === 'json'}>
+                <FolderDownloadSvg className="icon" fill="#4c5e5a" />
+            </Button>
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '0.75rem' }}
+                onClick={fetchControl('apiManage').bindAct('onClickUpdateJsonFile')}
+                show={viewMode === 'json'}>
+                <FolderUploadSvg className="icon" fill="#4c5e5a" />
+            </Button>
+            <ToggleButtonGroup
+                value={viewMode}
+                exclusive
+                onChange={handleChangeToggleButton}
+                aria-label="Platform"
+            >
+                <ToggleButton value="board">BOARD</ToggleButton>
+                <ToggleButton value="json">JSON</ToggleButton>
+            </ToggleButtonGroup>
             {/* <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave> */}
-
-            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
-                onClick={fetchControl('apiManage').bindAct('onClickCreateApiDoc')}>
-                add apiDoc
-            </Button> */}
         </CreateApiDocStyled>
     )
 
+    const asideSlotDom = (<QuickPanelAsideSpace>
+        <QuickPanelAside fetchControl={fc.export()}></QuickPanelAside>
+    </QuickPanelAsideSpace>);
+
     return (
-        <PageTitle title={pageTitle} titleExtendSlot={titleExtendSlotDom}>
-            <ApiPageOuter>
+        <PageTitle title={pageTitle} titleExtendSlot={titleExtendSlotDom} asideSlot={asideSlotDom}>
+            <ApiPageOuter show={viewMode === 'board'}>
                 <ApiDocument fetchControl={fetchControl}></ApiDocument>
-                <QuickPanelAsideSpace></QuickPanelAsideSpace>
-                <QuickPanelAside fetchControl={fetchControl}></QuickPanelAside>
+                {/* <QuickPanelAsideSpace></QuickPanelAsideSpace>
+                <QuickPanelAside fetchControl={fetchControl}></QuickPanelAside> */}
                 <AddTagModal control={apiManageControl}
                     model={addTagModel}
                     apiManageModel={apiManageModel}></AddTagModal>
@@ -1493,10 +1602,13 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <EditAttrModal control={apiManageControl}
                     model={editAttrModel}
                     apiManageModel={apiManageModel}></EditAttrModal>
-                <AddApiDocModal control={apiManageControl}
-                    model={addApiDocModel}
-                    apiManageModel={apiManageModel}></AddApiDocModal>
             </ApiPageOuter>
+            <ApiPageOuter show={viewMode === 'json'} className="json-editor-page-outer">
+                <ApiDocJsonTextEditor apiJsonControl={apiJsonControl} apiJsonModel={apiJsonModel}></ApiDocJsonTextEditor>
+            </ApiPageOuter>
+            <AddApiDocModal control={apiManageControl}
+                model={addApiDocModel}
+                apiManageModel={apiManageModel}></AddApiDocModal>
         </PageTitle>
     );
 }

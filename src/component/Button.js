@@ -27,6 +27,9 @@ const FillButtonStyledBase = ({ children, disabled, onClick, qid, className, imp
 const FillButtonStyled = styled(FillButtonStyledBase)`
     box-shadow: none;
 
+    /* display: ; */
+    display: ${props => (props.show ? 'auto' : 'none')};
+
     background-color: ${getButtonStyle('button', '#868686')};
     color: ${getButtonStyle('text', '#868686')};
     
@@ -233,7 +236,7 @@ cursor: pointer;
 
 export default function Button({ children, type, mode, pattern, onClick, disabled,
     importStyle, qid, onChange, active, setActive, status, setStatus, importCss, importClass,
-    srcKey, value }) {
+    srcKey, value, show = true }) {
 
     // console.log('importStyle', importStyle)
 
@@ -288,7 +291,7 @@ export default function Button({ children, type, mode, pattern, onClick, disable
         patternStyle = ButtonPatternStyleMixin.getPatternStyle(pattern);
         return (<FillButtonStyled disabled={nowDisabled} theme={themeObject} type={mode}
             onClick={handleClick()} importStyle={importStyle} patternStyle={patternStyle}
-            qid={qid}>{children}</FillButtonStyled>);
+            qid={qid} show={show}>{children}</FillButtonStyled>);
     } else if (type === 'icon') {
         return (<IconButton importStyle={importStyle} onClick={onClick}>{children}</IconButton>);
     } else if (type === 'toggle') {

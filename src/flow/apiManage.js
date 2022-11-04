@@ -1,8 +1,9 @@
 import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
+import ApiJsonModel from "fragment/ApiJson";
 import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
-import LocalAccessor from "localAccessor";
+import FileSaver from 'file-saver';
 
 export class ApiManageControl extends Control {
     // constructor(){
@@ -27,6 +28,7 @@ export class ApiManageControl extends Control {
             addRes: AddResModel.name,
             editAttr: EditAttrModel.name,
             addApiDoc: AddApiDocModel.name,
+            apiJson: ApiJsonModel.name,
         }
     }
 
@@ -34,7 +36,6 @@ export class ApiManageControl extends Control {
         const vm = this;
 
         const jsonPath = this.fetchModel('apiManage').getState('jsonPath');
-        // console.log(`fetchJson`, jsonPath);
         fetch(jsonPath)
             .then(response => {
                 if (!response.ok) {
@@ -44,12 +45,12 @@ export class ApiManageControl extends Control {
             })
             .then(json => {
                 vm.fetchModel('apiDoc').saveApiDoc(json);
-                // console.log('get apiDoc', json);
+                vm.fetchModel('apiJson').saveJsonDoc(json);
             })
-            .catch(function (error) {
+            .catch(new ApiError(function (error, next) {
                 console.error(error);
-                // this.dataError = true;
-            });
+                next(`apiDoc json fetch fail`);
+            }).catchErrorMsg());
     }
 
     onClickAddTag() {
@@ -601,9 +602,6 @@ export class ApiManageControl extends Control {
     onClickCreateApiDoc() {
         console.log('onClickCreateApiDoc');
 
-
-
-
         const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
         if (addApiDocModalRef) {
             addApiDocModalRef.openModal();
@@ -638,5 +636,53 @@ export class ApiManageControl extends Control {
         if (addApiDocModalRef) {
             addApiDocModalRef.closeModal();
         }
+    }
+
+    async onClickClientSaveJsonFile() {
+        // console.log('onClickClientSaveJsonFile');
+
+        const jsonStr = this.fetchModel('apiJson').getState('json')
+        var blob = new Blob([jsonStr], { type: "text/plain;charset=utf-8" });
+
+        let fileName = this.fetchModel('apiManage').getState('fileName') || 'swagger';
+        fileName = `${fileName}.json`;
+
+        await this.saveFile(blob, fileName);
+    }
+    async onClickUpdateJsonFile() {
+        const jsonStr = this.fetchModel('apiJson').getState('json');
+
+        let fileName = this.fetchModel('apiManage').getState('fileName');
+
+        if (!fileName) {
+            console.error(`onClickUpdateJsonFile: no fileName`);
+            return;
+        }
+
+        ApiSender.sendApi('[post]/doc/updateJson', {
+            fileName: fileName,
+            json: jsonStr,
+        }).then(() => {
+            // this.fetchJson();
+        }).catch(new ApiError().catchAlertMsg())
+    }
+
+
+    saveFile(blob, fileFullName) {
+        FileSaver.saveAs(blob, fileFullName);
+        console.log(`saveFile: Document ${fileFullName} has been saved!`);
+
+        return Promise.resolve();
+        // https://www.npmjs.com/package/file-saver
+
+        // 文字檔
+        // var blob = new Blob(["Hello, world!"], { type: "text/plain;charset=utf-8" });
+        // FileSaver.saveAs(blob, "hello world.txt");
+
+        // 儲存canvas快照
+        // var canvas = document.getElementById("my-canvas");
+        // canvas.toBlob(function(blob) {
+        //     saveAs(blob, "pretty image.png");
+        // });
     }
 }

@@ -38,7 +38,6 @@ export default class ApiError {
             return;
         }
 
-
         // if (typeof error === 'object') {
         //     store.dispatch(apiErrorOpenAlertModal());
         // } else {
@@ -51,4 +50,21 @@ export default class ApiError {
         }
     }
 
+    catchErrorMsg() {
+        return this.handleCatchErrorMsg.bind(this);
+    }
+
+    handleCatchErrorMsg(error) {
+
+        let nextError;
+        if (this.errorFilter) {
+            this.errorFilter(error, function (error) { // next
+                nextError = error;
+            });
+        }
+
+        if (nextError) {
+            store.dispatch(apiErrorOpenAlertModal(nextError));
+        }
+    }
 }
