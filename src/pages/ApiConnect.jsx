@@ -29,6 +29,7 @@ import { ReactComponent as PlusSvg } from "assets/svg/br-plus.svg"
 import { ReactComponent as StarSvg } from "assets/svg/star-sign.svg"
 import { ReactComponent as FolderDownloadSvg } from "assets/svg/folder-download.svg"
 import { ReactComponent as FolderUploadSvg } from "assets/svg/folder-upload.svg"
+import { ReactComponent as BrowserSvg } from "assets/svg/br-browser.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -1388,9 +1389,9 @@ const ApiDocJsonTextEditor = ({ apiJsonControl, apiJsonModel }) => {
     //     setJson('val');
     // }
 
-    useEffect(function () {
-        console.log('ApiDocJsonTextEditor');
-    }, [])
+    // useEffect(function () {
+    //     console.log('ApiDocJsonTextEditor');
+    // }, [])
 
     return (
         <JsonEditorStyled>
@@ -1405,6 +1406,21 @@ const ApiDocJsonTextEditor = ({ apiJsonControl, apiJsonModel }) => {
         </JsonEditorStyled>
     )
 }
+
+const SwaggerButtonInnerStyled = styled.div`
+display: flex;
+align-items: center;
+
+& .text {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #4c5e5a;
+}
+& .icon {
+    width: 19px;
+    height: 19px;
+}
+`
 
 export default function ApiConnect({ fetchControl, mode }) {
     // mode: 'edit'
@@ -1544,6 +1560,15 @@ export default function ApiConnect({ fetchControl, mode }) {
         actViewMode(newMode);
     };
 
+    const jumpToSwaggerPage = () => () => {
+        const fileName = apiManageModel.getState('fileName');
+        console.log('fileName', fileName);
+        
+        // 未完成
+
+        // 要接一個ApiDocProfile API
+    }
+
     const titleExtendSlotDom = (
         <CreateApiDocStyled show={apiDocModel.pageUnitAuth('titleExtend')}>
             <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '1.5rem' }}
@@ -1570,6 +1595,17 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <ToggleButton value="board">BOARD</ToggleButton>
                 <ToggleButton value="json">JSON</ToggleButton>
             </ToggleButtonGroup>
+
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '0.75rem', paddingH: '0.5rem' }}
+                onClick={jumpToSwaggerPage()}
+                show={true}>
+                <SwaggerButtonInnerStyled>
+                    <div className="text">
+                        swagger
+                    </div>
+                    <BrowserSvg className="icon" fill="#4c5e5a" />
+                </SwaggerButtonInnerStyled>
+            </Button>
             {/* <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave> */}
         </CreateApiDocStyled>
     )

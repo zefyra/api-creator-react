@@ -268,7 +268,6 @@ class ApiSchema {
             // console.log(`before getSchema`, eachSchema);
             // console.log(`getSchema`, new ApiSchema(eachSchema, vm.definitionMap, vm.layer + 1).getSchema());
             return new ApiSchema(eachSchema, vm.definitionMap, vm.layer + 1).getSchema();
-
         });
         // console.log('allOfSchemaList', allOfSchemaList)
 

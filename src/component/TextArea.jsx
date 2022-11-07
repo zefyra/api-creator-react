@@ -95,7 +95,7 @@ export default function TextArea({ width, height, value, onUpdate, srcKey = 'Tex
     // event----------------------------------------
 
     const handleChange = () => e => {
-        console.log('handleChange value', e.target.value)
+        // console.log('handleChange value', e.target.value)
         // console.log('handleChange nowValue', nowValue)
 
         if (isRefMode) {

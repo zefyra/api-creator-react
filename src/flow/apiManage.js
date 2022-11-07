@@ -14,6 +14,7 @@ export class ApiManageControl extends Control {
         return {
             confirm: true,
             tip: true,
+            notify: true,
         }
     }
 
@@ -44,8 +45,8 @@ export class ApiManageControl extends Control {
                 return response.json();
             })
             .then(json => {
+                vm.fetchModel('apiJson').saveJsonDoc(json); // ps.順序要在前面，否則因為saveApiDoc的程序，會把attributes等欄位塞進去，導致多出不必要的欄位
                 vm.fetchModel('apiDoc').saveApiDoc(json);
-                vm.fetchModel('apiJson').saveJsonDoc(json);
             })
             .catch(new ApiError(function (error, next) {
                 console.error(error);
@@ -458,7 +459,7 @@ export class ApiManageControl extends Control {
     }
 
     onClickEditAttr(apiData, attributeData, attrSrc) {
-        console.log('onClickEditAttributeDescription attributeData', attributeData);
+        // console.log('onClickEditAttributeDescription attributeData', attributeData);
         /* attributeData: {
             default: 0
             description: "好友ID"
@@ -650,6 +651,7 @@ export class ApiManageControl extends Control {
         await this.saveFile(blob, fileName);
     }
     async onClickUpdateJsonFile() {
+        const vm = this;
         const jsonStr = this.fetchModel('apiJson').getState('json');
 
         let fileName = this.fetchModel('apiManage').getState('fileName');
@@ -659,11 +661,23 @@ export class ApiManageControl extends Control {
             return;
         }
 
+        console.log(`onClickUpdateJsonFile`, fileName);
+
+        try {
+            JSON.parse(jsonStr);
+        } catch (error) {
+            console.error(`onClickUpdateJsonFile error`, error);
+            new ApiError().runErrorAlert(`json parse fail`);
+
+            return Promise.reject(error);
+        }
+
         ApiSender.sendApi('[post]/doc/updateJson', {
             fileName: fileName,
             json: jsonStr,
         }).then(() => {
-            // this.fetchJson();
+            this.fetchJson();
+            return vm.fetchControl('notify').notify('json has update');
         }).catch(new ApiError().catchAlertMsg())
     }
 

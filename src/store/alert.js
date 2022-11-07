@@ -108,6 +108,14 @@ export const alertSlice = createSlice({
                 return action;
             },
         },
+        openErrorAlert: (state, action) => {
+
+            // console.log('openErrorAlert', action)
+
+            state.alertModalShow = 'open';
+            state.alertTitle = 'error';
+            state.alertContent = action.payload;
+        },
         // 外部開啟 confirm
         openConfirmModal: (state, action) => {
 
@@ -138,7 +146,7 @@ export const { updateAlertContent } = alertSlice.actions;
 export const { openAlertModal } = alertSlice.actions;
 export const { apiErrorOpenAlertModal } = alertSlice.actions;
 export const { openConfirmModal } = alertSlice.actions;
-
+export const { openErrorAlert } = alertSlice.actions;
 // 外部使用action的寫法
 // const dispatch = useDispatch();
 // dispatch(updateAccount());

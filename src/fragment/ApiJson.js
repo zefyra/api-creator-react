@@ -11,7 +11,6 @@ export default class ApiJsonModel extends StateModel {
     }
     saveJsonDoc(jsonObj) {
         const jsonStr = JSON.stringify(jsonObj);
-        // console.log('formatJSON(jsonStr)', )
         this.setState('json', formatJSON(jsonStr));
     }
 }

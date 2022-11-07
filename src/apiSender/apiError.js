@@ -1,4 +1,4 @@
-import { apiErrorOpenAlertModal } from 'store/alert';
+import { apiErrorOpenAlertModal, openErrorAlert } from 'store/alert';
 import store from 'store'
 
 export default class ApiError {
@@ -66,5 +66,9 @@ export default class ApiError {
         if (nextError) {
             store.dispatch(apiErrorOpenAlertModal(nextError));
         }
+    }
+
+    runErrorAlert(error) {
+        store.dispatch(openErrorAlert(error));
     }
 }
