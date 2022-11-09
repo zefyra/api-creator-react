@@ -1563,10 +1563,12 @@ export default function ApiConnect({ fetchControl, mode }) {
     const jumpToSwaggerPage = () => () => {
         const fileName = apiManageModel.getState('fileName');
         console.log('fileName', fileName);
-        
-        // 未完成
 
-        // 要接一個ApiDocProfile API
+        // 轉跳頁面
+        // window.location.href = `http://localhost:9001/api-docs/${fileName}`;
+        window.open(`http://localhost:9001/api-docs/${fileName}`);
+
+        // http://localhost:9001/api-docs/qore-plus-demo
     }
 
     const titleExtendSlotDom = (
