@@ -1,3 +1,5 @@
+import ParameterTypeEnum from "enum/apiConnect/ParameterType";
+import SwaggerPropertyTypeEnum from "enum/apiConnect/SwaggerPropertyType";
 import StateModel from "model/StateModel";
 
 export default class ApiManageModel extends StateModel {
@@ -12,6 +14,7 @@ export default class ApiManageModel extends StateModel {
             addResModalRef: null,
             editAttrModalRef: null,
             addApiDocModalRef: null,
+            addQueryModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '',
@@ -190,6 +193,22 @@ export class AddApiDocModel extends StateModel {
             fileName: '',
             title: '',
             host: '',
+        }
+    }
+}
+
+export class AddQueryModel extends StateModel {
+    data() {
+        return {
+            apiRoute: '',
+            apiType: '',
+            //swagger-------------------------------
+            type: SwaggerPropertyTypeEnum.string,
+            name: '',
+            in: ParameterTypeEnum.query,
+            default: '',
+            description: '',
+            enum: '',
         }
     }
 }

@@ -30,6 +30,7 @@ import { ReactComponent as StarSvg } from "assets/svg/star-sign.svg"
 import { ReactComponent as FolderDownloadSvg } from "assets/svg/folder-download.svg"
 import { ReactComponent as FolderUploadSvg } from "assets/svg/folder-upload.svg"
 import { ReactComponent as BrowserSvg } from "assets/svg/br-browser.svg"
+import { ReactComponent as SquareRootSvg } from "assets/svg/sr-square-root.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -39,11 +40,13 @@ import AddApiModal from 'element/ApiConnect/AddApiModal'
 import AddBodyModal from 'element/ApiConnect/AddBodyModal'
 import EditApiModal from 'element/ApiConnect/EditTagModal'
 
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
 
 import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
 import EditAttrModal from 'element/ApiConnect/EditAttrModal'
+import AddQueryModal from 'element/ApiConnect/AddQueryModal'
+
 import AttrSrc from 'enum/apiConnect/AttrSrc'
 import DocxSave from 'element/ApiConnect/DocxSave'
 import DocxControl from 'flow/docxControl'
@@ -529,7 +532,8 @@ const AttributeDefaultBlock = ({ attributeData }) => {
         // }
 
         const [dropdownOpen, setDropdownOpen] = useState(false);
-        enumSelectControl.getStateModel().registSetter('dropdownOpen', 'enumLabel', setDropdownOpen);
+        // enumSelectControl.getStateModel().registSetter('dropdownOpen', 'enumLabel', setDropdownOpen);
+        const actDropdownOpen = enumSelectControl.getStateModel().reactive('dropdownOpen', 'enumLabel', setDropdownOpen)
 
         let arrowIcon;
         if (dropdownOpen) {
@@ -537,6 +541,10 @@ const AttributeDefaultBlock = ({ attributeData }) => {
         } else {
             arrowIcon = <AngleDownSvg className="arrow-icon" fill={apiDocTheme.getTheme('inputSelectArrowIcon', '#a1a1a1')} />
         }
+
+        //         useEffect(function () {
+        // console.log('cccdropdownOpen', dropdownOpen)
+        //         }, [dropdownOpen]);
 
         return (
             <Select type="slot" optionList={enumOptionList} control={enumSelectControl}>
@@ -916,6 +924,10 @@ const ApiBlock = ({ fetchControl, apiData }) => {
                 <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}
                     importStyle={{ margin: '0 0 0 15px' }}>
                     <DocumentSvg className="icon" fill="#FFFFFF" />
+                </Button>
+                <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddQueryParam', apiData)}
+                    importStyle={{ margin: '0 0 0 15px' }}>
+                    <SquareRootSvg className="icon" fill="#FFFFFF" />
                 </Button>
                 {/* <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
                     onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}>
@@ -1501,6 +1513,10 @@ export default function ApiConnect({ fetchControl, mode }) {
 
     fc.setup('apiJson', apiJsonControl);
 
+    const addQueryModel = new AddQueryModel(useRef(null));
+    apiManageControl.registModel('addQuery', addQueryModel);
+
+
 
     // http://{host}/apiConnect?category=dataCollection
 
@@ -1562,7 +1578,7 @@ export default function ApiConnect({ fetchControl, mode }) {
 
     const jumpToSwaggerPage = () => () => {
         const fileName = apiManageModel.getState('fileName');
-        console.log('fileName', fileName);
+        // console.log('fileName', fileName);
 
         // 轉跳頁面
         // window.location.href = `http://localhost:9001/api-docs/${fileName}`;
@@ -1640,6 +1656,9 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <EditAttrModal control={apiManageControl}
                     model={editAttrModel}
                     apiManageModel={apiManageModel}></EditAttrModal>
+                <AddQueryModal control={apiManageControl}
+                    model={addQueryModel}
+                    apiManageModel={apiManageModel}></AddQueryModal>
             </ApiPageOuter>
             <ApiPageOuter show={viewMode === 'json'} className="json-editor-page-outer">
                 <ApiDocJsonTextEditor apiJsonControl={apiJsonControl} apiJsonModel={apiJsonModel}></ApiDocJsonTextEditor>

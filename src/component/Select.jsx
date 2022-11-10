@@ -59,13 +59,6 @@ const DefaultSelect = ({ type = 'default', value, optionList, onUpdate, disabled
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    useEffect(function () {
-        WindowCall.autoCloseOnShowChanged('DefaultSelect',
-            dropdownOpen, '.select-box, .option',
-            () => actDropdownOpen(false)
-        );
-    }, [dropdownOpen]);
-
     let actDropdownOpen = setDropdownOpen;
 
     // SelectControl是舊版的寫法，之後刪

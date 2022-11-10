@@ -2,7 +2,7 @@ import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
 import ApiJsonModel from "fragment/ApiJson";
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
 import FileSaver from 'file-saver';
 
 export class ApiManageControl extends Control {
@@ -30,6 +30,7 @@ export class ApiManageControl extends Control {
             editAttr: EditAttrModel.name,
             addApiDoc: AddApiDocModel.name,
             apiJson: ApiJsonModel.name,
+            addQuery: AddQueryModel.name
         }
     }
 
@@ -390,6 +391,69 @@ export class ApiManageControl extends Control {
         vm.fetchJson();
     }
 
+    onClickAddQueryParam(apiData) {
+        // console.log('onClickAddQueryParam', apiData)
+
+        this.fetchModel('addQuery').setState('apiRoute', apiData.path);
+        this.fetchModel('addQuery').setState('apiType', apiData.apiType);
+
+        const addQueryModalRef = this.fetchModel('apiManage').getState('addQueryModalRef');
+        if (addQueryModalRef) {
+            addQueryModalRef.openModal();
+        }
+    }
+
+    onCancelAddQuery() {
+        const addQueryModalRef = this.fetchModel('apiManage').getState('addQueryModalRef');
+
+        if (addQueryModalRef) {
+            addQueryModalRef.closeModal();
+        }
+    }
+
+    async onConfirmAddQuery() {
+        const addQueryModel = this.fetchModel('addQuery');
+
+        let isErr = false;
+
+        const enumStr = addQueryModel.getState('enum');
+        let enumVal;
+        if (enumStr) {
+            try {
+                enumVal = JSON.parse(enumStr);
+            } catch (e) {
+                console.error('onConfirmAddQuery: enum is not json');
+                console.error(e);
+                isErr = true;
+            }
+        }
+        if (isErr) return;
+
+        await ApiSender.sendApi('[post]/api/addQuery', {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            apiRoute: addQueryModel.getState('apiRoute'),
+            apiType: addQueryModel.getState('apiType'),
+            type: addQueryModel.getState('type'),
+            name: addQueryModel.getState('name'),
+            in: addQueryModel.getState('in'),
+            default: addQueryModel.getState('default'),
+            description: addQueryModel.getState('description'),
+            enum: enumVal,
+        }).catch(new ApiError(function (err, next) {
+            isErr = true;
+            next(err);
+        }).catchAlertMsg());
+        if (isErr) return;
+
+        this.fetchJson();
+
+        const addQueryModalRef = this.fetchModel('apiManage').getState('addQueryModalRef');
+
+        if (addQueryModalRef) {
+            addQueryModalRef.closeModal();
+        }
+    }
+
     onClickAddRes(apiData) {
         // console.log('onClickAddBody apiData', JSON.stringify(apiData))
         /* apiData: {
@@ -404,10 +468,10 @@ export class ApiManageControl extends Control {
                 ],
                 "summary": "1-2.Edit Friend",
                 "parameters": [
-
+    
                 ],
                 "responses": {
-
+    
                 }
             }
         } */

@@ -18,7 +18,8 @@ const apiConfigMap = {
     },
     '[post]/doc/updateJson': {
         
-    }
+    },
+    '[post]/api/addQuery': {},
     // '[get]/permissions': {
     //     header: 'bearerTokenHeader',
     //     outputType: 'crossbot',

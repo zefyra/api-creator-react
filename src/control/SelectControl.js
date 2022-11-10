@@ -37,7 +37,10 @@ export default class SelectControl extends Control {
     }
 
     actDropdown() {
-        this.actDropdownOpen(!this.stateModel.getState('dropdownOpen'));
+        const dropdownOpen = this.stateModel.getState('dropdownOpen');
+
+        // console.log('dropdownOpen', dropdownOpen)
+        this.stateModel.setState('dropdownOpen', !dropdownOpen);
     }
     getStateModel() {
         return this.stateModel;
