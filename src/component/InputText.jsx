@@ -432,7 +432,15 @@ const DefaultInputText = ({ placeholder, value, onUpdate, validate,
 
     // 節流
     const throttle = function () {
-
+        // 這個是節流
+        // if (debounceTimeout) {
+        //     // 代表已有排程，不執行
+        //     return;
+        // }
+        // setDebounceTimeout(setTimeout(function () {
+        //     callback();
+        //     setDebounceTimeout(null);
+        // }, debounceInterval));
     };
 
     // ---------------------------------------------------------------
@@ -445,14 +453,15 @@ const DefaultInputText = ({ placeholder, value, onUpdate, validate,
     }
     // 防抖
     const debounce = function (callback) {
-        if (debounceTimeout) {
-            // 代表已有排程，不執行
-            return;
-        }
-        setDebounceTimeout(setTimeout(function () {
-            callback();
-            setDebounceTimeout(null);
-        }, debounceInterval));
+        // 這個是節流
+        // if (debounceTimeout) {
+        //     // 代表已有排程，不執行
+        //     return;
+        // }
+        // setDebounceTimeout(setTimeout(function () {
+        //     callback();
+        //     setDebounceTimeout(null);
+        // }, debounceInterval));
     }
 
     // 數值驗證------------------------------------------

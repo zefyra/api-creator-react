@@ -4,6 +4,7 @@ import ApiConnectModel from "fragment/ApiConnect";
 import ApiJsonModel from "fragment/ApiJson";
 import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
 import FileSaver from 'file-saver';
+import uniqid from 'uniqid';
 
 export class ApiManageControl extends Control {
     // constructor(){
@@ -390,6 +391,58 @@ export class ApiManageControl extends Control {
 
         vm.fetchJson();
     }
+
+    onGqlJsonSrcUpdate(json) {
+        console.log('onGqlJsonSrcUpdate', json)
+
+        let jsonObj;
+        try {
+            jsonObj = JSON.parse(json);
+        } catch (e) {
+            // 代表json parse失敗
+            console.error(e);
+            return;
+        }
+
+        const addBodyModel = this.fetchModel('addBody');
+
+        const convertGql = function (jsonObj) {
+
+            const qid = uniqid().toUpperCase();
+
+            let json = `input TYPE_${qid} {\n`;
+            Object.keys(jsonObj).forEach((key) => {
+                const val = jsonObj[key];
+
+                // const typeMap = {
+                //     // <js type>: <gql type>
+                //     'string': 'String',
+                //     'Int'
+                //     ''
+                // };
+
+                let valType = typeof val;
+                let fieldType;
+                if (valType === 'string') {
+                    fieldType = 'String';
+                } else if (valType === 'number' && Number.isInteger(val)) {
+                    fieldType = 'Int';
+                } else if (valType === 'boolean') {
+                    fieldType = 'Boolean';
+                } else {
+                    fieldType = 'Unknown';
+                }
+
+                json += `   ${key}: ${fieldType}!\n`;
+            });
+            json += '}';
+            return json;
+        };
+
+        addBodyModel.setState('schema', convertGql(jsonObj) + addBodyModel.getState('schema'));
+    }
+
+
 
     onClickAddQueryParam(apiData) {
         // console.log('onClickAddQueryParam', apiData)

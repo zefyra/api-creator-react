@@ -75,16 +75,12 @@ export class AddApiModel extends StateModel {
 export class AddBodyModel extends StateModel {
     data(initObj = {}) {
         return {
-            // 'fileName', 'apiRoute', 'apiType'
             apiRoute: '',
             apiType: '',
             rootType: '',
             schema: '',
-            // "fileName": "qore-plus-api",
-            //         "apiRoute": "/api/Ffriend",
-            // "apiType": "post",
-            // "rootType": "SYSTEM_FRIEND_LIST",
-            // "schema"
+            // aside--------------------------
+            gqlJsonSrc: '',
         }
     }
     // filter() {

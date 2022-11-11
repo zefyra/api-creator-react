@@ -384,12 +384,15 @@ const ItemLabelStyled = styled.div`
 display: flex;
 flex-direction: row;
 align-items: center;
+justify-content: center;
 
-min-width: 10rem;
+/* min-width: 10rem; */
+/* flex-grow: 1;
+max-width: 10rem; */
 `
 
 
-const ItemLabel = ({ label, srcKey = 'ItemLabel' }) => {
+const ItemLabel = ({ label, srcKey = 'ItemLabel', importStyle }) => {
     const isRefMode = label instanceof Ref;
 
     const convertLabel = function () {
@@ -406,7 +409,7 @@ const ItemLabel = ({ label, srcKey = 'ItemLabel' }) => {
         label.reactive(`${srcKey}_ItemLabel`, setLabel);
     }
     return (
-        <ItemLabelStyled>
+        <ItemLabelStyled style={importStyle}>
             {nowLabel}
         </ItemLabelStyled>
     )
@@ -474,7 +477,7 @@ const DateTimePickerRow = ({ formItem, srcKey }) => {
     // )
 }
 
-const FormItemRow = ({ formItem, srcKey }) => {
+const FormItemRow = ({ formItem, srcKey, itemLabelWidth = '10rem' }) => {
 
     let itemContentDom;
 
@@ -556,7 +559,10 @@ const FormItemRow = ({ formItem, srcKey }) => {
 
     return (
         <FormItemRowStyled>
-            <ItemLabel label={formItem.label} srcKey={srcKey}></ItemLabel>
+            <ItemLabel label={formItem.label} srcKey={srcKey}
+                importStyle={{
+                    minWidth: itemLabelWidth,
+                }}></ItemLabel>
             {/* <div className="item-label">
                 {formItem.label}
             </div> */}
@@ -582,8 +588,21 @@ const FormItemRow = ({ formItem, srcKey }) => {
     // )
 }
 
+const FormExpandArea = styled.div`
+display: flex;
+flex-direction: row;
+`
+
+const FormAside = styled.div`
+display: flex;
+flex-direction: column;
+
+
+`
+
 export default function FormModal({ modalRef, modalWidth = 700, modalHeight = 660,
-    title = '', formItemList = [], footerSlot, srcKey = 'FormModal', formWidth }) {
+    title = '', formItemList = [], footerSlot, srcKey = 'FormModal', formWidth,
+    asideSlot, itemLabelWidth }) {
 
 
     const formItemListDom = formItemList.map((formItem, index) => {
@@ -592,9 +611,16 @@ export default function FormModal({ modalRef, modalWidth = 700, modalHeight = 66
         } */
         return (
             <FormItemRow formItem={formItem}
-                key={`FormItemRow_${index}`} srcKey={`${srcKey}_FormItemRow_${index}`} />
+                key={`FormItemRow_${index}`} srcKey={`${srcKey}_FormItemRow_${index}`}
+                itemLabelWidth={itemLabelWidth} />
         )
     });
+
+    const formAsidDom = asideSlot ? (
+        <FormAside>
+            {asideSlot}
+        </FormAside>
+    ) : undefined;
 
     return (
         <Modal childRef={modalRef}
@@ -603,9 +629,12 @@ export default function FormModal({ modalRef, modalWidth = 700, modalHeight = 66
                 <FormModalTitleRow>
                     {title}
                 </FormModalTitleRow>
-                <FormArea modalWidth={modalWidth} formWidth={formWidth}>
-                    {formItemListDom}
-                </FormArea>
+                <FormExpandArea className="FormExpandArea">
+                    <FormArea modalWidth={modalWidth} formWidth={formWidth}>
+                        {formItemListDom}
+                    </FormArea>
+                    {formAsidDom}
+                </FormExpandArea>
                 {footerSlot}
                 {/* {children} */}
                 {/* <FooterArea>
