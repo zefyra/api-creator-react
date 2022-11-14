@@ -404,7 +404,7 @@ export class ApiManageControl extends Control {
             return;
         }
 
-        const addBodyModel = this.fetchModel('addBody');
+        // const addBodyModel = this.fetchModel('addBody');
 
         const convertGql = function (jsonObj) {
 
@@ -439,10 +439,23 @@ export class ApiManageControl extends Control {
             return json;
         };
 
-        addBodyModel.setState('schema', convertGql(jsonObj) + addBodyModel.getState('schema'));
+        // 不儲存，直接回傳數值
+        return convertGql(jsonObj);
+        // addBodyModel.setState('schema', convertGql(jsonObj) + addBodyModel.getState('schema'));
     }
 
 
+    onAddGqlToAddBody(gqlStr) {
+        // console.log('onAddGqlToAddBody', gqlStr);
+
+        const addBodyModel = this.fetchModel('addBody');
+        addBodyModel.setState('schema', gqlStr + addBodyModel.getState('schema'));
+    }
+
+    onAddGqlToAddRes(gqlStr) {
+        const model = this.fetchModel('addRes');
+        model.setState('schema', gqlStr + model.getState('schema'));
+    }
 
     onClickAddQueryParam(apiData) {
         // console.log('onClickAddQueryParam', apiData)
@@ -577,7 +590,7 @@ export class ApiManageControl extends Control {
 
     onClickEditAttr(apiData, attributeData, attrSrc) {
         // console.log('onClickEditAttributeDescription attributeData', attributeData);
-        /* attributeData: {
+        /* attributeData: { // 代表是一般的body上的參數
             default: 0
             description: "好友ID"
             name: "id"
@@ -586,6 +599,20 @@ export class ApiManageControl extends Control {
             layerPath: ['error', 'path', 'path']
             attrRequired: false,
         }*/
+
+        /* attributeData: { // paramType === 'urlQuery'
+            default: "10"
+            description: ""
+            in: "query" // 代表是URL上的query參數
+            name: "pageSize"
+            type: "string"
+
+            ===>缺以下2個參數
+            layerPath
+            attrRequired
+        } */
+
+        console.log('apiData', apiData, attributeData, attrSrc)
 
         const getBoolean = function (value) {
             if (typeof value !== 'boolean') {
@@ -596,6 +623,13 @@ export class ApiManageControl extends Control {
         }
 
         const editAttrModel = this.fetchModel('editAttr');
+
+        if (attributeData.in === 'query') { // URL query參數的情況
+            editAttrModel.setState('paramType', 'urlQuery');
+        } else {
+            editAttrModel.setState('paramType', 'bodyJson');
+        }
+
         // 查詢參數
         editAttrModel.setState('apiType', apiData.apiType);
         editAttrModel.setState('apiRoute', apiData.path);
@@ -701,7 +735,14 @@ export class ApiManageControl extends Control {
         };
         // console.log('onConfirmEditAttr', apiParam);
 
-        await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg())
+        const paramType = editAttrModel.getState('paramType');
+        if (paramType === 'urlQuery') {
+            await ApiSender.sendApi(`[put]/api/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
+        } else if (paramType === 'bodyJson') {
+            await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg());
+        }
+
+        // await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const editAttrModalRef = this.fetchModel('apiManage').getState('editAttrModalRef');
         if (editAttrModalRef) {

@@ -136,6 +136,8 @@ export class AddResModel extends StateModel {
                 label: '500',
                 value: '500'
             }],
+            // aside--------------------------
+            gqlJsonSrc: '',
         };
     }
 }
@@ -143,6 +145,8 @@ export class AddResModel extends StateModel {
 export class EditAttrModel extends StateModel {
     data() {
         return {
+            // 判別參數類型
+            paramType: '',
             // 查詢參數
             apiType: '',
             apiRoute: '',

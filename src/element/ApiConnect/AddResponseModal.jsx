@@ -6,6 +6,7 @@ import styled from '@emotion/styled'
 import Button from 'component/Button';
 import FormModal, { FooterArea } from 'component/FormModal'
 import { useTranslation } from 'react-i18next';
+import BodyModalJsonAside from './BodyModalJsonAside';
 
 
 export default function AddResponseModal({ control, apiManageModel, model }) {
@@ -117,6 +118,10 @@ export default function AddResponseModal({ control, apiManageModel, model }) {
                     <Button type="fill" onClick={control.bindAct('onConfirmAddRes')}>{t('confirm')}</Button>
                 </FooterArea>
             }
+            asideSlot={
+                <BodyModalJsonAside model={model} control={control} onGqlOutput={control.bindAct('onAddGqlToAddRes')} />
+            }
+            itemLabelWidth="6rem"
         ></FormModal>
     )
 }
