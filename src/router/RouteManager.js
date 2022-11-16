@@ -299,7 +299,10 @@ export default class RouteManager {
 
         let apiDocList = LocalAccessor.getItem('apiDocList');
 
-        const customApiDocSubMenuList = apiDocList.map((apiDocItem) => {
+        const customApiDocSubMenuList = apiDocList.filter((apiDocItem) => {
+            // console.log('apiDocItem', apiDocItem)
+            return true;
+        }).map((apiDocItem) => {
             return {
                 // "nameSrc": "subItem.cccccc",
                 "path": "/apiManage",

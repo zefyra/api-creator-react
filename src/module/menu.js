@@ -143,7 +143,7 @@ const MenuItem = ({ itemKey, item, subItemList }) => {
             console.error('item have no path', item);
             return;
         }
-        console.log('item have path', item);
+        // console.log('item have path', item);
 
         if (item.path === location.pathname) {
             // 相同路徑禁止重複轉跳

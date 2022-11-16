@@ -63,11 +63,11 @@ export default function BodyModalJsonAside({ model, control, onGqlOutput }) {
 
         // setSensorAlertShow();
 
-        console.log('json sensor')
+        // console.log('json sensor')
 
         debounce(function () {
 
-            console.log('parse json');
+            // console.log('parse json');
 
             let jsonObj;
             let jsonValid = false;
@@ -79,7 +79,7 @@ export default function BodyModalJsonAside({ model, control, onGqlOutput }) {
                 jsonValid = false;
             }
 
-            console.log('jsonValid', jsonValid)
+            // console.log('jsonValid', jsonValid)
 
             setJsonValid(jsonValid);
         });

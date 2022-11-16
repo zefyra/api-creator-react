@@ -17,7 +17,8 @@ export default class ApiManageModel extends StateModel {
             addQueryModalRef: null,
             // json config-----------------------------------------
             fileName: '',
-            jsonPath: '',
+            jsonPath: '', // 'http://localhost:5050/apiDoc/api-creator.json'
+            docType: '', // 'swagger2'
         }
     }
     bindModalRef(srcKey, ref) {

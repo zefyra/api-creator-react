@@ -7,10 +7,6 @@ import FileSaver from 'file-saver';
 import uniqid from 'uniqid';
 
 export class ApiManageControl extends Control {
-    // constructor(){
-
-    // }
-
     circuit() {
         return {
             confirm: true,
@@ -39,7 +35,8 @@ export class ApiManageControl extends Control {
         const vm = this;
 
         const jsonPath = this.fetchModel('apiManage').getState('jsonPath');
-        fetch(jsonPath)
+        // console.log('jsonPath', jsonPath);
+        return fetch(jsonPath)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("HTTP error " + response.status);
@@ -47,8 +44,11 @@ export class ApiManageControl extends Control {
                 return response.json();
             })
             .then(json => {
+
+                const docType = vm.fetchModel('apiManage').getState('docType');
+
                 vm.fetchModel('apiJson').saveJsonDoc(json); // ps.順序要在前面，否則因為saveApiDoc的程序，會把attributes等欄位塞進去，導致多出不必要的欄位
-                vm.fetchModel('apiDoc').saveApiDoc(json);
+                vm.fetchModel('apiDoc').saveApiDoc(json, docType);
             })
             .catch(new ApiError(function (error, next) {
                 console.error(error);

@@ -36,7 +36,7 @@ export default function AddResponseModal({ control, apiManageModel, model }) {
     }, {
         label: 'schema',
         type: 'textArea',
-        width: '445px',
+        width: '335px',
         height: '250px',
         // value: schema,
         // onUpdate: updateSchema,
@@ -108,9 +108,9 @@ export default function AddResponseModal({ control, apiManageModel, model }) {
         <FormModal modalRef={apiManageModel.reactive('addResModalRef', 'EditTagModal_ref')}
             title="加入Response" formItemList={formItemList}
             modalHeight={620}
-            modalWidth={800}
+            modalWidth={500}
             srcKey="AddResModal"
-            formWidth="580px"
+            formWidth="450px"
             footerSlot={
                 <FooterArea>
                     <Button type="fill" onClick={control.bindAct('onCancelAddRes')}>{t('cancel')}</Button>

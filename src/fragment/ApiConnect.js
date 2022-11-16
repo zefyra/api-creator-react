@@ -1,4 +1,5 @@
 import StateModel from "model/StateModel";
+import ApiBuild from "./ApiBuild";
 
 /* 
 原本是巢狀object測試，dataCollection.json要替換回去
@@ -461,7 +462,7 @@ class ApiSchema {
                         }
                     });
                 } else {
-                    console.error(`schema.required is not array`);
+                    console.error(`schema.required is not array`, schema);
                 }
                 // console.log(`build required schema [${key}] required`, schema.required, required)
             }
@@ -747,7 +748,6 @@ class ApiConnectComposition {
     }
 }
 
-
 export default class ApiConnectModel extends StateModel {
     data(initObj = {}) {
         return {
@@ -776,16 +776,30 @@ export default class ApiConnectModel extends StateModel {
         return unitAuth === pageMode;
     }
 
-    saveApiDoc(json) {
-        this.setState('docJson', json);
+    saveApiDoc(json, docType) {
 
-        // console.log('saveApiDoc json', json)
+        if (docType === 'swagger2') {
+            this.setState('docJson', json);
 
-        const tagList = this.buildTagBlockDataList(new ApiConnectComposition(json));
+            // console.log('saveApiDoc json', json)
 
-        this.setState('tagList', tagList);
+            const tagList = this.buildTagBlockDataList(new ApiConnectComposition(json));
 
-        this.buildJumpLinkList(tagList);
+            console.log('tagList', tagList);
+
+            this.setState('tagList', tagList);
+
+            this.buildJumpLinkList(tagList);
+        } else {
+            // console.error(`saveApiDoc: not support docType ${docType}`);
+
+            // 從這裡開始，前端對json的parse進行分支，分支出openapi3.0的版本
+            const apiBuildObj = new ApiBuild(json, docType);
+            const tagList = apiBuildObj.getTagList();
+
+            this.setState('tagList', tagList);
+            this.buildJumpLinkList(tagList);
+        }
     }
     buildJumpLinkList(tagList) {
         tagList = tagList.map(val => val);

@@ -422,6 +422,10 @@ padding-bottom: 1.5rem;
                         border-radius: 3px;
 
                         line-height: 1.5rem;
+
+                        max-width: 6.5rem;
+                        max-height: 1.5rem;
+                        overflow: hidden;
                         & .text {
                             cursor: auto;
                         }
@@ -1535,6 +1539,7 @@ export default function ApiConnect({ fetchControl, mode }) {
     let jsonPath = '/apiConnect/default.json';
     let pageTitle = translationMenu.t('apiConnect');
     let fileName = '';
+    let docType;
     if (urlQueryObj) {
         if (urlQueryObj.category) {
             const pageInfo = apiConnectPageMap[urlQueryObj.category];
@@ -1556,6 +1561,7 @@ export default function ApiConnect({ fetchControl, mode }) {
                 // jsonPath = `http://localhost:5050/apiDoc/${urlQueryObj.fileName}.json`
                 pageTitle = `pageTitle`;
                 fileName = urlQueryObj.fileName;
+                docType = apiDocInfo.type;
             } else {
                 console.error(`apiDocInfo not found`, urlQueryObj.fileName);
             }
@@ -1565,6 +1571,7 @@ export default function ApiConnect({ fetchControl, mode }) {
     useEffect(function () {
         apiManageModel.setState('fileName', fileName);
         apiManageModel.setState('jsonPath', jsonPath);
+        apiManageModel.setState('docType', docType);
 
         fetchControl('apiManage').fetchJson();
     }, []);
