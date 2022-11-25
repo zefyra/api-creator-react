@@ -91,7 +91,7 @@ export class ApiManageControl extends Control {
             fileName: this.fetchModel('apiManage').getState('fileName'),
         };
 
-        await ApiSender.sendApi(`[post]/addTag`, apiParam).catch(new ApiError().catchAlertMsg())
+        await ApiSender.sendApi(`[post]/tag/addTag`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const addTagModalRef = this.fetchModel('apiManage').getState('addTagModalRef');
 
@@ -228,7 +228,7 @@ export class ApiManageControl extends Control {
 
         // console.log('apiParam', apiParam)
 
-        await ApiSender.sendApi(`[post]/addApi`, apiParam).catch(new ApiError().catchAlertMsg())
+        await ApiSender.sendApi(`[post]/api/addApi`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const addApiModalRef = this.fetchModel('apiManage').getState('addApiModalRef');
 
@@ -381,7 +381,7 @@ export class ApiManageControl extends Control {
 
         // console.log('onConfirmAddBody apiParam', apiParam)
 
-        await ApiSender.sendApi(`[post]/addBody`, apiParam).catch(new ApiError().catchAlertMsg())
+        await ApiSender.sendApi(`[post]/api/addReqBody`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const addBodyModalRef = this.fetchModel('apiManage').getState('addBodyModalRef');
 
@@ -578,7 +578,7 @@ export class ApiManageControl extends Control {
 
         console.log('onConfirmAddBody apiParam', apiParam)
 
-        await ApiSender.sendApi(`[post]/addResponse`, apiParam).catch(new ApiError().catchAlertMsg())
+        await ApiSender.sendApi(`[post]/api/addResBody`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const addResModalRef = this.fetchModel('apiManage').getState('addResModalRef');
         if (addResModalRef) {
@@ -786,9 +786,10 @@ export class ApiManageControl extends Control {
             fileName: addApiDocModel.getState('fileName'),
             title: addApiDocModel.getState('title'),
             host: addApiDocModel.getState('host'),
+            docType: addApiDocModel.getState('docType'),
         }
 
-        await ApiSender.sendApi('[post]/genSwagger', apiParam).catch(err => (error = err));
+        await ApiSender.sendApi('[post]/doc/createJson', apiParam).catch(err => (error = err));
         if (error) return Promise.reject(error);
 
         const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');

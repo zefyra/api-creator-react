@@ -1,3 +1,6 @@
+import ApiProfile from "./ApiProfile";
+import ApiSchema from "./ApiSchema";
+import DefinitionBuild from "./DefinitionBuild";
 
 
 class ApiDocVersion {
@@ -58,6 +61,8 @@ class TagList extends ApiComponent {
 class OpenApiBuild extends ApiDocVersion { // OpenAPI 3.0
     json = null;
     tagList = [];
+    defBuildObj = null;
+    // definitionMap = {};
 
     constructor(json) {
         super();
@@ -69,7 +74,94 @@ class OpenApiBuild extends ApiDocVersion { // OpenAPI 3.0
 
         // this.tagList = tagList;
 
+        this.defBuildObj = new DefinitionBuild(json);
+        // this.definitionMap = this.defBuildObj.getDefinitionMap();
+
+        // console.log('this.definitionMap', this.definitionMap);
+
+        // 生成tag的空殼
         this.tagList = this.buildTagList();
+
+        // 生成tag內的apiList
+        this.buildTagApiList();
+    }
+
+    // 跑每個tag，將apiList塞進去
+    buildTagApiList() {
+        /*
+        目標格式: 要build成這種格式
+        tagList: [{
+            apiList: [{
+                apiData: { // <swagger的格式>
+                    parameters
+                    produces
+                    responses
+                    tags
+                }
+                apiType: "post"
+                path: "/api/provider"
+            }]
+            "name": "pet",
+            "description": "Everything about your Pets",
+            "externalDocs": {
+                "description": "Find out more",
+                "url": "http://swagger.io"
+            }
+        }] */
+
+        if (!this.json.paths) {
+            return;
+        }
+
+        const vm = this;
+
+        const tagApiDataMap = {
+            // <tagName>: [<apiData>]
+        };
+        const addTagApiData = function (tagName, apiData) {
+            if (!apiData) {
+                console.error(`addTagApiData apiData not exist`);
+                return;
+            }
+            if (!tagApiDataMap[tagName]) {
+                tagApiDataMap[tagName] = [];
+            }
+            tagApiDataMap[tagName].push(apiData);
+        }
+        const getTagApiDataList = function (tagName) {
+            if (!tagApiDataMap[tagName]) {
+                console.error(`\`${tagName}\` not getTagApiData`);
+            }
+            return tagApiDataMap[tagName];
+        }
+
+        Object.keys(this.json.paths).forEach((apiRoute) => {
+            Object.keys(this.json.paths[apiRoute]).forEach((apiType) => {
+                let apiData = this.json.paths[apiRoute][apiType];
+                const apiTags = apiData.tags;
+                if (!apiTags) { // 代表該api尚未設定掛在哪個tag底下
+                    return;
+                }
+                apiData = new ApiProfile(apiData, apiRoute, apiType, vm.defBuildObj).getApiData();
+                // apiData = vm.addParameterBody(apiData);
+
+                // ps.這塊要獨立出去
+
+                apiTags.forEach((tagName) => {
+                    addTagApiData(tagName, apiData);
+                });
+            });
+        });
+
+
+        this.tagList = this.tagList.map((tagObj) => {
+            let outTagObj = Object.assign({}, tagObj);
+
+            const apiDataList = getTagApiDataList(tagObj.name);
+            outTagObj.apiList = apiDataList;
+
+            return outTagObj
+        });
     }
     buildTagList() {
 

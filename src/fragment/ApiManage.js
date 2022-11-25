@@ -18,7 +18,7 @@ export default class ApiManageModel extends StateModel {
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '', // 'http://localhost:5050/apiDoc/api-creator.json'
-            docType: '', // 'swagger2'
+            docType: '', // 'swagger2', 'openapi3'
         }
     }
     bindModalRef(srcKey, ref) {
@@ -194,6 +194,14 @@ export class AddApiDocModel extends StateModel {
             fileName: '',
             title: '',
             host: '',
+            docType: 'openapi3',
+            docTypeOptionList: [{
+                label: 'OpenAPI 3.0',
+                value: 'openapi3'
+            }, {
+                label: 'Swagger 2.0',
+                value: 'swagger2'
+            }]
         }
     }
 }

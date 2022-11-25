@@ -794,6 +794,9 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
 const AttributesForm = ({ fetchControl, apiData, title, attributes, show = true, attrSrc }) => {
     // attributes = apiComp.getApiDataField('requestAttributes')
 
+    // if (title === 'BODY - ATTRIBUTES') {
+    //     console.log('attributes', attributes)
+    // }
 
     // console.log(`AttributesForm attrSrc`, attrSrc)
 
@@ -837,9 +840,11 @@ const AttributesForm = ({ fetchControl, apiData, title, attributes, show = true,
 }
 
 
-const ApiBlock = ({ fetchControl, apiData }) => {
+const ApiBlock = ({ fetchControl, apiData, docType }) => {
 
-    const apiComp = new ApiComposition(apiData);
+    // const fc = new FetchControl(fetchControl);
+    // const docType = fc.fetchModel('apiManage').getState('docType');
+    const apiComp = new ApiComposition(apiData, docType);
 
     // console.log(`[${apiData.apiType}] ${apiData.path} apiData`, apiData)
 
@@ -998,7 +1003,7 @@ const TagHr = () => {
 }
 
 
-const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
+const TagBlock = ({ tagData, fetchControl, fetchModel, docType }) => {
     /* tagData: {
         // Swagger預設----------------------------
         description: "Everything about your Pets"
@@ -1013,7 +1018,8 @@ const TagBlock = ({ tagData, fetchControl, fetchModel }) => {
         apiBlockListDom = apiBlockList.map((apiBlockData, index) => {
             return (
                 <ApiBlock key={`${tagData.name}_ApiBlock_${index}`}
-                    apiData={apiBlockData} fetchControl={fetchControl}></ApiBlock>
+                    apiData={apiBlockData} fetchControl={fetchControl}
+                    docType={docType}></ApiBlock>
             )
         });
     }
@@ -1056,7 +1062,7 @@ flex-grow: 1;
 
 `
 
-const ApiDocument = ({ fetchControl }) => { // , jsonPath
+const ApiDocument = ({ fetchControl, docType }) => { // , jsonPath
 
     const fc = new FetchControl(fetchControl);
     const fetchModel = fc.export('fetchModel');
@@ -1094,7 +1100,7 @@ const ApiDocument = ({ fetchControl }) => { // , jsonPath
     const tagBlockListDom = tagList.map((tagData, index) => {
         return (
             <TagBlock key={`TagBlock_${index}`} fetchControl={fetchControl}
-                fetchModel={fetchModel} tagData={tagData}></TagBlock>
+                fetchModel={fetchModel} tagData={tagData} docType={docType}></TagBlock>
         );
     });
 
@@ -1164,9 +1170,14 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
     }
 
     let apiLinkListDom = apiList.map((apiData, index) => {
+        const apiLinkKey = `apiLink_${index}`;
         if (!apiData.apiData) {
             return (
-                <div>no summary</div>
+                <a key={apiLinkKey}
+                    style={{ cursor: 'pointer' }}>
+                    no summary
+                </a>
+                // <div key={apiLinkKey}>no summary</div>
             );
         }
         const apiLinkId = `${apiData.apiType}_${apiData.path}`;
@@ -1188,7 +1199,7 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
         }
 
         return (
-            <a key={`apiLink_${index}`} onClick={handleApiLinkClick()}
+            <a key={apiLinkKey} onClick={handleApiLinkClick()}
                 style={{ cursor: 'pointer' }}>
                 {getApiLinkLabel(apiData)}
             </a>
@@ -1642,7 +1653,7 @@ export default function ApiConnect({ fetchControl, mode }) {
     return (
         <PageTitle title={pageTitle} titleExtendSlot={titleExtendSlotDom} asideSlot={asideSlotDom}>
             <ApiPageOuter show={viewMode === 'board'}>
-                <ApiDocument fetchControl={fetchControl}></ApiDocument>
+                <ApiDocument fetchControl={fetchControl} docType={docType}></ApiDocument>
                 {/* <QuickPanelAsideSpace></QuickPanelAsideSpace>
                 <QuickPanelAside fetchControl={fetchControl}></QuickPanelAside> */}
                 <AddTagModal control={apiManageControl}

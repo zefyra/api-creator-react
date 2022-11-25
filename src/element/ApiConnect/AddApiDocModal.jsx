@@ -17,11 +17,16 @@ export default function AddApiDocModal({ control, apiManageModel, model }) {
         type: 'inputText',
         value: model.fetchRef('fileName', `AddApiDocModal`),
     }, {
+        label: '檔案格式',
+        type: 'select',
+        optionList: model.fetchRef('docTypeOptionList', `AddApiDocModal`),
+        value: model.fetchRef('docType', `AddApiDocModal`),
+    }, {
         label: '文件標題',
         type: 'inputText',
         value: model.fetchRef('title', `AddApiDocModal`),
     }, {
-        label: 'host',
+        label: 'host/url',
         type: 'inputText',
         value: model.fetchRef('host', `AddApiDocModal`),
     }];

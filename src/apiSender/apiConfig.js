@@ -3,16 +3,16 @@ import ApiFake from "./apiFake";
 // import get_permissions from "./fakeRes/get_permissions"
 
 const apiConfigMap = {
-    '[post]/addTag': {
+    '[post]/tag/addTag': {
 
     },
     '[post]/removeTag': {},
-    '[post]/addApi': {},
-    '[post]/addBody': {},
+    '[post]/api/addApi': {},
+    '[post]/api/addReqBody': {},
     '[post]/editTag': {},
-    '[post]/addResponse': {},
+    '[post]/api/addResBody': {},
     '[post]/editAttr': {},
-    '[post]/genSwagger': {},
+    '[post]/doc/createJson': {},
     '[post]/listApiDoc': {
         outputType: 'apiCreator',
     },

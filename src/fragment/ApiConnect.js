@@ -27,8 +27,10 @@ export class AttributeComposition {
 
 
 export class ApiComposition {
+    docType = '';
     tagData = null;
-    constructor(apiData) {
+    constructor(apiData, docType) {
+        this.docType = docType;
         /*  tagData: {
                 apiList: [{ // <apiData>
                     apiData: { // <apiInfo>
@@ -72,10 +74,14 @@ export class ApiComposition {
         const apiInfo = this.apiData.apiData;
 
         if (key === 'consumesContentType') {
+            if (!apiInfo) return false;
             return apiInfo.consumes ? (apiInfo.consumes[0] != null) : false;
         } else if (key === 'producesContentType') {
+            if (!apiInfo) return false;
             return apiInfo.produces ? (apiInfo.produces[0] != null) : false;
         } else if (key === 'requestAttributes') {
+            if (!apiInfo) return false;
+            if (!apiInfo.parameters) return false;
             const parameterItem = apiInfo.parameters.find((parameterItem) => {
                 return parameterItem.in === 'body';
             });
@@ -102,20 +108,29 @@ export class ApiComposition {
         const apiInfo = this.apiData.apiData;
 
         if (key === 'apiTitle') {
+            if (!apiInfo) return '';
             return apiInfo.summary || '';
         } else if (key === 'apiType') {
+            if (!apiInfo) return '';
             return this.apiData.apiType || '';
         } else if (key === 'path') {
+            if (!apiInfo) return '';
             return this.apiData.path || '';
         } else if (key === 'apiDescription') {
+            if (!apiInfo) return '';
             return this.apiData.apiData ? (this.apiData.apiData.description || '') : '';
         } else if (key === 'consumesContentType') {
+            if (!apiInfo) return '';
             return apiInfo.consumes ? (apiInfo.consumes[0] || '') : '';
         } else if (key === 'producesContentType') {
+            if (!apiInfo) return '';
             return apiInfo.produces ? (apiInfo.produces[0] || '') : '';
         } else if (key === 'requestAttributes') {
             // return apiInfo.attributes ? apiInfo.attributes : [];
             // return apiData.apiData ? (apiData.apiData.description || '') : '';
+
+            if (!apiInfo) return [];
+            if (!apiInfo.parameters) return [];
             const parameterItem = apiInfo.parameters.find((parameterItem) => {
                 return parameterItem.in === 'body';
             });
@@ -125,7 +140,42 @@ export class ApiComposition {
             }
 
             return parameterItem.schema.attributes;
+
+            /*
+            if (this.docType === 'swagger2') {
+                if (!apiInfo) return [];
+                if (!apiInfo.parameters) return [];
+                const parameterItem = apiInfo.parameters.find((parameterItem) => {
+                    return parameterItem.in === 'body';
+                });
+
+                if (!parameterItem) {
+                    return [];
+                }
+
+                return parameterItem.schema.attributes;
+            } else if (this.docType === 'openapi3') {
+                if (!apiInfo) return [];
+                if (!apiInfo.requestBody) return [];
+                if (!apiInfo.requestBody.content) return [];
+                if (!apiInfo.requestBody.content['application/json']) return [];
+                if (!apiInfo.requestBody.content['application/json'].schema) return [];
+
+                const parameterItem = apiInfo.parameters.find((parameterItem) => {
+                    return parameterItem.in === 'body';
+                });
+
+                if (!parameterItem) {
+                    return [];
+                }
+
+                return parameterItem.schema.attributes;
+            }
+            */
         } else if (key === 'statusList') {
+            if (!apiInfo) {
+                return [];
+            }
 
             if (!apiInfo.responses) {
                 return [];
@@ -141,26 +191,35 @@ export class ApiComposition {
                     }
                 }
             } */
+            const status = args[0]; // '200'
 
-            const status = args[0];
+            console.log('responseAttributes this.docType', this.docType);
 
-            if (!apiInfo.responses) {
-                return [];
+            if (this.docType === 'swagger2') {
+                if (!apiInfo.responses) return [];
+                const responseItem = apiInfo.responses[status];
+                if (!responseItem) return [];
+                if (!responseItem.schema) return [];
+                if (!responseItem.schema.attributes) return [];
+                return responseItem.schema.attributes;
+            } else if (this.docType === 'openapi3') {
+                if (!apiInfo.responses) return [];
+                const responseItem = apiInfo.responses[status];
+                if (!responseItem) return [];
+                if (!responseItem.content) return [];
+                if (!responseItem.content['application/json']) return [];
+                if (!responseItem.content['application/json'].schema) return [];
+                if (!responseItem.content['application/json'].schema.attributes) return [];
+                return responseItem.content['application/json'].schema.attributes;
             }
-            // const responseItem = apiInfo.responses['200'];
-            const responseItem = apiInfo.responses[status];
-
-            if (!responseItem) {
-                return [];
-            }
-
-            return responseItem.schema.attributes;
-
         } else if (key === 'requestQueryAttributes') {
+            if (!apiInfo) return [];
             return apiInfo.parameters ? (apiInfo.parameters.filter(item => item.in === 'query')) : [];
         } else if (key === 'requestUrlAttributes') {
+            if (!apiInfo) return [];
             return apiInfo.parameters ? (apiInfo.parameters.filter(item => item.in === 'path')) : [];
         } else if (key === 'requestHeaderAttributes') {
+            if (!apiInfo) return [];
             return apiInfo.parameters ? (apiInfo.parameters.filter(item => item.in === 'header')) : [];
             // } else if (key === 'apiDescription') {
             //     return apiData.apiData ? (apiData.apiData.description || '') : '';
@@ -785,7 +844,7 @@ export default class ApiConnectModel extends StateModel {
 
             const tagList = this.buildTagBlockDataList(new ApiConnectComposition(json));
 
-            console.log('tagList', tagList);
+            console.log('tagList', JSON.stringify(tagList));
 
             this.setState('tagList', tagList);
 
@@ -796,6 +855,8 @@ export default class ApiConnectModel extends StateModel {
             // 從這裡開始，前端對json的parse進行分支，分支出openapi3.0的版本
             const apiBuildObj = new ApiBuild(json, docType);
             const tagList = apiBuildObj.getTagList();
+
+            console.log('tagList', tagList);
 
             this.setState('tagList', tagList);
             this.buildJumpLinkList(tagList);
