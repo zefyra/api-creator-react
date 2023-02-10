@@ -79,7 +79,7 @@ const FormArea = ({ children, modalWidth, formWidth }) => {
     // modalWidth={modalWidth}
     return (
         <FormAreaStyled formWidth={formWidth}>
-            <div className="form-block">
+            <div className="FormArea form-block">
                 {children}
             </div>
         </FormAreaStyled>

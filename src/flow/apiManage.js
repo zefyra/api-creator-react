@@ -2,7 +2,7 @@ import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
 import ApiJsonModel from "fragment/ApiJson";
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddSecurityModel, AddTagModel, ApiSettingModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
 import FileSaver from 'file-saver';
 import uniqid from 'uniqid';
 
@@ -27,7 +27,9 @@ export class ApiManageControl extends Control {
             editAttr: EditAttrModel.name,
             addApiDoc: AddApiDocModel.name,
             apiJson: ApiJsonModel.name,
-            addQuery: AddQueryModel.name
+            addQuery: AddQueryModel.name,
+            addSecu: AddSecurityModel.name,
+            apiSetting: ApiSettingModel.name,
         }
     }
 
@@ -327,6 +329,85 @@ export class ApiManageControl extends Control {
         return bodyObj;
     } */
 
+
+    async onClickApiSetting(apiData) {
+
+        // const vm = this;
+        const apiSettingModel = this.fetchModel('apiSetting');
+
+        console.log('onClickApiSetting', apiData)
+
+        // 載入apiRoute, apiType-------------------------------------
+
+        apiSettingModel.setState('apiRoute', apiData.path);
+        apiSettingModel.setState('apiType', apiData.apiType);
+
+        // 載入securityKey-------------------------------------
+
+        // 畫蛇添足了，不需要用API抓，之後刪
+        // const apiParam = {
+        //     fileName: this.fetchModel('apiManage').getState('fileName'),
+        //     apiRoute: apiData.path,
+        //     apiType: apiData.apiType,
+        // };
+        // const apiRes = await ApiSender.sendApi('[post]/api/loadApiSetting', apiParam).catch(new ApiError().catchAlertMsg());
+        // apiSettingModel.setSecurityKey(apiRes.data.security);
+
+        apiSettingModel.setSecurityKey(apiData.apiData.security);
+
+        // 載入securityOptionList-------------------------------------
+
+        const apiParamLoadSecurity = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+        };
+
+        const apiResLoadSecurity = await ApiSender.sendApi('[post]/doc/loadSecurity', apiParamLoadSecurity).catch(new ApiError().catchAlertMsg());
+
+        apiSettingModel.setSecurityOptionList(apiResLoadSecurity.data.security);
+
+        const apiSettingModalRef = this.fetchModel('apiManage').getState('apiSettingModalRef');
+
+        if (apiSettingModalRef) {
+            apiSettingModalRef.openModal();
+        }
+    }
+    async onCancelApiSetting() {
+        const apiSettingModalRef = this.fetchModel('apiManage').getState('apiSettingModalRef');
+
+        if (apiSettingModalRef) {
+            apiSettingModalRef.closeModal();
+        }
+    }
+    async onSaveApiSetting(apiData) {
+        console.log('apiData', apiData);
+
+        const vm = this;
+        const apiSettingModel = this.fetchModel('apiSetting');
+
+        const apiParam = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            // apiRoute: addBodyModel.getState('apiRoute'),
+            // apiType: addBodyModel.getState('apiType'),
+            // rootType: addBodyModel.getState('rootType').trim(), // 避免兩旁出現空白字元
+            // schema: addBodyModel.getState('schema'),
+            apiRoute: apiSettingModel.getState('apiRoute'),
+            apiType: apiSettingModel.getState('apiType'),
+            securityKey: apiSettingModel.getState('securityKey'),
+        };
+
+        console.log('onSaveApiSetting apiParam', apiParam)
+
+        await ApiSender.sendApi(`[post]/api/setApiSetting`, apiParam).catch(new ApiError().catchAlertMsg());
+
+        const apiSettingModalRef = this.fetchModel('apiManage').getState('apiSettingModalRef');
+
+        if (apiSettingModalRef) {
+            apiSettingModalRef.closeModal();
+        }
+
+        vm.fetchJson();
+    }
+
     onClickAddBody(apiData) {
         // console.log('onClickAddBody apiData', JSON.stringify(apiData))
         /* apiData: {
@@ -375,7 +456,7 @@ export class ApiManageControl extends Control {
             fileName: this.fetchModel('apiManage').getState('fileName'),
             apiRoute: addBodyModel.getState('apiRoute'),
             apiType: addBodyModel.getState('apiType'),
-            rootType: addBodyModel.getState('rootType'),
+            rootType: addBodyModel.getState('rootType').trim(), // 避免兩旁出現空白字元
             schema: addBodyModel.getState('schema'),
         };
 
@@ -766,6 +847,14 @@ export class ApiManageControl extends Control {
             addApiDocModalRef.openModal();
         }
     }
+
+    onClickAddSecuritySchemes() {
+        const addSecurityRef = this.fetchModel('apiManage').getState('addSecurityRef');
+        if (addSecurityRef) {
+            addSecurityRef.openModal();
+        }
+    }
+
     onCancelAddApiDoc() {
 
         const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
@@ -795,6 +884,41 @@ export class ApiManageControl extends Control {
         const addApiDocModalRef = this.fetchModel('apiManage').getState('addApiDocModalRef');
         if (addApiDocModalRef) {
             addApiDocModalRef.closeModal();
+        }
+    }
+
+    onCancelAddSecurity() {
+        const addSecurityRef = this.fetchModel('apiManage').getState('addSecurityRef');
+        if (addSecurityRef) {
+            addSecurityRef.closeModal();
+        }
+    }
+
+    async onConfirmAddSecurity() {
+        const addSecurityModel = this.fetchModel('addSecu');
+
+        // LocalAccessor.setItem('apiDocList', [{
+        //     fileName: addApiDocModel.getState('fileName'),
+        // }]);
+
+        const apiParam = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            securityKey: addSecurityModel.getState('securityKey'),
+            key: addSecurityModel.getState('key'),
+            type: addSecurityModel.getState('type'),
+            in: addSecurityModel.getState('in'),
+            description: addSecurityModel.getState('description'),
+        }
+
+        console.log('apiParam', apiParam);
+
+        let error;
+        await ApiSender.sendApi('[post]/doc/addSecurity', apiParam).catch(err => (error = err));
+        if (error) return Promise.reject(error);
+
+        const addSecurityRef = this.fetchModel('apiManage').getState('addSecurityRef');
+        if (addSecurityRef) {
+            addSecurityRef.closeModal();
         }
     }
 

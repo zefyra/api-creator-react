@@ -399,14 +399,16 @@ const apiDocThemeObject = {
     apiPath: '#1f4b4b', // API路徑文字
     apiPathBlock: '#afcfc9',
     apiTypeBlockGet: '#20c4a6',
-    apiTypeBlockPut: '#a891e3',
+    apiTypeBlockPut: '#b49cd8',
     apiTypeBlockPost: '#4aafcb',
-    apiTypeBlockDelete: '#a36379',
+    apiTypeBlockDelete: '#ce6c8f',
+    apiTypeBlockPatch:'#dca35e',
 
     apiTypeGet: '#3c3c3c',
     apiTypePut: '#3c3c3c',
     apiTypePost: '#3c3c3c',
-    apiTypeDeletet: '#3c3c3c',
+    apiTypeDelete: '#3c3c3c',
+    apiTypePatch: '#3c3c3c',
 
     requestTitle: '#8faeae',
     contentType: '#0e1b1b',

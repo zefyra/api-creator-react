@@ -129,10 +129,11 @@ class OpenApiBuild extends ApiDocVersion { // OpenAPI 3.0
             tagApiDataMap[tagName].push(apiData);
         }
         const getTagApiDataList = function (tagName) {
-            if (!tagApiDataMap[tagName]) {
-                console.error(`\`${tagName}\` not getTagApiData`);
-            }
-            return tagApiDataMap[tagName];
+            // if (!tagApiDataMap[tagName]) {
+            //     console.error(`\`${tagName}\` not getTagApiData`);
+            // }
+            // return tagApiDataMap[tagName];
+            return tagApiDataMap[tagName] || [];
         }
 
         Object.keys(this.json.paths).forEach((apiRoute) => {

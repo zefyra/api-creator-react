@@ -31,6 +31,7 @@ import { ReactComponent as FolderDownloadSvg } from "assets/svg/folder-download.
 import { ReactComponent as FolderUploadSvg } from "assets/svg/folder-upload.svg"
 import { ReactComponent as BrowserSvg } from "assets/svg/br-browser.svg"
 import { ReactComponent as SquareRootSvg } from "assets/svg/sr-square-root.svg"
+import { ReactComponent as GearSvg } from "assets/svg/gear.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -40,12 +41,14 @@ import AddApiModal from 'element/ApiConnect/AddApiModal'
 import AddBodyModal from 'element/ApiConnect/AddBodyModal'
 import EditApiModal from 'element/ApiConnect/EditTagModal'
 
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel, AddSecurityModel, ApiSettingModel } from 'fragment/ApiManage'
 
 import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
 import EditAttrModal from 'element/ApiConnect/EditAttrModal'
 import AddQueryModal from 'element/ApiConnect/AddQueryModal'
+
+import AddSecurityModal from 'element/ApiConnect/AddSecurityModal'
 
 import AttrSrc from 'enum/apiConnect/AttrSrc'
 import DocxSave from 'element/ApiConnect/DocxSave'
@@ -58,6 +61,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import TextArea from 'component/TextArea'
 import { ApiJsonControl } from 'flow/apiJsonControl'
 import ApiJsonModel from 'fragment/ApiJson'
+import ApiSettingModal from 'element/ApiConnect/ApiSettingModal'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -150,7 +154,7 @@ padding-bottom: 1.5rem;
     & .row.api-title-row {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
         
         font-size: 1.18rem;
@@ -212,8 +216,12 @@ padding-bottom: 1.5rem;
                         background-color: ${fetchTheme('apiTypeBlockPost', '#e8e8e8')};
                     }
                     &.delete {
-                        color: ${fetchTheme('apiTypeDeletet', '#3c3c3c')};
+                        color: ${fetchTheme('apiTypeDelete', '#3c3c3c')};
                         background-color: ${fetchTheme('apiTypeBlockDelete', '#e8e8e8')};
+                    }
+                    &.patch {
+                        color: ${fetchTheme('apiTypePatch', '#3c3c3c')};
+                        background-color: ${fetchTheme('apiTypeBlockPatch', '#e8e8e8')};
                     }
                 }
             }
@@ -903,10 +911,11 @@ const ApiBlock = ({ fetchControl, apiData, docType }) => {
             <div>
                 {apiComp.getApiDataField('apiTitle')}
             </div>
-            {/* <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0' }}
-                onClick={fetchControl('apiManage').bindAct('onClickAddApi', apiData)}>
-                <PlusSvg className="plus-icon" fill="#0a2f25" />
-            </Button> */}
+            {/* API設定 */}
+            <Button type="fill" pattern="small" importStyle={{ height: '1.5rem', paddingH: '0.75rem', marginTop: '0', marginBottom: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickApiSetting', apiData)}>
+                <GearSvg className="plus-icon" fill="#4c5e5a" />
+            </Button>
         </div>
         <div className="row api-path-row">
             <div className="api-path-block" onClick={onApiPathClick()}>
@@ -1152,7 +1161,7 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
 
     // console.log('tagGroupData', tagGroupData)
 
-    const apiList = tagGroupData.apiList;
+    const apiList = tagGroupData.apiList || [];
     // console.log('QuickLinkGroup apiList', apiList)
 
     const getApiLinkLabel = function (apiData) {
@@ -1507,6 +1516,12 @@ export default function ApiConnect({ fetchControl, mode }) {
     const addApiDocModel = new AddApiDocModel(useRef(null));
     fc.setupModel('addApiDoc', addApiDocModel);
 
+    const addSecurityModel = new AddSecurityModel(useRef(null));
+    fc.setupModel('addSecu', addSecurityModel);
+
+    const apiSettingModel = new ApiSettingModel(useRef(null));
+    fc.setupModel('apiSetting', apiSettingModel);
+
     apiManageControl.registModel('apiManage', apiManageModel);
     apiManageControl.registModel('addTag', addTagModel);
     apiManageControl.registModel('addApi', addApiModel);
@@ -1612,6 +1627,7 @@ export default function ApiConnect({ fetchControl, mode }) {
                 show={viewMode === 'board'}>
                 <PlusSvg className="icon" fill="#4c5e5a" />
             </Button>
+
             <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '1.5rem', marginLeft: '0' }}
                 onClick={fetchControl('apiManage').bindAct('onClickClientSaveJsonFile')}
                 show={viewMode === 'json'}>
@@ -1622,6 +1638,7 @@ export default function ApiConnect({ fetchControl, mode }) {
                 show={viewMode === 'json'}>
                 <FolderUploadSvg className="icon" fill="#4c5e5a" />
             </Button>
+
             <ToggleButtonGroup
                 value={viewMode}
                 exclusive
@@ -1641,6 +1658,12 @@ export default function ApiConnect({ fetchControl, mode }) {
                     </div>
                     <BrowserSvg className="icon" fill="#4c5e5a" />
                 </SwaggerButtonInnerStyled>
+            </Button>
+
+            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '0' }}
+                onClick={fetchControl('apiManage').bindAct('onClickAddSecuritySchemes')}
+                show={viewMode === 'board'}>
+                增加安全設定
             </Button>
             {/* <DocxSave apiManageModel={apiManageModel} docxControl={docxControl}></DocxSave> */}
         </CreateApiDocStyled>
@@ -1677,6 +1700,12 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <AddQueryModal control={apiManageControl}
                     model={addQueryModel}
                     apiManageModel={apiManageModel}></AddQueryModal>
+                <AddSecurityModal control={apiManageControl}
+                    model={addSecurityModel}
+                    apiManageModel={apiManageModel}></AddSecurityModal>
+                <ApiSettingModal control={apiManageControl}
+                    model={apiSettingModel}
+                    apiManageModel={apiManageModel}></ApiSettingModal>
             </ApiPageOuter>
             <ApiPageOuter show={viewMode === 'json'} className="json-editor-page-outer">
                 <ApiDocJsonTextEditor apiJsonControl={apiJsonControl} apiJsonModel={apiJsonModel}></ApiDocJsonTextEditor>

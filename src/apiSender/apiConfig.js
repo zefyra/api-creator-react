@@ -19,6 +19,10 @@ const apiConfigMap = {
     '[post]/doc/updateJson': {
         
     },
+    '[post]/doc/addSecurity': {},
+    '[post]/doc/loadSecurity': {},
+    '[post]/api/loadApiSetting': {},
+    '[post]/api/setApiSetting': {},
     '[post]/api/addQuery': {},
     '[put]/api/editQueryParam': {},
     // '[get]/permissions': {

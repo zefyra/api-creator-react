@@ -15,6 +15,8 @@ export default class ApiManageModel extends StateModel {
             editAttrModalRef: null,
             addApiDocModalRef: null,
             addQueryModalRef: null,
+            addSecurityRef: null,
+            apiSettingModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '', // 'http://localhost:5050/apiDoc/api-creator.json'
@@ -67,6 +69,9 @@ export class AddApiModel extends StateModel {
             }, {
                 label: 'DELETE',
                 value: 'delete',
+            }, {
+                label: 'PATCH',
+                value: 'patch',
             }],
         }
     }
@@ -219,5 +224,90 @@ export class AddQueryModel extends StateModel {
             description: '',
             enum: '',
         }
+    }
+}
+
+
+
+export class AddSecurityModel extends StateModel {
+    data() {
+        return {
+            securityKey: '', // scheme field name
+            key: '', // data key
+            type: 'apiKey', // 'apiKey'    other: 'http'
+            in: 'header', // 'header'
+            description: '',
+            securityTypeOptionList: [{
+                label: 'apiKey',
+                value: 'apiKey',
+            }],
+            securityInOptionList: [{
+                label: 'header',
+                value: 'header',
+            }],
+        }
+    }
+}
+
+
+export class ApiSettingModel extends StateModel {
+    data() {
+        return {
+            apiRoute: '',
+            apiType: '',
+            securityKey: '', // scheme field name
+            securityKeyOptionList: [{
+                label: 'Token',
+                value: 'Token',
+            }],
+        }
+    }
+    setSecurityKey(securityList) {
+        // this.setState('securityKeyOptionList', json);
+        /* securityList: [{
+            // <securityKey>: []
+            Token: []
+        }] */
+        if (!securityList) {
+            this.setState('securityKey', '');
+            return;
+        }
+
+        if (securityList.length !== 1) {
+            this.setState('securityKey', '');
+            return;
+        }
+
+        const obj = securityList[0];
+
+        const keyList = Object.keys(obj);
+        if (keyList.length !== 1) {
+            this.setState('securityKey', '');
+            return;
+        }
+        const securityKey = keyList[0];
+
+        // console.log('securityKey', securityKey);
+
+        this.setState('securityKey', securityKey);
+    }
+
+    setSecurityOptionList(securityList) {
+        console.log('setSecurityOptionList', securityList);
+        /* securityList: [{
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header",
+            "description": "login取得的token"
+        }] */
+
+        const securityKeyOptionList = securityList.map((obj) => {
+            return {
+                label: obj.securityKey,
+                value: obj.securityKey,
+            }
+        });
+
+        this.setState('securityKeyOptionList', securityKeyOptionList);
     }
 }
