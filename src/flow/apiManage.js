@@ -2,9 +2,10 @@ import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
 import ApiJsonModel from "fragment/ApiJson";
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddSecurityModel, AddTagModel, ApiSettingModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddExampleModel, AddQueryModel, AddResModel, AddSecurityModel, AddTagModel, ApiSettingModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
 import FileSaver from 'file-saver';
 import uniqid from 'uniqid';
+import { format as formatJSON } from "json-string-formatter";
 
 export class ApiManageControl extends Control {
     circuit() {
@@ -30,6 +31,7 @@ export class ApiManageControl extends Control {
             addQuery: AddQueryModel.name,
             addSecu: AddSecurityModel.name,
             apiSetting: ApiSettingModel.name,
+            addExample: AddExampleModel.name,
         }
     }
 
@@ -341,6 +343,7 @@ export class ApiManageControl extends Control {
 
         apiSettingModel.setState('apiRoute', apiData.path);
         apiSettingModel.setState('apiType', apiData.apiType);
+        apiSettingModel.setState('summary', apiData.apiData.summary);
 
         // 載入securityKey-------------------------------------
 
@@ -392,6 +395,7 @@ export class ApiManageControl extends Control {
             // schema: addBodyModel.getState('schema'),
             apiRoute: apiSettingModel.getState('apiRoute'),
             apiType: apiSettingModel.getState('apiType'),
+            summary: apiSettingModel.getState('summary'),
             securityKey: apiSettingModel.getState('securityKey'),
         };
 
@@ -473,8 +477,9 @@ export class ApiManageControl extends Control {
         vm.fetchJson();
     }
 
-    onGqlJsonSrcUpdate(json) {
-        console.log('onGqlJsonSrcUpdate', json)
+    onGqlJsonSrcUpdate(json, bodyType) {
+        // bodyType="requestBody" , "responseBody"
+        console.log('onGqlJsonSrcUpdate', bodyType)
 
         let jsonObj;
         try {
@@ -502,6 +507,9 @@ export class ApiManageControl extends Control {
                 //     ''
                 // };
 
+                // 只有 requestBody 預設是必填
+                const requiredSign = bodyType === 'requestBody' ? '!' : '';
+
                 let valType = typeof val;
                 let fieldType;
                 if (valType === 'string') {
@@ -514,7 +522,18 @@ export class ApiManageControl extends Control {
                     fieldType = 'Unknown';
                 }
 
-                json += `   ${key}: ${fieldType}!\n`;
+                // const defaultValueDef = `"user"`
+                let defaultValueDef = '';
+                if (fieldType === 'String') {
+                    defaultValueDef = ` = \"${val}\"`;
+                } else if (fieldType === 'Int') {
+                    defaultValueDef = ` = ${val}`;
+                } else if (fieldType === 'Boolean') {
+                    defaultValueDef = ` = ${val}`;
+                } else if (fieldType === 'Unknown') {
+                }
+
+                json += `   ${key}: ${fieldType}${requiredSign}${defaultValueDef}\n`;
             });
             json += '}';
             return json;
@@ -981,5 +1000,113 @@ export class ApiManageControl extends Control {
         // canvas.toBlob(function(blob) {
         //     saveAs(blob, "pretty image.png");
         // });
+    }
+
+    onClickAddExample(apiData, mode) {
+        // mode: 'reqBody', 'resBody'
+        const addExampleModel = this.fetchModel('addExample');
+        addExampleModel.setState('mode', mode);
+
+        const apiRoute = apiData.path;
+        const apiType = apiData.apiType;
+        addExampleModel.setState('apiRoute', apiRoute);
+        addExampleModel.setState('apiType', apiType);
+
+
+        // Load exmaple optionList -------------------------------
+
+        ApiSender.sendApi('[post]/example/list', {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            apiRoute,
+            apiType,
+            mode,
+        }).then((apiRes) => {
+            // console.log('example list', apiRes.data.list);
+
+            const exampleMap = {};
+            const exampleOptionList = apiRes.data.list.map((exampleItem) => {
+                exampleMap[exampleItem.name] = exampleItem.value;
+
+                return {
+                    label: exampleItem.name,
+                    value: exampleItem.name,
+                    // obj: exampleItem.value,
+                }
+            });
+            addExampleModel.setState('exampleMap', exampleMap);
+            addExampleModel.setState('exampleOptionList', exampleOptionList);
+
+            if (exampleOptionList.length === 0) {
+                return;
+            }
+            const exampleKey = exampleOptionList[0].value;
+
+            const exampleObj = exampleMap[exampleKey];
+            const exampleSchemaJson = JSON.stringify(exampleObj);
+            let fJson = formatJSON(exampleSchemaJson);
+            fJson = fJson.replace(/\t/g, "  ");
+            addExampleModel.setState('exampleShowKey', exampleKey);
+            addExampleModel.setState('exampleSchemaJson', fJson);
+        });
+
+        const addExampleModalRef = this.fetchModel('apiManage').getState('addExampleModalRef');
+        if (addExampleModalRef) {
+            addExampleModalRef.openModal();
+        }
+    }
+
+    onCancelAddExample() {
+        const addExampleModalRef = this.fetchModel('apiManage').getState('addExampleModalRef');
+        if (addExampleModalRef) {
+            addExampleModalRef.closeModal();
+        }
+    }
+
+    onChangeShowExample(exampleKey) {
+        const addExampleModel = this.fetchModel('addExample');
+        addExampleModel.setState('exampleShowKey', exampleKey);
+
+        const exampleObj = addExampleModel.getExample(exampleKey);
+        const exampleSchemaJson = JSON.stringify(exampleObj);
+        let fJson = formatJSON(exampleSchemaJson);
+        fJson = fJson.replace(/\t/g, "  ");
+        addExampleModel.setState('exampleSchemaJson', fJson);
+    }
+
+    async onConfirmAddExample() {
+        const addExampleModel = this.fetchModel('addExample');
+
+        const mode = addExampleModel.getState('mode');
+
+        const schema = addExampleModel.getState('schema');
+
+        let jsonSchema;
+        try {
+            jsonSchema = JSON.parse(schema);
+        } catch (err) {
+            // 代表json parse失敗
+            console.error(`onConfirmAddExample json parse fail:`, err);
+            new ApiError().runErrorAlert(`json parse fail`);
+            return;
+        }
+
+        const apiParam = {
+            // mode: addExampleModel.getState('mode'),// 'reqBody', 'resBody'
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            apiType: addExampleModel.getState('apiType'),
+            apiRoute: addExampleModel.getState('apiRoute'),
+            name: addExampleModel.getState('name'),
+            schema: schema,
+        };
+        await ApiSender.sendApi(`[post]/example/add/{mode}`, apiParam, {
+            apiInnerData: {
+                mode: mode
+            }
+        }).catch(new ApiError().catchAlertMsg());
+
+        const addExampleModalRef = this.fetchModel('apiManage').getState('addExampleModalRef');
+        if (addExampleModalRef) {
+            addExampleModalRef.closeModal();
+        }
     }
 }

@@ -119,7 +119,7 @@ export default function AddResponseModal({ control, apiManageModel, model }) {
                 </FooterArea>
             }
             asideSlot={
-                <BodyModalJsonAside model={model} control={control} onGqlOutput={control.bindAct('onAddGqlToAddRes')} />
+                <BodyModalJsonAside model={model} control={control} onGqlOutput={control.bindAct('onAddGqlToAddRes')} bodyType="responseBody"/>
             }
             itemLabelWidth="6rem"
         ></FormModal>

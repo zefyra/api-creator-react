@@ -69,7 +69,7 @@ const TextareaStyled = styled.textarea`
     }
 `
 
-export default function TextArea({ width, height, value, onUpdate, srcKey = 'TextArea', nowrap = false, importStyle, searchTrigger }) {
+export default function TextArea({ width, height, value, onUpdate, srcKey = 'TextArea', nowrap = false, importStyle, searchTrigger, disabled = false }) {
 
     const isRefMode = value instanceof Ref;
 
@@ -234,6 +234,7 @@ export default function TextArea({ width, height, value, onUpdate, srcKey = 'Tex
             value={bindValue} onChange={handleChange()}
             style={importStyle}
             ref={textareaRef}
+            disabled={disabled}
         ></TextareaStyled>
     );
 

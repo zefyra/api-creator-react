@@ -24,6 +24,10 @@ export default function ApiSettingModal({ control, apiManageModel, model }) {
         // value: model.getState('apiType'),
         value: model.fetchRef('apiType', `ApiSettingModal`),
     }, {
+        label: 'API名稱',
+        type: 'inputText',
+        value: model.fetchRef('summary', `ApiSettingModal`),
+    }, {
         label: '安全欄位key',
         type: 'select',
         optionList: model.fetchRef('securityKeyOptionList', `ApiSettingModal`),

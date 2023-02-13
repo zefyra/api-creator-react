@@ -32,6 +32,7 @@ import { ReactComponent as FolderUploadSvg } from "assets/svg/folder-upload.svg"
 import { ReactComponent as BrowserSvg } from "assets/svg/br-browser.svg"
 import { ReactComponent as SquareRootSvg } from "assets/svg/sr-square-root.svg"
 import { ReactComponent as GearSvg } from "assets/svg/gear.svg"
+import { ReactComponent as BookmarkSvg } from "assets/svg/book-bookmark.svg"
 
 import Button from 'component/Button'
 import { ApiManageControl } from 'flow/apiManage'
@@ -41,7 +42,7 @@ import AddApiModal from 'element/ApiConnect/AddApiModal'
 import AddBodyModal from 'element/ApiConnect/AddBodyModal'
 import EditApiModal from 'element/ApiConnect/EditTagModal'
 
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel, AddSecurityModel, ApiSettingModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel, AddSecurityModel, ApiSettingModel, AddExampleModel } from 'fragment/ApiManage'
 
 import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
@@ -62,6 +63,7 @@ import TextArea from 'component/TextArea'
 import { ApiJsonControl } from 'flow/apiJsonControl'
 import ApiJsonModel from 'fragment/ApiJson'
 import ApiSettingModal from 'element/ApiConnect/ApiSettingModal'
+import AddExampleModal from 'element/ApiConnect/AddExample'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -947,6 +949,10 @@ const ApiBlock = ({ fetchControl, apiData, docType }) => {
                     importStyle={{ margin: '0 0 0 15px' }}>
                     <SquareRootSvg className="icon" fill="#FFFFFF" />
                 </Button>
+                <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddExample', apiData, 'reqBody')}
+                    importStyle={{ margin: '0 0 0 15px' }}>
+                    <BookmarkSvg className="icon" fill="#FFFFFF" />
+                </Button>
                 {/* <Button type="fill" pattern="small" importStyle={{ marginLeft: '15px', marginTop: '0', marginBottom: '0', fixWidth: '65px' }}
                     onClick={fetchControl('apiManage').bindAct('onClickAddBody', apiData)}>
                     <PlusSvg className="plus-icon" fill="#0a2f25" />
@@ -983,6 +989,10 @@ const ApiBlock = ({ fetchControl, apiData, docType }) => {
                 <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddRes', apiData)}
                     importStyle={{ margin: '0 0 0 15px' }}>
                     <DocumentSvg className="icon" fill="#FFFFFF" />
+                </Button>
+                <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickAddExample', apiData, 'resBody')}
+                    importStyle={{ margin: '0 0 0 15px' }}>
+                    <BookmarkSvg className="icon" fill="#FFFFFF" />
                 </Button>
             </div>
             <div className="content-type-block" style={{
@@ -1522,6 +1532,10 @@ export default function ApiConnect({ fetchControl, mode }) {
     const apiSettingModel = new ApiSettingModel(useRef(null));
     fc.setupModel('apiSetting', apiSettingModel);
 
+    const addExampleModel = new AddExampleModel(useRef(null));
+    fc.setupModel('addExample', addExampleModel);
+
+
     apiManageControl.registModel('apiManage', apiManageModel);
     apiManageControl.registModel('addTag', addTagModel);
     apiManageControl.registModel('addApi', addApiModel);
@@ -1545,7 +1559,6 @@ export default function ApiConnect({ fetchControl, mode }) {
 
     const addQueryModel = new AddQueryModel(useRef(null));
     apiManageControl.registModel('addQuery', addQueryModel);
-
 
 
     // http://{host}/apiConnect?category=dataCollection
@@ -1660,7 +1673,7 @@ export default function ApiConnect({ fetchControl, mode }) {
                 </SwaggerButtonInnerStyled>
             </Button>
 
-            <Button type="fill" pattern="small" importStyle={{ marginTop: '0', marginBottom: '0', marginRight: '0' }}
+            <Button type="fill" pattern="small" importStyle={{ paddingH: '0.5rem', marginTop: '0', marginBottom: '0', marginRight: '0' }}
                 onClick={fetchControl('apiManage').bindAct('onClickAddSecuritySchemes')}
                 show={viewMode === 'board'}>
                 增加安全設定
@@ -1706,6 +1719,9 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <ApiSettingModal control={apiManageControl}
                     model={apiSettingModel}
                     apiManageModel={apiManageModel}></ApiSettingModal>
+                <AddExampleModal control={apiManageControl}
+                    model={addExampleModel}
+                    apiManageModel={apiManageModel}></AddExampleModal>
             </ApiPageOuter>
             <ApiPageOuter show={viewMode === 'json'} className="json-editor-page-outer">
                 <ApiDocJsonTextEditor apiJsonControl={apiJsonControl} apiJsonModel={apiJsonModel}></ApiDocJsonTextEditor>

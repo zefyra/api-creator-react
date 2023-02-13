@@ -17,6 +17,7 @@ export default class ApiManageModel extends StateModel {
             addQueryModalRef: null,
             addSecurityRef: null,
             apiSettingModalRef: null,
+            addExampleModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '', // 'http://localhost:5050/apiDoc/api-creator.json'
@@ -255,6 +256,7 @@ export class ApiSettingModel extends StateModel {
         return {
             apiRoute: '',
             apiType: '',
+            summary: '', // API名稱
             securityKey: '', // scheme field name
             securityKeyOptionList: [{
                 label: 'Token',
@@ -310,4 +312,42 @@ export class ApiSettingModel extends StateModel {
 
         this.setState('securityKeyOptionList', securityKeyOptionList);
     }
+}
+
+
+
+export class AddExampleModel extends StateModel {
+    data() {
+        return {
+            mode: '',
+            apiRoute: '',
+            apiType: '',
+            name: '',
+            schema: '',
+            // --------------
+            exampleShowKey: '',
+            exampleOptionList: [],
+            exampleMap: {},
+            exampleSchemaJson: '',
+        }
+    }
+    getExample(exampleKey) {
+        const exampleMap = this.getState('exampleMap');
+
+        return exampleMap[exampleKey];
+    }
+    // sight() { // 用來設定watch可存取的範圍
+    //     return {
+    //         exampleShowKey: {
+    //             // removeBtnDisabled: true,
+    //         }
+    //     }
+    // }
+    // watch() {
+    //     return {
+    //         exampleShowKey: function (exampleKey) {
+    //             console.log('exampleKey', exampleKey)
+    //         }
+    //     }
+    // }
 }

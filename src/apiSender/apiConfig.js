@@ -25,6 +25,8 @@ const apiConfigMap = {
     '[post]/api/setApiSetting': {},
     '[post]/api/addQuery': {},
     '[put]/api/editQueryParam': {},
+    '[post]/example/add/{mode}': {},
+    '[post]/example/list': {},
     // '[get]/permissions': {
     //     header: 'bearerTokenHeader',
     //     outputType: 'crossbot',

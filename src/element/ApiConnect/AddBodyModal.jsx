@@ -185,7 +185,7 @@ export default function AddBodyModal({ control, apiManageModel, model }) {
                 </FooterArea>
             }
             asideSlot={
-                <BodyModalJsonAside model={model} control={control} onGqlOutput={control.bindAct('onAddGqlToAddBody')} />
+                <BodyModalJsonAside model={model} control={control} onGqlOutput={control.bindAct('onAddGqlToAddBody')} bodyType="requestBody"/>
             }
             // asideSlot={
             //     <AsideJsonInputStyled>

@@ -34,7 +34,8 @@ const AsideJsonInputStyled = styled.div`
     padding-right: 1rem;
 `
 
-export default function BodyModalJsonAside({ model, control, onGqlOutput }) {
+export default function BodyModalJsonAside({ model, control, onGqlOutput, bodyType }) {
+    // bodyType="requestBody" , "responseBody"
 
     const [debounceTimeout, setDebounceTimeout] = useState(null);
     const [jsonValid, setJsonValid] = useState(false);
@@ -86,9 +87,10 @@ export default function BodyModalJsonAside({ model, control, onGqlOutput }) {
     }, [json]);
 
     const handleConvertJson = () => () => {
+        console.log('handleConvertJson');
         // control.onGqlJsonSrcUpdate(json); // 舊版的
         if (onGqlOutput) {
-            onGqlOutput(control.onGqlJsonSrcUpdate(json));
+            onGqlOutput(control.onGqlJsonSrcUpdate(json, bodyType));
         }
     }
 
