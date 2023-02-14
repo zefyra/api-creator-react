@@ -595,7 +595,9 @@ export class ApiManageControl extends Control {
         }
         if (isErr) return;
 
-        await ApiSender.sendApi('[post]/api/addQuery', {
+        /*
+        // '[post]/api/addQuery'
+        await ApiSender.sendApi('[post]/attribute/add/query', {
             fileName: this.fetchModel('apiManage').getState('fileName'),
             apiRoute: addQueryModel.getState('apiRoute'),
             apiType: addQueryModel.getState('apiType'),
@@ -610,6 +612,45 @@ export class ApiManageControl extends Control {
             next(err);
         }).catchAlertMsg());
         if (isErr) return;
+        */
+
+        const paramIn = addQueryModel.getState('in');
+
+        const apiParam = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            apiRoute: addQueryModel.getState('apiRoute'),
+            apiType: addQueryModel.getState('apiType'),
+            type: addQueryModel.getState('type'),
+            name: addQueryModel.getState('name'),
+            in: addQueryModel.getState('in'),
+            default: addQueryModel.getState('default'),
+            description: addQueryModel.getState('description'),
+            enum: enumVal,
+        };
+
+
+        if (paramIn === 'query') {
+            await ApiSender.sendApi('[post]/attribute/add/query', apiParam).catch(new ApiError(function (err, next) {
+                isErr = true;
+                next(err);
+            }).catchAlertMsg());
+            if (isErr) return;
+        } else if (paramIn === 'path') {
+            await ApiSender.sendApi('[post]/attribute/add/path', apiParam).catch(new ApiError(function (err, next) {
+                isErr = true;
+                next(err);
+            }).catchAlertMsg());
+            if (isErr) return;
+        } else {
+            console.error('onConfirmAddQuery: unknown paramIn', paramIn);
+            isErr = true;
+            return;
+        }
+
+
+
+
+
 
         this.fetchJson();
 
@@ -712,7 +753,7 @@ export class ApiManageControl extends Control {
             attrRequired
         } */
 
-        console.log('apiData', apiData, attributeData, attrSrc)
+        // console.log('apiData', apiData, attributeData, attrSrc)
 
         const getBoolean = function (value) {
             if (typeof value !== 'boolean') {
@@ -724,11 +765,20 @@ export class ApiManageControl extends Control {
 
         const editAttrModel = this.fetchModel('editAttr');
 
-        if (attributeData.in === 'query') { // URL query參數的情況
-            editAttrModel.setState('paramType', 'urlQuery');
-        } else {
+        // console.log('attributeData.in', attributeData.in);
+
+        if (!attributeData.in) { // 預設undefined為json
             editAttrModel.setState('paramType', 'bodyJson');
+        } else if (attributeData.in === 'query') { // URL query參數的情況
+            editAttrModel.setState('paramType', 'urlQuery');
+        } else if (attributeData.in === 'path') { // 設在 path 裡
+            editAttrModel.setState('paramType', 'pathParam');
+        } else {
+            console.error(`unknown paramIn type`); // 不明型態
+            editAttrModel.setState('paramType', attributeData.in);
         }
+
+        // console.log('editAttr', attributeData);
 
         // 查詢參數
         editAttrModel.setState('apiType', apiData.apiType);
@@ -816,6 +866,8 @@ export class ApiManageControl extends Control {
             }
         }
 
+        // console.log(`attrName`, editAttrModel.getState('attrName'));
+
         const apiParam = {
             fileName: this.fetchModel('apiManage').getState('fileName'),
             apiType: editAttrModel.getState('apiType'),
@@ -837,12 +889,16 @@ export class ApiManageControl extends Control {
 
         const paramType = editAttrModel.getState('paramType');
         if (paramType === 'urlQuery') {
-            await ApiSender.sendApi(`[put]/api/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
+            // await ApiSender.sendApi(`[put]/api/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
+            await ApiSender.sendApi(`[put]/attribute/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
         } else if (paramType === 'bodyJson') {
-            await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg());
+            // await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg());
+            await ApiSender.sendApi(`[post]/attribute/edit`, apiParam).catch(new ApiError().catchAlertMsg());
+        } else if (paramType === 'pathParam') {
+            await ApiSender.sendApi(`[post]/attribute/edit/path`, apiParam).catch(new ApiError().catchAlertMsg());
+        } else {
+            console.error(`unknown paramType`, paramType);
         }
-
-        // await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const editAttrModalRef = this.fetchModel('apiManage').getState('editAttrModalRef');
         if (editAttrModalRef) {

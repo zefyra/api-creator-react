@@ -28,7 +28,7 @@ class DefinitionBuild {
             vm.refSchemaMap[refKey] = outSchemaObj; // 取代掉原本的
         });
 
-        console.log('vm.refSchemaMap', vm.refSchemaMap)
+        // console.log('vm.refSchemaMap', vm.refSchemaMap)
 
 
         /*舊版

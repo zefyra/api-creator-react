@@ -193,7 +193,7 @@ export class ApiComposition {
             } */
             const status = args[0]; // '200'
 
-            console.log('responseAttributes this.docType', this.docType);
+            // console.log('responseAttributes this.docType', this.docType);
 
             if (this.docType === 'swagger2') {
                 if (!apiInfo.responses) return [];
@@ -856,7 +856,7 @@ export default class ApiConnectModel extends StateModel {
             const apiBuildObj = new ApiBuild(json, docType);
             const tagList = apiBuildObj.getTagList();
 
-            console.log('tagList', tagList);
+            // console.log('tagList', tagList);
 
             this.setState('tagList', tagList);
             this.buildJumpLinkList(tagList);

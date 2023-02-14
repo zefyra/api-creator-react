@@ -11,20 +11,29 @@ const apiConfigMap = {
     '[post]/api/addReqBody': {},
     '[post]/editTag': {},
     '[post]/api/addResBody': {},
-    '[post]/editAttr': {},
+
+    // attribute-------------------------------------------
+
+    '[post]/attribute/add/query': {}, // '[post]/api/addQuery': {},
+    '[post]/attribute/add/path': {},
+
+    '[post]/attribute/edit': {}, // '[post]/editAttr': {},
+    '[put]/attribute/edit/query': {}, // '[put]/api/editQueryParam': {},
+    '[post]/attribute/edit/path': {},
+    // -------------------------------------------
+
     '[post]/doc/createJson': {},
     '[post]/listApiDoc': {
         outputType: 'apiCreator',
     },
     '[post]/doc/updateJson': {
-        
+
     },
     '[post]/doc/addSecurity': {},
     '[post]/doc/loadSecurity': {},
     '[post]/api/loadApiSetting': {},
     '[post]/api/setApiSetting': {},
-    '[post]/api/addQuery': {},
-    '[put]/api/editQueryParam': {},
+    // example-------------------------------------------
     '[post]/example/add/{mode}': {},
     '[post]/example/list': {},
     // '[get]/permissions': {

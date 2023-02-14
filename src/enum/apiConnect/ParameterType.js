@@ -10,7 +10,7 @@ export default class ParameterTypeEnum {
         }
 
         if (mode === 'urlQuery') {
-            return convertToOptionList([ParameterTypeEnum.query]);
+            return convertToOptionList([ParameterTypeEnum.query, ParameterTypeEnum.path]);
         }
         return [];
     }
