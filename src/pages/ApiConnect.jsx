@@ -972,7 +972,7 @@ const ApiBlock = ({ fetchControl, apiData, docType }) => {
         <AttributesForm title="HEADER - ATTRIBUTES" attributes={apiComp.getApiDataField('requestHeaderAttributes')}
             apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestHeaderAttributes')}
             fetchControl={fetchControl}></AttributesForm>
-        <AttributesForm title="URL - ATTRIBUTES" attributes={apiComp.getApiDataField('requestUrlAttributes')}
+        <AttributesForm title="PATH - ATTRIBUTES" attributes={apiComp.getApiDataField('requestUrlAttributes')}
             apiData={apiData} show={apiShow && apiComp.checkApiDataField('requestUrlAttributes')}
             fetchControl={fetchControl} ></AttributesForm>
         <AttributesForm title="Query - ATTRIBUTES" attributes={apiComp.getApiDataField('requestQueryAttributes')}
