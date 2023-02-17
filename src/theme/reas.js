@@ -427,6 +427,8 @@ const apiDocThemeObject = {
 
     inputSelectArrowIcon: '#add5d5', // a1a1a1
 
+    removeAttributeButton: '#f08181d0',
+
     // text: '#0a2f25', // 文字統一顏色
     // attention: '#e33838', // 高亮文字
     // spotlight: '#000dff', // 高亮文字

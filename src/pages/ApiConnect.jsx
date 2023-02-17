@@ -42,7 +42,7 @@ import AddApiModal from 'element/ApiConnect/AddApiModal'
 import AddBodyModal from 'element/ApiConnect/AddBodyModal'
 import EditApiModal from 'element/ApiConnect/EditTagModal'
 
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel, AddSecurityModel, ApiSettingModel, AddExampleModel } from 'fragment/ApiManage'
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddQueryModel, AddResModel, AddTagModel, EditAttrModel, EditTagModel, AddSecurityModel, ApiSettingModel, AddExampleModel, AddAttrModel, RemoveAttrModel } from 'fragment/ApiManage'
 
 import { ReactComponent as DocumentSvg } from 'assets/svg/document.svg'
 import AddResponseModal from 'element/ApiConnect/AddResponseModal'
@@ -64,6 +64,7 @@ import { ApiJsonControl } from 'flow/apiJsonControl'
 import ApiJsonModel from 'fragment/ApiJson'
 import ApiSettingModal from 'element/ApiConnect/ApiSettingModal'
 import AddExampleModal from 'element/ApiConnect/AddExample'
+import AddAttrModal from 'element/ApiConnect/AddAttrModal'
 
 const apiDocTheme = new ThemeMixin(apiDocThemeObject);
 
@@ -400,11 +401,13 @@ padding-bottom: 1.5rem;
 
                 margin-left: 15px;
 
+                flex-grow: 1;
+
                 & .attribute-row {
                     display: flex;
                     flex-direction: row;
 
-                    flex-grow: 1;
+                    /* flex-grow: 1; */
 
                     transform: translateY(-1px);
 
@@ -472,6 +475,20 @@ padding-bottom: 1.5rem;
                     flex-direction: row;
 
                     margin-left: 1.5rem;
+                    margin-right: 0.5rem;
+
+                    flex-grow: 1;
+
+                    justify-content: space-between;
+
+                    & .attribute-control-left {
+                        display: flex;
+                        flex-direction: row;
+                    }
+                    & .attribute-control-right {
+                        display: flex;
+                        flex-direction: row;
+                    }
                 }
             }
         }
@@ -762,10 +779,27 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
                         {attributeData.description || ''}
                     </div>
                     <div className="attribute-control-row">
-                        <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickEditAttr', apiData, attributeData, attrSrc)}
-                            importStyle={{ margin: '0 0 0 15px' }}>
-                            <DocumentSvg className="icon" fill="#FFFFFF" />
-                        </Button>
+                        <div className="attribute-control-left">
+                            {/* 編輯 */}
+                            <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickEditAttr', apiData, attributeData, attrSrc)}
+                                importStyle={{ margin: '0 0 0 15px' }}>
+                                <DocumentSvg className="icon" fill="#FFFFFF" />
+                            </Button>
+                        </div>
+                        <div className="attribute-control-right">
+                            {/* 刪除欄位 */}
+                            <Button type="icon"
+                                importStyle={{ margin: '0 0 0 15px', backgroundColor: apiDocTheme.getTheme('removeAttributeButton', '#a1a1a1') }}
+                                onClick={fetchControl('apiManage').bindAct('onClickRemoveAttr', apiData, attributeData, attrSrc)}>
+                                <MinusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+                            </Button>
+                            {/* 新增欄位(在底下) */}
+                            <Button type="icon"
+                                importStyle={{ margin: '0 0 0 15px' }}
+                                onClick={fetchControl('apiManage').bindAct('onClickAddAttr', apiData, attributeData, attrSrc)}>
+                                <PlusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1523,6 +1557,12 @@ export default function ApiConnect({ fetchControl, mode }) {
     const editAttrModel = new EditAttrModel(useRef(null));
     fc.setupModel('editAttr', editAttrModel);
 
+    const addAttrModel = new AddAttrModel(useRef(null));
+    fc.setupModel('addAttr', addAttrModel);
+
+    const removeAttrModel = new RemoveAttrModel(useRef(null));
+    fc.setupModel('removeAttr', removeAttrModel);
+
     const addApiDocModel = new AddApiDocModel(useRef(null));
     fc.setupModel('addApiDoc', addApiDocModel);
 
@@ -1722,6 +1762,9 @@ export default function ApiConnect({ fetchControl, mode }) {
                 <AddExampleModal control={apiManageControl}
                     model={addExampleModel}
                     apiManageModel={apiManageModel}></AddExampleModal>
+                <AddAttrModal control={apiManageControl}
+                    model={addAttrModel}
+                    apiManageModel={apiManageModel}></AddAttrModal>
             </ApiPageOuter>
             <ApiPageOuter show={viewMode === 'json'} className="json-editor-page-outer">
                 <ApiDocJsonTextEditor apiJsonControl={apiJsonControl} apiJsonModel={apiJsonModel}></ApiDocJsonTextEditor>

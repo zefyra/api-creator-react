@@ -20,6 +20,8 @@ const apiConfigMap = {
     '[post]/attribute/edit': {}, // '[post]/editAttr': {},
     '[put]/attribute/edit/query': {}, // '[put]/api/editQueryParam': {},
     '[post]/attribute/edit/path': {},
+    '[post]/attribute/add': {},
+    '[post]/attribute/remove': {},
     // -------------------------------------------
 
     '[post]/doc/createJson': {},

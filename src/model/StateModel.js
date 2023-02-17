@@ -537,7 +537,7 @@ export default class StateModel extends ReactModel {
 
         // 檢查欄位名稱是否合法
         if (!this.validateStateKey(stateKey)) {
-            console.error(`StateModel setState: stateKey "${stateKey}" is invalid`);
+            console.error(`StateModel setState: stateKey "${stateKey}" is invalid`, this.registMap);
             return;
         }
 

@@ -2,7 +2,7 @@ import ApiSender, { ApiError } from "apiSender";
 import Control from "control/Control";
 import ApiConnectModel from "fragment/ApiConnect";
 import ApiJsonModel from "fragment/ApiJson";
-import ApiManageModel, { AddApiDocModel, AddApiModel, AddBodyModel, AddExampleModel, AddQueryModel, AddResModel, AddSecurityModel, AddTagModel, ApiSettingModel, EditAttrModel, EditTagModel } from "fragment/ApiManage";
+import ApiManageModel, { AddApiDocModel, AddApiModel, AddAttrModel, AddBodyModel, AddExampleModel, AddQueryModel, AddResModel, AddSecurityModel, AddTagModel, ApiSettingModel, EditAttrModel, EditTagModel, RemoveAttrModel } from "fragment/ApiManage";
 import FileSaver from 'file-saver';
 import uniqid from 'uniqid';
 import { format as formatJSON } from "json-string-formatter";
@@ -32,6 +32,8 @@ export class ApiManageControl extends Control {
             addSecu: AddSecurityModel.name,
             apiSetting: ApiSettingModel.name,
             addExample: AddExampleModel.name,
+            addAttr: AddAttrModel.name,
+            removeAttr: RemoveAttrModel.name,
         }
     }
 
@@ -728,6 +730,126 @@ export class ApiManageControl extends Control {
 
         vm.fetchJson();
     }
+
+    // 在該欄位底下，新增新的欄位
+    onClickAddAttr(apiData, attributeData, attrSrc) {
+        const addAttrModel = this.fetchModel('addAttr');
+
+        // console.log('addAttrModel', addAttrModel);
+
+        // console.log('apiData', apiData)
+        // console.log('attributeData', JSON.stringify(attributeData))
+        // console.log('attrSrc', attrSrc)
+
+        /* attributeData: {
+            "type": "integer",
+            "description": "",
+            "default": "2",
+            "name": "auth",
+            "attrRequired": false,
+            "layerPath": [
+                "data",
+                "list"
+            ]
+        } */
+
+        addAttrModel.setState('apiType', apiData.apiType);
+        addAttrModel.setState('apiRoute', apiData.path);
+        addAttrModel.setState('layerPath', attributeData.layerPath);
+        addAttrModel.setState('name', attributeData.name);
+        addAttrModel.setState('attrSrc', attrSrc);
+
+        addAttrModel.setState('addPositionDescription', `加在 '${attributeData.name}'(欄位key) 之後`);
+
+        const addAttrModalRef = this.fetchModel('apiManage').getState('addAttrModalRef');
+        if (addAttrModalRef) {
+            addAttrModalRef.openModal();
+        }
+    }
+
+    onCancelAddAttr() {
+        const addAttrModalRef = this.fetchModel('apiManage').getState('addAttrModalRef');
+        if (addAttrModalRef) {
+            addAttrModalRef.closeModal();
+        }
+    }
+    onConfirmAddAttr() {
+        const vm = this;
+        const addAttrModel = this.fetchModel('addAttr');
+        // console.log('onConfirmAddAttr');
+
+        const attrName = addAttrModel.getState('add_name');
+        const attrDefault = addAttrModel.getState('add_defaultValue');
+        const attrValueType = addAttrModel.getState('add_valueType');
+        const attrDescription = addAttrModel.getState('add_description');
+        const attrRequired = addAttrModel.getState('add_required');
+
+        const attrData = {
+            name: attrName,
+            default: attrDefault,
+            valueType: attrValueType,
+            description: attrDescription,
+            required: attrRequired === 'true',
+        }
+
+        const apiParam = {
+            fileName: this.fetchModel('apiManage').getState('fileName'),
+            apiType: addAttrModel.getState('apiType'),
+            apiRoute: addAttrModel.getState('apiRoute'),
+            attrSrc: addAttrModel.getState('attrSrc'),
+            layerPath: addAttrModel.getState('layerPath'),
+            name: addAttrModel.getState('name'),
+            attrData,
+        }
+
+        ApiSender.sendApi('[post]/attribute/add', apiParam).then(() => {
+            return vm.fetchControl('tip').tip('新增成功');
+        }).then(() => {
+            vm.fetchJson();
+            const addAttrModalRef = vm.fetchModel('apiManage').getState('addAttrModalRef');
+            if (addAttrModalRef) {
+                addAttrModalRef.closeModal();
+            }
+        }).catch(new ApiError().catchAlertMsg());
+    }
+
+    // 刪除該欄位
+    onClickRemoveAttr(apiData, attributeData, attrSrc) {
+        const vm = this;
+
+        /* attributeData: {
+            "type": "integer",
+            "description": "",
+            "default": "2",
+            "name": "auth",
+            "attrRequired": false,
+            "layerPath": [
+                "data",
+                "list"
+            ]
+        } */
+        
+        this.fetchControl('confirm').confirm(`是否刪除欄位？`).then((action) => {
+
+            if (action === 'confirm') {
+                const apiParam = {
+                    fileName: vm.fetchModel('apiManage').getState('fileName'),
+                    apiType: apiData.apiType,
+                    apiRoute: apiData.path,
+                    attrSrc: attrSrc,
+                    layerPath: attributeData.layerPath,
+                    name: attributeData.name,
+                };
+
+                ApiSender.sendApi('[post]/attribute/remove', apiParam).then(() => {
+                    return vm.fetchControl('tip').tip('刪除成功');
+                }).then(() => {
+                    vm.fetchJson();
+                }).catch(new ApiError().catchAlertMsg());
+            }
+        });
+    }
+
 
     onClickEditAttr(apiData, attributeData, attrSrc) {
         // console.log('onClickEditAttributeDescription attributeData', attributeData);

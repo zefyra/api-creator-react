@@ -18,6 +18,8 @@ export default class ApiManageModel extends StateModel {
             addSecurityRef: null,
             apiSettingModalRef: null,
             addExampleModalRef: null,
+            addAttrModalRef: null,
+            removeAttrModalRef: null,
             // json config-----------------------------------------
             fileName: '',
             jsonPath: '', // 'http://localhost:5050/apiDoc/api-creator.json'
@@ -350,4 +352,56 @@ export class AddExampleModel extends StateModel {
     //         }
     //     }
     // }
+}
+
+export class AddAttrModel extends StateModel {
+    data() {
+        return {
+            // 查詢參數
+            apiType: '',
+            apiRoute: '',
+            layerPath: [], // [ "data", "list" ]
+            name: '', // "auth"
+            attrSrc: '',
+
+            // 數值參數
+            add_name: '',
+            add_defaultValue: '',
+            add_valueType: 'string',
+            add_description: '',
+            add_required: 'false',
+
+            addPositionDescription: '',
+            valueTypeOptionList: [{
+                value: 'string',
+                label: 'String',
+            }, {
+                value: 'integer',
+                label: 'Int',
+            }, {
+                value: 'boolean',
+                label: 'Boolean',
+            }],
+            requiredOptionList: [{
+                label: 'true',
+                value: 'true'
+            }, {
+                label: 'false',
+                value: 'false'
+            }],
+        };
+    }
+}
+
+export class RemoveAttrModel extends StateModel {
+    data() {
+        return {
+            // // 判別參數類型
+            // paramType: '',
+            // // 查詢參數
+            // apiType: '',
+            // apiRoute: '',
+            // tags: [],
+        };
+    }
 }
