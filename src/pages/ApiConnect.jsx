@@ -1088,7 +1088,8 @@ const TagBlock = ({ tagData, fetchControl, fetchModel, docType }) => {
         <TagBlockBoardStyled theme={apiDocThemeObject} id={`tag_${tagData.name}`} className="tag-block-board">
             <div className="tag-block-title-row">
                 <div className="tag-block-title-left">
-                    {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`}
+                    {/* 舊版使用groupName {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`} */}
+                    {tagData.description ? `${tagData.description} - ${tagData.name}` : tagData.name}
                     <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickTagEdit', tagData)}>
                         <DocumentSvg className="icon" fill="#FFFFFF" />
                     </Button>
@@ -1109,23 +1110,23 @@ const TagBlock = ({ tagData, fetchControl, fetchModel, docType }) => {
 
 const ApiDocumentStyled = styled.div`
 display: flex;
-flex-direction: column;
+                    flex-direction: column;
 
-flex-grow: 1;
+                    flex-grow: 1;
 
-`
+                    `
 
 const ApiDocument = ({ fetchControl, docType }) => { // , jsonPath
 
     const fc = new FetchControl(fetchControl);
     const fetchModel = fc.export('fetchModel');
 
-    // const apiDocModel = new ApiConnectModel(useRef(null), { pageMode: mode });
+    // const apiDocModel = new ApiConnectModel(useRef(null), {pageMode: mode });
     // const fc = new FetchControl(fetchControl);
     // fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
     const apiDocModel = fetchModel('apiDoc');
 
-    // const apiDocModel = new ApiConnectModel(useRef(null), { pageMode: pageMode });
+    // const apiDocModel = new ApiConnectModel(useRef(null), {pageMode: pageMode });
     // fc.setupModel('apiDoc', apiDocModel); // 註冊進fetchControl體系，這樣底下就可以輕鬆存取
 
     // useEffect(() => {
@@ -1175,10 +1176,10 @@ const ApiDocument = ({ fetchControl, docType }) => { // , jsonPath
 const checkHalfShape = function (summary) {
 
     /*
-    str="中文;；ａ"     
-  alert(str.match(/[\u0000-\u00ff]/g))     //半形   
-  alert(str.match(/[\u4e00-\u9fa5]/g))     //中文   
-  alert(str.match(/[\uff00-\uffff]/g))     //全形   */
+                    str="中文;；ａ"
+                    alert(str.match(/[\u0000-\u00ff]/g))     //半形
+                    alert(str.match(/[\u4e00-\u9fa5]/g))     //中文
+                    alert(str.match(/[\uff00-\uffff]/g))     //全形   */
 
     // match會輸出一個陣列，把符合全形、或半形的字塞進每個陣列元素
 
@@ -1236,7 +1237,7 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
         const apiLinkId = `${apiData.apiType}_${apiData.path}`;
 
         // 未完成: 之後要想辦法用js加回去，會跟textarea搶focus
-        // href={`#${apiLinkId}`} 
+        // href={`#${apiLinkId}`}
 
         const onAsideLinkClick = fetchControl('apiJson').bindAct('onAsideLinkClick', tagGroupData, apiData);
 
@@ -1260,7 +1261,9 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
     });
 
     const getApiGroupLabel = function (tagGroupData) {
-        return tagGroupData.groupName || tagGroupData.name;
+        return tagGroupData.description ? `${tagGroupData.description} - ${tagGroupData.name}` : tagGroupData.name;
+        // return tagGroupData.name;
+        // return tagGroupData.groupName || tagGroupData.name;
     }
 
     return (
@@ -1277,123 +1280,122 @@ const QuickLinkGroup = ({ fetchControl, tagGroupData }) => {
 
 // 用來騰出右側空間用的
 const QuickPanelAsideSpace = styled.div`
-display: flex;
-flex-direction: column;
+                    display: flex;
+                    flex-direction: column;
 
-flex-grow: 0;
+                    flex-grow: 0;
 
-margin-right: ${quickPanelRight || '35px'};
+                    margin-right: ${quickPanelRight || '35px'};
 
-width: ${quickPanelWidth};
+                    width: ${quickPanelWidth};
 
-@media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
-    display: none;
+                    @media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
+                        display: none;
 }
-`
+                    `
 
 const marginVertical = '1rem';
 
 const QuickPanelAsideStyled = styled.div`
 
 
-display: flex;
-flex-direction: column;
+                    display: flex;
+                    flex-direction: column;
 
-flex-grow: 0;
+                    flex-grow: 0;
 
 /* margin-right: ${quickPanelRight || '35px'}; */
 
-background-color: ${fetchTheme('board', '#cba165')};
+                    background-color: ${fetchTheme('board', '#cba165')};
 
-border-radius: ${fetchTheme('boardRadius', '5px')};
+                    border-radius: ${fetchTheme('boardRadius', '5px')};
 
-width: ${quickPanelWidth};
+                    width: ${quickPanelWidth};
 
-position: fixed;
+                    position: fixed;
 
-top: calc(${LayoutMixin.navBarHeight} + ${marginVertical});
-// 若想要對齊PageTitle的下緣，只要把top參數拿掉即可
+                    top: calc(${LayoutMixin.navBarHeight} + ${marginVertical});
+                    // 若想要對齊PageTitle的下緣，只要把top參數拿掉即可
 
-right: ${quickPanelRight};
+                    right: ${quickPanelRight};
 
-height: calc(100vh - ${LayoutMixin.navBarHeight} - (${marginVertical} * 2));
+                    height: calc(100vh - ${LayoutMixin.navBarHeight} - (${marginVertical} * 2));
 
-overflow-y: auto;
+                    overflow-y: auto;
 
-@media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
-    display: none;
-}
+                    @media only screen and (max-width: ${quickPanelHiddenMaxWidth}) {
+                        display: none;
+                    }
 
-// scrollbar---------------------------------------
+                    // scrollbar---------------------------------------
 
-/* width */
-&::-webkit-scrollbar {
-    width: 14px;
-}
+                    /* width */
+                    &::-webkit-scrollbar {
+                        width: 14px;
+                    }
 
-/* Track */
-&::-webkit-scrollbar-track {
-    /* box-shadow: inset 0 0 5px grey; */
-    /* background: #d1d1d1; */
-    border-radius: 15px;
+                    /* Track */
+                    &::-webkit-scrollbar-track {
+                        /* box-shadow: inset 0 0 5px grey; */
+                        /* background: #d1d1d1; */
+                        border-radius: 15px;
 
-    background: transparent;
-}
+                        background: transparent;
+                    }
 
-/* Handle */
-&::-webkit-scrollbar-thumb {
-    /* background: #989898; */
-    background-color: ${fetchTheme('scrollbar', '#cdcdcd')};
+                    /* Handle */
+                    &::-webkit-scrollbar-thumb {
+                        /* background: #989898; */
+                        background-color: ${fetchTheme('scrollbar', '#cdcdcd')};
 
-    border-radius: 30px;
-    
-    border: 3px solid transparent; // 用來縮小thumb的寬度
-    background-clip: content-box;
-    /* box-shadow: inset 0 0 5px #282828; */
-}
+                        border-radius: 30px;
 
-/* Handle on hover */
-&::-webkit-scrollbar-thumb:hover {
-    /* background: #dedede; */
-    background-color: ${fetchTheme('scrollbarHover', '#dedede')};
-    border: 3px solid transparent; // 用來縮小thumb的寬度
-    background-clip: content-box;
-}
+                        border: 3px solid transparent; // 用來縮小thumb的寬度
+                        background-clip: content-box;
+                        /* box-shadow: inset 0 0 5px #282828; */
+                    }
 
-    & .quick-link-group {
-        display: flex;
-        flex-direction: column;
+                    /* Handle on hover */
+                    &::-webkit-scrollbar-thumb:hover {
+                        /* background: #dedede; */
+                        background-color: ${fetchTheme('scrollbarHover', '#dedede')};
+                        border: 3px solid transparent; // 用來縮小thumb的寬度
+                        background-clip: content-box;
+                    }
 
-        margin-right: 1rem;
+                    & .quick-link-group {
+                        display: flex;
+                        flex-direction: column;
 
-        margin-top: 1rem;
+                        margin-right: 1rem;
 
-        & a {
-            margin-left: 2.5rem;
+                        margin-top: 1rem;
 
-            /* word-break: break-all; */
-            /* word-break: normal; */
-            /* word-break: keep-all; */
-            /* word-break: break-word; */
+                        & a {
+                            margin-left: 2.5rem;
 
-            color: ${fetchTheme('quickApiTitle', '#000000')};
+                            /* word-break: break-all; */
+                            /* word-break: normal; */
+                            /* word-break: keep-all; */
+                            /* word-break: break-word; */
 
-            margin-bottom: 0.45rem;
-            text-decoration: none;
+                            color: ${fetchTheme('quickApiTitle', '#000000')};
 
-            font-size: 1.05rem;
-        }
-        /* & a:active {
-            color: blue;
-        } */
+                            margin-bottom: 0.45rem;
+                            text-decoration: none;
 
-        & a.group-link {
-            color: ${fetchTheme('quickGroupTitle', '#000000')};
-            margin-left: 1rem;
-        }
-    }
+                            font-size: 1.05rem;
+                        }
+                        /* & a:active {
+                                        color: blue;
+                        } */
 
-`
+                        & a.group-link {
+                            color: ${fetchTheme('quickGroupTitle', '#000000')};
+                            margin-left: 1rem;
+                        }
+                    }
+                    `
 
 const QuickPanelAside = ({ fetchControl }) => {
 
@@ -1420,43 +1422,43 @@ const QuickPanelAside = ({ fetchControl }) => {
 
 
 const ApiPageOuter = styled.div`
-    /* display: flex; */
-    display: ${props => (props.show ? 'flex' : 'none')};
-    flex-direction: row;
+                    /* display: flex; */
+                    display: ${props => (props.show ? 'flex' : 'none')};
+                    flex-direction: row;
 
-    flex-grow: 1;
+                    flex-grow: 1;
 
-    /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
-`
+                    /* position: relative; // 用來定位: 讓下層的QuickPanelAsideStyled可以定位 */
+                    `
 
 const CreateApiDocStyled = styled.div`
-    /* display: flex; */
-    display: ${props => props.show ? 'flex' : 'none'};
-    flex-direction: row-reverse;
-    flex-grow: 1;
+                    /* display: flex; */
+                    display: ${props => props.show ? 'flex' : 'none'};
+                    flex-direction: row-reverse;
+                    flex-grow: 1;
 
-    justify-content: flex-start;
+                    justify-content: flex-start;
 
-    & .icon {
-    width: 22px;
-    height: 22px;
+                    & .icon {
+                        width: 22px;
+                    height: 22px;
     }
 
 /* background-color: red; */
 
 /* width: calc(100% - ${quickPanelWidth} - 20px); */
-/* width: 100%; */
-`
+                    /* width: 100%; */
+                    `
 
 const JsonEditorStyled = styled.div`
-display: flex;
-flex-direction: column;
-width: calc(100% - 1.5rem);
+                    display: flex;
+                    flex-direction: column;
+                    width: calc(100% - 1.5rem);
 
-    & .text-area-block {
-    margin-left: 1.5rem;
+                    & .text-area-block {
+                        margin-left: 1.5rem;
 }
-`
+                    `
 
 const ApiDocJsonTextEditor = ({ apiJsonControl, apiJsonModel }) => {
     // {/* width={formItem.width} height={height} */}
@@ -1516,7 +1518,7 @@ export default function ApiConnect({ fetchControl, mode }) {
 
     const urlQueryObj = urlQuery.get();
     /* urlQueryObj: {
-        category: "dataCollection"
+                        category: "dataCollection"
     }*/
 
     // apiDocModel------------------------------------------------------

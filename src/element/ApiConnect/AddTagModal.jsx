@@ -28,12 +28,12 @@ export default function AddTagModal({ control, apiManageModel, model }) {
         label: '標籤key', // t('tagCategoryZh'),
         type: 'inputText',
         value: model.fetchRef('name', `AddTagModal`),
+        // }, {
+        //     label: '標籤標題',
+        //     type: 'inputText',
+        //     value: model.fetchRef('groupName', `AddTagModal`),
     }, {
         label: '標籤標題',
-        type: 'inputText',
-        value: model.fetchRef('groupName', `AddTagModal`),
-    }, {
-        label: '標籤描述',
         type: 'inputText',
         value: model.fetchRef('description', `AddTagModal`),
         /*

@@ -856,7 +856,7 @@ export default class ApiConnectModel extends StateModel {
             const apiBuildObj = new ApiBuild(json, docType);
             const tagList = apiBuildObj.getTagList();
 
-            // console.log('tagList', tagList);
+            // console.log('tagList', JSON.stringify(tagList));
 
             this.setState('tagList', tagList);
             this.buildJumpLinkList(tagList);

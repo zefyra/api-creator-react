@@ -44,7 +44,7 @@ export class AddTagModel extends StateModel {
             // AddTagModal----------------------------------------
             name: '',
             description: '',
-            groupName: '',
+            // groupName: '',
         }
     }
 }

@@ -196,14 +196,13 @@ class OpenApiBuild extends ApiDocVersion { // OpenAPI 3.0
             const tagObj = new Tag();
 
             tagObj.setName(docTagItem.name);
-            tagObj.setDescription(docTagItem.name);
-            tagObj.setGroupName(docTagItem.name);
-
-            // 寫到這裡
-            // tagObj.pushApiList();
+            tagObj.setDescription(docTagItem.description);
+            tagObj.setGroupName(docTagItem.groupName);
 
             tagsObj.push(tagObj);
         });
+
+        // console.log('tagsObj.outObj();', tagsObj.outObj())
 
         return tagsObj.outObj();
         // return [{

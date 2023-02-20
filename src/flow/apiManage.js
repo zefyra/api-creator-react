@@ -93,7 +93,7 @@ export class ApiManageControl extends Control {
         const apiParam = {
             name: addTagModel.getState('name'),
             description: addTagModel.getState('description'),
-            groupName: addTagModel.getState('groupName'),
+            // groupName: addTagModel.getState('groupName'),
             fileName: this.fetchModel('apiManage').getState('fileName'),
         };
 
@@ -1007,14 +1007,11 @@ export class ApiManageControl extends Control {
                 required: required,
             },
         };
-        // console.log('onConfirmEditAttr', apiParam);
 
         const paramType = editAttrModel.getState('paramType');
         if (paramType === 'urlQuery') {
-            // await ApiSender.sendApi(`[put]/api/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
-            await ApiSender.sendApi(`[put]/attribute/editQueryParam`, apiParam).catch(new ApiError().catchAlertMsg())
+            await ApiSender.sendApi(`[put]/attribute/edit/query`, apiParam).catch(new ApiError().catchAlertMsg())
         } else if (paramType === 'bodyJson') {
-            // await ApiSender.sendApi(`[post]/editAttr`, apiParam).catch(new ApiError().catchAlertMsg());
             await ApiSender.sendApi(`[post]/attribute/edit`, apiParam).catch(new ApiError().catchAlertMsg());
         } else if (paramType === 'pathParam') {
             await ApiSender.sendApi(`[post]/attribute/edit/path`, apiParam).catch(new ApiError().catchAlertMsg());
