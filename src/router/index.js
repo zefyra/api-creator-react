@@ -18,6 +18,7 @@ import Profile from "pages/Profile" // 基本資料設定
 // 系統管理-----------------------------------------------------
 const Users = lazy(() => import('pages/Users')); // 用戶列表
 const ApiConnect = lazy(() => import('pages/ApiConnect')); // 17-1. 開發文件>API介接
+const ChartTest = lazy(() => import('pages/ChartTest'));
 
 // 自動將pathname尾端的 '/' 拔掉
 export const RemoveTrailingSlash = ({ ...rest }) => {

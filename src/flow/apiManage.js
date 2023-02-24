@@ -841,6 +841,9 @@ export class ApiManageControl extends Control {
                     name: attributeData.name,
                 };
 
+                // console.log('attributeData', attributeData)
+                // console.log('attrSrc', attrSrc)
+
                 ApiSender.sendApi('[post]/attribute/remove', apiParam).then(() => {
                     return vm.fetchControl('tip').tip('刪除成功');
                 }).then(() => {
