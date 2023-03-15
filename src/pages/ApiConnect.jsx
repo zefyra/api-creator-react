@@ -745,7 +745,22 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
     // attributeData.in === 'query' || attributeData.in === 'path'
     const attrIsNotBody = attributeData.in != null;
 
-    let addAttrPanelDom = attrIsNotBody ? null : (
+    let addAttrPanelDom = attrIsNotBody ? ( // 'query', 'path'
+        <div className="attribute-control-right">
+            {/* 刪除欄位 */}
+            <Button type="icon"
+                importStyle={{ margin: '0 0 0 15px', backgroundColor: apiDocTheme.getTheme('removeAttributeButton', '#a1a1a1') }}
+                onClick={fetchControl('apiManage').bindAct('onClickRemoveAttr', apiData, attributeData, attrSrc)}>
+                <MinusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+            </Button>
+            {/* 新增欄位(在底下) */}
+            {/* <Button type="icon"
+                importStyle={{ margin: '0 0 0 15px' }}
+                onClick={fetchControl('apiManage').bindAct('onClickAddAttr', apiData, attributeData, attrSrc)}>
+                <PlusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+            </Button> */}
+        </div>
+    ) : (
         <div className="attribute-control-right">
             {/* 刪除欄位 */}
             <Button type="icon"

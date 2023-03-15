@@ -327,9 +327,12 @@ export class ApiManageControl extends Control {
 
         // 載入apiRoute, apiType-------------------------------------
 
-        apiSettingModel.setState('apiRoute', apiData.path);
-        apiSettingModel.setState('apiType', apiData.apiType);
+        apiSettingModel.setState('apiRoute', apiData.path); // const參數
+        apiSettingModel.setState('apiType', apiData.apiType); // const參數
         apiSettingModel.setState('summary', apiData.apiData.summary);
+
+        apiSettingModel.setState('apiRouteVar', apiData.path); // variable參數
+        apiSettingModel.setState('apiTypeVar', apiData.apiType); // variable參數
 
         // 載入securityKey-------------------------------------
 
@@ -373,16 +376,26 @@ export class ApiManageControl extends Control {
         const vm = this;
         const apiSettingModel = this.fetchModel('apiSetting');
 
+        const apiRoute = apiSettingModel.getState('apiRoute');
+        const apiType = apiSettingModel.getState('apiType');
+
+        let apiRouteVar = apiSettingModel.getState('apiRouteVar');
+        let apiTypeVar = apiSettingModel.getState('apiTypeVar');
+
         const apiParam = {
             fileName: this.fetchModel('apiManage').getState('fileName'),
             // apiRoute: addBodyModel.getState('apiRoute'),
             // apiType: addBodyModel.getState('apiType'),
             // rootType: addBodyModel.getState('rootType').trim(), // 避免兩旁出現空白字元
             // schema: addBodyModel.getState('schema'),
-            apiRoute: apiSettingModel.getState('apiRoute'),
-            apiType: apiSettingModel.getState('apiType'),
+            apiRoute: apiRoute,
+            apiType: apiType,
             summary: apiSettingModel.getState('summary'),
             securityKey: apiSettingModel.getState('securityKey'),
+
+            // 若參數沒異動，則傳null
+            apiRouteVar: apiRouteVar !== apiRoute ? apiRouteVar : null,
+            apiTypeVar: apiTypeVar !== apiType ? apiTypeVar : null,
         };
 
         console.log('onSaveApiSetting apiParam', apiParam)
@@ -795,7 +808,7 @@ export class ApiManageControl extends Control {
                 "list"
             ]
         } */
-        
+
         this.fetchControl('confirm').confirm(`是否刪除欄位？`).then((action) => {
 
             if (action === 'confirm') {

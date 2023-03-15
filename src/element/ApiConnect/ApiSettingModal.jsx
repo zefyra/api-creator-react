@@ -15,14 +15,16 @@ export default function ApiSettingModal({ control, apiManageModel, model }) {
 
     let formItemList = [{
         label: 'API路由',
-        type: 'text',
-        // value: model.getState('apiRoute'),
-        value: model.fetchRef('apiRoute', `ApiSettingModal`),
+        // type: 'text',
+        // value: model.fetchRef('apiRoute', `ApiSettingModal`),
+        type: 'inputText',
+        value: model.fetchRef('apiRouteVar', `ApiSettingModal`),
     }, {
         label: 'API類型',
-        type: 'text',
-        // value: model.getState('apiType'),
-        value: model.fetchRef('apiType', `ApiSettingModal`),
+        // type: 'text',
+        // value: model.fetchRef('apiType', `ApiSettingModal`),
+        type: 'inputText',
+        value: model.fetchRef('apiTypeVar', `ApiSettingModal`),
     }, {
         label: 'API名稱',
         type: 'inputText',
@@ -39,7 +41,7 @@ export default function ApiSettingModal({ control, apiManageModel, model }) {
 
     return (
         <FormModal modalRef={apiManageModel.reactive('apiSettingModalRef', 'ApiSettingModal_ref')}
-            title="增加安全設定" formItemList={formItemList}
+            title="API設定" formItemList={formItemList}
             modalHeight={620}
             modalWidth={800}
             srcKey="AddApiModal"

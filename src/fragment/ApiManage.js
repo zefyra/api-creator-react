@@ -264,6 +264,8 @@ export class ApiSettingModel extends StateModel {
                 label: 'Token',
                 value: 'Token',
             }],
+            apiRouteVar: '',
+            apiTypeVar: '',
         }
     }
     setSecurityKey(securityList) {
