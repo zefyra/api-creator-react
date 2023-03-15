@@ -97,7 +97,7 @@ export class ApiManageControl extends Control {
             fileName: this.fetchModel('apiManage').getState('fileName'),
         };
 
-        await ApiSender.sendApi(`[post]/tag/addTag`, apiParam).catch(new ApiError().catchAlertMsg())
+        await ApiSender.sendApi(`[post]/tag/add`, apiParam).catch(new ApiError().catchAlertMsg())
 
         const addTagModalRef = this.fetchModel('apiManage').getState('addTagModalRef');
 
@@ -120,7 +120,7 @@ export class ApiManageControl extends Control {
         this.fetchControl('confirm').confirm(`是否刪除 ${tagName} 標籤？`).then((action) => {
 
             if (action === 'confirm') {
-                ApiSender.sendApi('[post]/removeTag', apiParam).then(() => {
+                ApiSender.sendApi('[post]/tag/remove', apiParam).then(() => {
                     return vm.fetchControl('tip').tip('刪除成功');
                 }).then(() => {
                     vm.fetchJson();
@@ -139,7 +139,7 @@ export class ApiManageControl extends Control {
         } */
 
         this.fetchModel('editTag').setState('tagName', tagData.name);
-        this.fetchModel('editTag').setState('summary', tagData.groupName);
+        this.fetchModel('editTag').setState('summary', tagData.description);
 
         const editTagModalRef = this.fetchModel('apiManage').getState('editTagModalRef');
         if (editTagModalRef) {
@@ -161,7 +161,7 @@ export class ApiManageControl extends Control {
             summary: this.fetchModel('editTag').getState('summary'),
         }
 
-        ApiSender.sendApi('[post]/editTag', apiParam).then(() => {
+        ApiSender.sendApi('[post]/tag/edit', apiParam).then(() => {
 
             const editTagModalRef = vm.fetchModel('apiManage').getState('editTagModalRef');
             if (editTagModalRef) {
@@ -175,22 +175,6 @@ export class ApiManageControl extends Control {
     onEditTagName() {
         const vm = this;
 
-        /*
-        const apiParam = {
-            fileName: vm.fetchModel('apiManage').getState('fileName'),
-            name: tagName,
-        };
-
-        this.fetchControl('confirm').confirm(`是否刪除 ${tagName} 標籤？`).then((action) => {
-
-            if (action === 'confirm') {
-                ApiSender.sendApi('[post]/removeTag', apiParam).then(() => {
-                    return vm.fetchControl('tip').tip('刪除成功');
-                }).then(() => {
-                    vm.fetchJson();
-                }).catch(new ApiError().catchAlertMsg());
-            }
-        });*/
     }
 
 
@@ -580,41 +564,24 @@ export class ApiManageControl extends Control {
     }
 
     async onConfirmAddQuery() {
+        console.log('onConfirmAddQuery');
+
         const addQueryModel = this.fetchModel('addQuery');
 
         let isErr = false;
 
-        const enumStr = addQueryModel.getState('enum');
-        let enumVal;
-        if (enumStr) {
-            try {
-                enumVal = JSON.parse(enumStr);
-            } catch (e) {
-                console.error('onConfirmAddQuery: enum is not json');
-                console.error(e);
-                isErr = true;
-            }
-        }
-        if (isErr) return;
-
-        /*
-        // '[post]/api/addQuery'
-        await ApiSender.sendApi('[post]/attribute/add/query', {
-            fileName: this.fetchModel('apiManage').getState('fileName'),
-            apiRoute: addQueryModel.getState('apiRoute'),
-            apiType: addQueryModel.getState('apiType'),
-            type: addQueryModel.getState('type'),
-            name: addQueryModel.getState('name'),
-            in: addQueryModel.getState('in'),
-            default: addQueryModel.getState('default'),
-            description: addQueryModel.getState('description'),
-            enum: enumVal,
-        }).catch(new ApiError(function (err, next) {
-            isErr = true;
-            next(err);
-        }).catchAlertMsg());
-        if (isErr) return;
-        */
+        // const enumStr = addQueryModel.getState('enum');
+        // let enumVal;
+        // if (enumStr) {
+        //     try {
+        //         enumVal = JSON.parse(enumStr);
+        //     } catch (e) {
+        //         console.error('onConfirmAddQuery: enum is not json');
+        //         console.error(e);
+        //         isErr = true;
+        //     }
+        // }
+        // if (isErr) return;
 
         const paramIn = addQueryModel.getState('in');
 
@@ -627,8 +594,11 @@ export class ApiManageControl extends Control {
             in: addQueryModel.getState('in'),
             default: addQueryModel.getState('default'),
             description: addQueryModel.getState('description'),
-            enum: enumVal,
+            enum: addQueryModel.getState('enum'),
+            // enum: enumVal,
         };
+
+        console.log('onConfirmAddQuery paramIn', paramIn)
 
 
         if (paramIn === 'query') {
@@ -735,12 +705,7 @@ export class ApiManageControl extends Control {
     onClickAddAttr(apiData, attributeData, attrSrc) {
         const addAttrModel = this.fetchModel('addAttr');
 
-        // console.log('addAttrModel', addAttrModel);
-
-        // console.log('apiData', apiData)
-        // console.log('attributeData', JSON.stringify(attributeData))
-        // console.log('attrSrc', attrSrc)
-
+        console.log('onClickAddAttr', apiData, attributeData, attrSrc);
         /* attributeData: {
             "type": "integer",
             "description": "",
@@ -765,6 +730,8 @@ export class ApiManageControl extends Control {
         if (addAttrModalRef) {
             addAttrModalRef.openModal();
         }
+
+        // 寫到這裡: 要繼續支援url query param
     }
 
     onCancelAddAttr() {
@@ -776,7 +743,7 @@ export class ApiManageControl extends Control {
     onConfirmAddAttr() {
         const vm = this;
         const addAttrModel = this.fetchModel('addAttr');
-        // console.log('onConfirmAddAttr');
+        console.log('onConfirmAddAttr');
 
         const attrName = addAttrModel.getState('add_name');
         const attrDefault = addAttrModel.getState('add_defaultValue');

@@ -211,7 +211,7 @@ const Menu = function ({ className, layoutClassName }) {
 
         if (!apiDocListStr) {
             // 裡面是空的，代表需要載入
-            ApiSender.sendApi('[post]/listApiDoc').then((apiRes) => {
+            ApiSender.sendApi('[post]/doc/listApiDoc').then((apiRes) => {
                 LocalAccessor.setItem('apiDocList', apiRes.list);
             }).catch(new ApiError().catchAlertMsg());
         }

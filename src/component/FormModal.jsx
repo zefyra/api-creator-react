@@ -330,7 +330,8 @@ const InputTextRow = ({ formItem, srcKey = 'InputTextRow' }) => {
     if (formItem.value instanceof Ref) {
         return (
             <InputText value={formItem.value}
-                type={formItem.inputType} max={formItem.max} min={formItem.min}></InputText>
+                type={formItem.inputType} max={formItem.max} min={formItem.min}
+                placeholder={formItem.placeholder}></InputText>
         )
     }
     // value是一般字串，純展示

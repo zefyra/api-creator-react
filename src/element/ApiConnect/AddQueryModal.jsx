@@ -40,6 +40,7 @@ export default function AddQueryModal({ control, apiManageModel, model }) {
         label: 'enum', // enum
         type: 'inputText',
         value: model.fetchRef('enum', `AddQueryModal`),
+        placeholder: 'key01,key02',
     }];
 
 

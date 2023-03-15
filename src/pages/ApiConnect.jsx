@@ -742,6 +742,25 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
         )
     }
 
+    // attributeData.in === 'query' || attributeData.in === 'path'
+    const attrIsNotBody = attributeData.in != null;
+
+    let addAttrPanelDom = attrIsNotBody ? null : (
+        <div className="attribute-control-right">
+            {/* 刪除欄位 */}
+            <Button type="icon"
+                importStyle={{ margin: '0 0 0 15px', backgroundColor: apiDocTheme.getTheme('removeAttributeButton', '#a1a1a1') }}
+                onClick={fetchControl('apiManage').bindAct('onClickRemoveAttr', apiData, attributeData, attrSrc)}>
+                <MinusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+            </Button>
+            {/* 新增欄位(在底下) */}
+            <Button type="icon"
+                importStyle={{ margin: '0 0 0 15px' }}
+                onClick={fetchControl('apiManage').bindAct('onClickAddAttr', apiData, attributeData, attrSrc)}>
+                <PlusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
+            </Button>
+        </div>
+    );
 
     return (
         <div className={`${indent === 0 ? 'attr-row' : ''} api-attribute-row`} style={{
@@ -786,20 +805,21 @@ const ApiAttributeRow = ({ fetchControl, apiData, attributeData, isTail = false,
                                 <DocumentSvg className="icon" fill="#FFFFFF" />
                             </Button>
                         </div>
-                        <div className="attribute-control-right">
-                            {/* 刪除欄位 */}
+                        {addAttrPanelDom}
+                        {/* <div className="attribute-control-right">
+                            刪除欄位
                             <Button type="icon"
                                 importStyle={{ margin: '0 0 0 15px', backgroundColor: apiDocTheme.getTheme('removeAttributeButton', '#a1a1a1') }}
                                 onClick={fetchControl('apiManage').bindAct('onClickRemoveAttr', apiData, attributeData, attrSrc)}>
                                 <MinusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
                             </Button>
-                            {/* 新增欄位(在底下) */}
+                            新增欄位(在底下)
                             <Button type="icon"
                                 importStyle={{ margin: '0 0 0 15px' }}
                                 onClick={fetchControl('apiManage').bindAct('onClickAddAttr', apiData, attributeData, attrSrc)}>
                                 <PlusSvg className="icon" fill="#FFFFFF" style={{ width: '1rem', height: '1rem' }} />
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
@@ -1088,7 +1108,6 @@ const TagBlock = ({ tagData, fetchControl, fetchModel, docType }) => {
         <TagBlockBoardStyled theme={apiDocThemeObject} id={`tag_${tagData.name}`} className="tag-block-board">
             <div className="tag-block-title-row">
                 <div className="tag-block-title-left">
-                    {/* 舊版使用groupName {`${tagData.groupName ? (tagData.groupName + ' - ') : ''}${tagData.name}`} */}
                     {tagData.description ? `${tagData.description} - ${tagData.name}` : tagData.name}
                     <Button type="icon" onClick={fetchControl('apiManage').bindAct('onClickTagEdit', tagData)}>
                         <DocumentSvg className="icon" fill="#FFFFFF" />

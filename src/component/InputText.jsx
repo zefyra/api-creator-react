@@ -104,15 +104,17 @@ const InputTextStyledBase = ({ placeholder, value, onChange,
             importStyle={importStyle} patternStyle={patternStyle}
         ></InputTextStyled>
     )
-    // className={inputTextClassName} 
-
     // return (
-    //     <input style={style} className={inputTextClassName} placeholder={placeholder}
-    //         value={value} onChange={onChange} disabled={disabled}
-    //         onFocus={onFocus} onBlur={onBlur} qid={qid} id={id}
-    //         onClick={onClick} onKeyDown={onKeyDown}
-    //     ></input>
-    // );
+    //     <div>
+    //         <InputTextStyled type={inputTypeAttr} theme={themeObject} style={style} placeholder={placeholder}
+    //             value={value} onChange={onChange} disabled={disabled}
+    //             onFocus={onFocus} onBlur={onBlur} qid={qid} id={id}
+    //             onClick={onClick} onKeyDown={onKeyDown} className={importClass}
+    //             importStyle={importStyle} patternStyle={patternStyle}
+    //         ></InputTextStyled>
+    //         {placeholder}BB
+    //     </div>
+    // )
 }
 
 
