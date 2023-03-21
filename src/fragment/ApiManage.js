@@ -383,6 +383,9 @@ export class AddAttrModel extends StateModel {
             }, {
                 value: 'boolean',
                 label: 'Boolean',
+            }, {
+                value: 'object',
+                label: 'Object',
             }],
             requiredOptionList: [{
                 label: 'true',
