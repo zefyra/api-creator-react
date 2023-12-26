@@ -350,7 +350,8 @@ padding-bottom: 1.5rem;
                 justify-content: flex-start;
                 align-items: center;
 
-                width: 10rem;
+                /* width: 10rem; 會切到*號 */
+                min-width: 10rem;
                 word-wrap: 'break-word';
 
                 & .title {

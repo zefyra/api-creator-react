@@ -99,6 +99,17 @@ export default function CrossbotRouter() {
                 </FilterRoute>
         },
 
+        
+        { // 測試頁
+            path: '/chartTest',
+            element:
+                <FilterRoute mode="free">
+                    <GlobalComponent layout="backend">
+                        <ChartTest />
+                    </GlobalComponent>
+                </FilterRoute>
+        },
+
 
         {
             path: "*",

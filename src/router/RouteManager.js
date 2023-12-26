@@ -82,6 +82,12 @@ let menuItemList = [{ // 系統管理
     isMenu: false,
     category: CategoryEnum.system,
     // resourceName: 'upgradeQuotaPlan',
+}, {
+    path: '/chartTest',
+    // nameSrc: 'hide.upgradeQuotaPlan', // 測試用
+    isMenu: false,
+    category: CategoryEnum.system,
+    // resourceName: 'upgradeQuotaPlan',
 }];
 
 // const hidePageList = [{
