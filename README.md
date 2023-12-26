@@ -1,6 +1,6 @@
-# crossbot-web
+# api-creator-react
 
-> backend client of crossbot server
+> swagger file generator GUI by React.js
 
 # .env參數介紹
 
