@@ -355,7 +355,7 @@ const NavBar = function ({ className, layoutClassName }) {
 
             <div className="start-container">
                 <div className="logo-container" onClick={() => { navigate('/home') }}>
-                    <img src="/reas_banner.png" alt="logo"></img>
+                    <img src="/creator_banner.png" alt="logo"></img>
                 </div>
                 {categoryList}
             </div>
