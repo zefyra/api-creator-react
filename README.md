@@ -15,3 +15,11 @@ REACT_APP_WEB_API_URL=""
 ```
 REACT_APP_DEV_API_INFO="true"
 ```
+
+
+## node-sass需要安裝Python的問題
+
+```shell
+npm install -g node-gyp
+npm install --global --production windows-build-tools
+```
